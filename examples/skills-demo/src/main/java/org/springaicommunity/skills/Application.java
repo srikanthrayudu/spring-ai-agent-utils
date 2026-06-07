@@ -33,11 +33,10 @@ public class Application {
 			ChatClient chatClient = chatClientBuilder // @formatter:off
 				.defaultSystem("Always use the available skills to assist the user in their requests.")
 
-				// Skills tool
-				.defaultTools(SkillsTool.builder().addSkillsResources(agentSkillsDirs).build())
-
-				// Built-in tools
 				.defaultTools(
+					// Skills tool
+					SkillsTool.builder().addSkillsResources(agentSkillsDirs).build(),
+
 					//Bash execution tool
 					ShellTools.builder().build(),// built-in shell tools
 					// Read, Write and Edit files tool

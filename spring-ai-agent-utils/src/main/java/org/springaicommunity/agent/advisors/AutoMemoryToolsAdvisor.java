@@ -43,7 +43,6 @@ import org.springframework.util.Assert;
 /**
  * @author Christian Tzolov
  */
-
 public class AutoMemoryToolsAdvisor implements BaseChatMemoryAdvisor {
 
 	private static final Resource DEFAULT_MEMORY_SYSTEM_PROMPT = new DefaultResourceLoader()
@@ -80,7 +79,8 @@ public class AutoMemoryToolsAdvisor implements BaseChatMemoryAdvisor {
 
 			ToolCallingChatOptions toolOptionsCopy = toolOptions.mutate().build();
 
-			List<ToolCallback> toolCallbacks = new ArrayList<>(Objects.requireNonNullElse(toolOptionsCopy.getToolCallbacks(), List.of()));
+			List<ToolCallback> toolCallbacks = new ArrayList<>(
+					Objects.requireNonNullElse(toolOptionsCopy.getToolCallbacks(), List.of()));
 
 			Set<String> existingNames = toolCallbacks.stream()
 				.map(tc -> tc.getToolDefinition().name())

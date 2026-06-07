@@ -9,7 +9,9 @@ import org.springaicommunity.agent.utils.AgentEnvironment;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +39,9 @@ public class Application {
 		return args -> {
 
 			ChatClient chatClient = chatClientBuilder // @formatter:off
+				
+				.defaultTools(new Tools()) // workaround for https://github.com/spring-projects/spring-ai/issues/6325
+
 				// system prompt
 				.defaultSystem(p -> p.text(systemPrompt) // system prompt
 					.param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
@@ -67,8 +72,9 @@ public class Application {
 
 					// Custom logging advisor
 					MyLoggingAdvisor.builder()
-						.showAvailableTools(false)
+						.showAvailableTools(true)
 						.showSystemMessage(false)
+						.order(Ordered.HIGHEST_PRECEDENCE + 1100)
 						.build())
 				.build();
 				// @formatter:on
@@ -79,11 +85,22 @@ public class Application {
 			try (Scanner scanner = new Scanner(System.in)) {
 				while (true) {
 					System.out.print("\n\033[1;34mUSER>\033[0m ");
-					System.out.println(
-							"\n\033[1;34mASSISTANT>\033[0m " + chatClient.prompt(scanner.nextLine()).call().content());
+					System.out.println("\n\033[1;34mASSISTANT>\033[0m " + chatClient.prompt(scanner.nextLine())
+						.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "session-1"))
+						.call()
+						.content());
 				}
 			}
 		};
+
+	}
+
+	public static class Tools {
+
+		@Tool(description = "Echoes the input text")
+		public String gecho(String input) {
+			return "Echo: " + input;
+		}
 
 	}
 

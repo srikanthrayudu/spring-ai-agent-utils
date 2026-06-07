@@ -7,6 +7,7 @@ import org.springaicommunity.agent.utils.CommandLineQuestionHandler;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -47,7 +48,10 @@ public class Application {
 			try (Scanner scanner = new Scanner(System.in)) {
 				while (true) {
 					System.out.print("\nUSER: ");
-					System.out.println("\nASSISTANT: " + chatClient.prompt(scanner.nextLine()).call().content());
+					System.out.println("\nASSISTANT: " + chatClient.prompt(scanner.nextLine())
+						.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "session-1"))
+						.call()
+						.content());
 				}
 			}
 		};

@@ -11,6 +11,7 @@ import org.springaicommunity.agent.utils.AgentEnvironment;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -55,10 +56,11 @@ public class Application {
 					// Publish todo update events
 					.todoEventHandler(event ->
 						applicationEventPublisher.publishEvent(new TodoUpdateEvent(this, event.todos())))
-					.build())	
-
-				// Internet search tool
-				.defaultTools(BraveWebSearchTool.builder(braveApiKey).resultCount(15).build())
+					.build(),
+					
+					// Internet search tool
+					BraveWebSearchTool.builder(braveApiKey).resultCount(15).build()
+				)	
 
 				// Advisors
 				.defaultAdvisors(
@@ -73,7 +75,10 @@ public class Application {
 			try (Scanner scanner = new Scanner(System.in)) {
 				while (true) {
 					System.out.print("\n> USER: ");
-					System.out.println("\n> ASSISTANT: " + chatClient.prompt(scanner.nextLine()).call().content());
+					System.out.println("\n> ASSISTANT: " + chatClient.prompt(scanner.nextLine())
+						.advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "session-1"))
+						.call()
+						.content());
 				}
 			}
 		};
