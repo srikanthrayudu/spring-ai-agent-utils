@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKOS — Identity Risk Intelligence Dashboard</title>
+<meta name="description" content="Cross-Platform Identity Sprawl & Privileged Access Abuse Detection Dashboard">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#06080f;--card:rgba(17,24,39,0.75);--card-solid:#111827;--border:rgba(31,41,55,0.6);--accent:#6366f1;--accent2:#8b5cf6;--critical:#ef4444;--high:#f97316;--medium:#eab308;--low:#22c55e;--text:#e5e7eb;--muted:#9ca3af;--surface:rgba(30,41,59,0.8);--glow:rgba(99,102,241,0.15)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,0.06) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:1440px;margin:0 auto;padding:20px 24px;position:relative;z-index:1}
+.header{text-align:center;padding:32px 0 24px}
+.header h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#6366f1,#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}
+.header p{color:var(--muted);font-size:0.9rem;margin-top:4px}
+.tabs{display:flex;gap:4px;margin:20px 0;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;overflow-x:auto}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:500;color:var(--muted);transition:all 0.2s;white-space:nowrap;border:none;background:none}
+.tab:hover{color:var(--text);background:rgba(99,102,241,0.1)}
+.tab.active{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,0.3)}
+.tab-content{display:none}.tab-content.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0}
+.card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:transform 0.2s,box-shadow 0.2s}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 20px var(--glow)}
+.card .value{font-size:2.2rem;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
+.card .label{color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
+.v-crit{color:var(--critical)}.v-high{color:var(--high)}.v-med{color:var(--medium)}.v-low{color:var(--low)}.v-acc{color:var(--accent)}
+.section{margin:28px 0}
+.section h2{font-size:1.2rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.controls{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.controls input,.controls select{background:var(--card-solid);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-size:0.82rem;font-family:inherit}
+.controls input{min-width:200px}
+.btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card-solid);color:var(--text);cursor:pointer;font-size:0.8rem;font-family:inherit;transition:all 0.2s}
+.btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-export{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:#22c55e}
+.btn-export:hover{background:#22c55e;color:#fff}
+table{width:100%;border-collapse:collapse;background:var(--card);backdrop-filter:blur(12px);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+th{background:var(--surface);color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;text-align:left;font-weight:600;cursor:pointer;user-select:none;position:relative}
+th:hover{color:var(--text)}
+th .sort-icon{margin-left:4px;opacity:0.4}
+td{padding:8px 14px;border-top:1px solid var(--border);font-size:0.85rem}
+tr:hover{background:rgba(99,102,241,0.05)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:600;text-transform:uppercase}
+.b-crit{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.25)}
+.b-high{background:rgba(249,115,22,0.15);color:#f97316;border:1px solid rgba(249,115,22,0.25)}
+.b-med{background:rgba(234,179,8,0.15);color:#eab308;border:1px solid rgba(234,179,8,0.25)}
+.b-low{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.25)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;margin:16px 0}
+.chart-box{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:12px;padding:16px}
+.chart-box h3{font-size:0.9rem;margin-bottom:12px;color:var(--muted);font-weight:600}
+.chart-box canvas{max-height:260px}
+.heatmap{display:grid;grid-template-columns:180px repeat(5,1fr);gap:2px;margin:16px 0}
+.hm-cell{padding:8px 6px;text-align:center;font-size:0.75rem;border-radius:4px;font-weight:500}
+.hm-hdr{background:var(--surface);color:var(--muted);font-weight:600}
+.h0{background:rgba(34,197,94,0.1);color:#22c55e}.h1{background:rgba(234,179,8,0.15);color:#eab308}
+.h2{background:rgba(249,115,22,0.2);color:#f97316}.h3{background:rgba(239,68,68,0.25);color:#ef4444}
+.h-{background:transparent;color:var(--muted)}
+.compliance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.comp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+.comp-card h3{font-size:0.95rem;margin-bottom:8px;color:var(--accent)}
+.comp-card li{padding:3px 0;font-size:0.82rem;color:var(--muted);list-style:none}
+.comp-card li::before{content:'✓ ';color:var(--low)}
+.consolidation-bar{display:flex;align-items:center;gap:12px;margin:12px 0;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.consolidation-bar .metric{font-size:2rem;font-weight:800;color:var(--low)}
+.consolidation-bar .desc{color:var(--muted);font-size:0.85rem}
+.drill-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+.drill-modal.show{display:flex}
+.drill-content{background:var(--card-solid);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:700px;width:90%;max-height:80vh;overflow-y:auto}
+.drill-content h3{margin-bottom:12px;font-size:1.1rem}
+.drill-close{float:right;cursor:pointer;color:var(--muted);font-size:1.2rem;background:none;border:none}
+.drill-close:hover{color:var(--text)}
+.evidence-item{padding:8px 12px;margin:4px 0;background:var(--surface);border-radius:8px;font-size:0.82rem}
+.gen-time{text-align:center;color:var(--muted);font-size:0.75rem;padding:24px 0;border-top:1px solid var(--border);margin-top:32px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tab-content.active{animation:fadeIn 0.3s ease}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>⛨ IKOS — Identity Risk Intelligence Dashboard</h1>
+<p>Cross-Platform Identity Sprawl & Privileged Access Abuse Detection | Generated {{TIMESTAMP}}</p>
+</div>
+
+<div class="cards" id="summary-cards">{{SUMMARY_CARDS}}</div>
+
+<div class="tabs" role="tablist">
+<button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
+<button class="tab" onclick="switchTab('risks')">🔴 Risks</button>
+<button class="tab" onclick="switchTab('identities')">👤 Identities</button>
+<button class="tab" onclick="switchTab('offboarding')">⚠ Offboarding</button>
+<button class="tab" onclick="switchTab('behavioral')">📈 Behavioral</button>
+<button class="tab" onclick="switchTab('consolidation')">🔗 Alert Consolidation</button>
+<button class="tab" onclick="switchTab('heatmap')">🔥 Privilege Heatmap</button>
+<button class="tab" onclick="switchTab('compliance')">📋 Compliance</button>
+<button class="tab" onclick="switchTab('report')">📄 Risk Report</button>
+<button class="tab" onclick="switchTab('data')">📖 Data Dictionary</button>
+</div>
+
+<!-- OVERVIEW TAB -->
+<div class="tab-content active" id="tab-overview">
+<div class="chart-grid">{{OVERVIEW_CHARTS}}</div>
+</div>
+
+<!-- RISKS TAB -->
+<div class="tab-content" id="tab-risks">
+<div class="section">
+<h2>🔴 Risk Observations</h2>
+<div class="controls">
+<input type="text" id="risk-search" placeholder="Search risks..." oninput="filterTable('risk-table',this.value)">
+<select id="risk-sev" onchange="filterBySev('risk-table',this.value)">
+<option value="">All Severities</option>
+<option value="CRITICAL">Critical</option>
+<option value="HIGH">High</option>
+<option value="MEDIUM">Medium</option>
+</select>
+<button class="btn btn-export" onclick="exportCSV('risk-table','ikos-risks.csv')">⬇ Export CSV</button>
+</div>
+<table id="risk-table">
+<thead><tr><th onclick="sortTable('risk-table',0)">Risk ID <span class="sort-icon">⇅</span></th><th onclick="sortTable('risk-table',1)">Severity <span class="sort-icon">⇅</span></th><th onclick="sortTable('risk-table',2)">MITRE</th><th>Statement</th><th onclick="sortTable('risk-table',4)">Confidence <span class="sort-icon">⇅</span></th><th>Action</th></tr></thead>
+<tbody>{{RISK_ROWS}}</tbody>
+</table>
+</div>
+</div>
+
+<!-- IDENTITIES TAB -->
+<div class="tab-content" id="tab-identities">
+<div class="section">
+<h2>👤 Identity Risk Rankings</h2>
+<div class="controls">
+<input type="text" id="id-search" placeholder="Search identities..." oninput="filterTable('id-table',this.value)">
+<button class="btn btn-export" onclick="exportCSV('id-table','ikos-identities.csv')">⬇ Export CSV</button>
+</div>
+<table id="id-table">
+<thead><tr><th onclick="sortTable('id-table',0)">Identity <span class="sort-icon">⇅</span></th><th>Platforms</th><th>Admin On</th><th onclick="sortTable('id-table',3)">Permissions <span class="sort-icon">⇅</span></th><th>Sensitive</th><th onclick="sortTable('id-table',5)">Risk Score <span class="sort-icon">⇅</span></th><th>Hidden Admin</th></tr></thead>
+<tbody>{{IDENTITY_ROWS}}</tbody>
+</table>
+</div>
+</div>
+
+<!-- OFFBOARDING TAB -->
+<div class="tab-content" id="tab-offboarding">
+<div class="section">
+<h2>⚠ Offboarding Gaps</h2>
+<div class="controls">
+<button class="btn btn-export" onclick="exportCSV('off-table','ikos-offboarding.csv')">⬇ Export CSV</button>
+</div>
+<table id="off-table">
+<thead><tr><th>Employee</th><th>Termination Date</th><th onclick="sortTable('off-table',2)">Days Since <span class="sort-icon">⇅</span></th><th>Type</th><th>Still Active On</th></tr></thead>
+<tbody>{{OFFBOARDING_ROWS}}</tbody>
+</table>
+</div>
+</div>
+
+<!-- BEHAVIORAL TAB -->
+<div class="tab-content" id="tab-behavioral">
+<div class="section">
+<h2>📈 Behavioral Analysis</h2>
+<div class="cards">{{BEHAVIORAL_CARDS}}</div>
+<div class="chart-grid">{{BEHAVIORAL_CHARTS}}</div>
+<table id="behav-table">
+<thead><tr><th>Account</th><th>Events</th><th>Logins</th><th>Failures</th><th>Priv Changes</th><th>Off-Hours</th><th onclick="sortTable('behav-table',6)">Anomaly Score <span class="sort-icon">⇅</span></th><th>Anomalies</th></tr></thead>
+<tbody>{{BEHAVIORAL_ROWS}}</tbody>
+</table>
+</div>
+</div>
+
+<!-- CONSOLIDATION TAB -->
+<div class="tab-content" id="tab-consolidation">
+<div class="section">
+<h2>🔗 Alert Consolidation</h2>
+<div class="consolidation-bar">
+<div class="metric">{{REDUCTION_PCT}}%</div>
+<div><div class="desc"><strong>Alert Noise Reduction</strong> — {{ORIGINAL_COUNT}} raw alerts consolidated into {{CONSOLIDATED_COUNT}} actionable incidents</div></div>
+</div>
+<div class="chart-grid">{{CONSOLIDATION_CHARTS}}</div>
+<table id="cons-table">
+<thead><tr><th>Alert ID</th><th>Category</th><th>Severity</th><th>Risks Grouped</th><th>Affected</th><th>Platforms</th><th>Summary</th></tr></thead>
+<tbody>{{CONSOLIDATION_ROWS}}</tbody>
+</table>
+</div>
+</div>
+
+<!-- HEATMAP TAB -->
+<div class="tab-content" id="tab-heatmap">
+<div class="section">
+<h2>🔥 Cross-Platform Privilege Heatmap</h2>
+<div class="heatmap">{{HEATMAP_CELLS}}</div>
+</div>
+</div>
+
+<!-- COMPLIANCE TAB -->
+<div class="tab-content" id="tab-compliance">
+<div class="section">
+<h2>📋 Framework Compliance Alignment</h2>
+<div class="compliance-grid">
+<div class="comp-card"><h3>NIST SP 800-53</h3><ul>
+<li>AC-2: Account Management (lifecycle, dormancy, removal)</li>
+<li>AC-5: Separation of Duties</li>
+<li>AC-6: Least Privilege (minimum necessary access)</li>
+<li>AC-6(5): Privileged Accounts</li>
+<li>IA-4: Identifier Management (unique identity tracking)</li>
+<li>IA-5(1): Password/Key Rotation</li></ul></div>
+<div class="comp-card"><h3>MITRE ATT&CK</h3><ul>
+<li>T1078: Valid Accounts (credential abuse)</li>
+<li>T1098: Account Manipulation (privilege escalation)</li>
+<li>T1136: Create Account (unauthorized accounts)</li>
+<li>T1550: Use Alternate Authentication Material (token misuse)</li>
+<li>T1531: Account Access Removal</li></ul></div>
+<div class="comp-card"><h3>GDPR</h3><ul>
+<li>Article 5: Data Minimisation (access scope ∝ purpose)</li>
+<li>Article 32: Security of Processing (identity controls)</li></ul></div>
+<div class="comp-card"><h3>CIS Controls</h3><ul>
+<li>Control 5: Account Management</li>
+<li>Control 6: Access Control Management</li></ul></div>
+</div>
+</div>
+</div>
+
+<!-- RISK REPORT TAB -->
+<div class="tab-content" id="tab-report">
+<div class="section">
+<h2>📄 Sample Risk Report — Top 10 Risky Identities</h2>
+{{RISK_REPORT}}
+</div>
+</div>
+
+<!-- DATA DICTIONARY TAB -->
+<div class="tab-content" id="tab-data">
+<div class="section">
+<h2>📖 Data Dictionary</h2>
+<table><thead><tr><th>Entity</th><th>Fields</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>IdentityAccount</code></td><td>accountId, platform, displayName, email, employeeId, status, roles, groups, isAdmin, lastLogin, createdAt, accountType, credentialAgeDays</td><td>Single account on a specific identity platform</td></tr>
+<tr><td><code>UnifiedIdentity</code></td><td>unifiedId, displayName, email, employeeId, department, accounts, metadata</td><td>Correlated identity across multiple platforms</td></tr>
+<tr><td><code>AuditEvent</code></td><td>eventId, accountId, platform, eventType, description, timestamp, sourceIp, targetResource, success</td><td>Login, privilege change, resource access event</td></tr>
+<tr><td><code>OffboardingRecord</code></td><td>employeeId, displayName, terminationDate, platformDisableStatus, terminationType</td><td>HR termination record with per-platform tracking</td></tr>
+<tr><td><code>TemporaryAccessException</code></td><td>exceptionId, employeeId, grantedPlatforms, grantedRoles, grantedAt, expiresAt, revokedPlatforms</td><td>Time-bound elevated access with expiry tracking</td></tr>
+<tr><td><code>GroupHierarchy</code></td><td>groupName, platform, parentGroups, grantedPermissions, isAdminGroup</td><td>Nested group/role hierarchy for privilege resolution</td></tr>
+<tr><td><code>EffectivePrivilegeProfile</code></td><td>identityId, platformPrivileges, adminPlatforms, sensitivePermissions, privilegeRiskScore, inheritanceChains</td><td>Computed effective privilege after group traversal</td></tr>
+<tr><td><code>KnowledgeUnit</code></td><td>id, statement, type, state, context, evidence, confidence, lastReviewed</td><td>Core knowledge store entity</td></tr>
+<tr><td><code>ConsolidatedAlert</code></td><td>alertId, category, severity, constituentRisks, affectedIdentities, remediationSteps</td><td>Clustered alert grouping related risks</td></tr>
+</tbody></table>
+<div style="margin-top:16px"><h2>📊 Dataset Statistics</h2>
+<table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody>{{DATA_STATS_ROWS}}</tbody></table>
+</div>
+</div>
+</div>
+
+<!-- DRILL-DOWN MODAL -->
+<div class="drill-modal" id="drill-modal" onclick="if(event.target===this)closeDrill()">
+<div class="drill-content">
+<button class="drill-close" onclick="closeDrill()">✕</button>
+<div id="drill-body"></div>
+</div>
+</div>
+
+</div>
+<script>
+function switchTab(id){
+document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.getElementById('tab-'+id).classList.add('active');
+event.target.classList.add('active');
+}
+function filterTable(tid,q){
+const rows=document.querySelectorAll('#'+tid+' tbody tr');
+q=q.toLowerCase();
+rows.forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'});
+}
+function filterBySev(tid,sev){
+const rows=document.querySelectorAll('#'+tid+' tbody tr');
+rows.forEach(r=>{
+if(!sev){r.style.display='';return}
+const badge=r.querySelector('.badge');
+r.style.display=(badge&&badge.textContent.trim()===sev)?'':'none';
+});
+}
+function sortTable(tid,col){
+const table=document.getElementById(tid);
+const tbody=table.querySelector('tbody');
+const rows=Array.from(tbody.querySelectorAll('tr'));
+const dir=table.dataset.sortDir==='asc'?'desc':'asc';
+table.dataset.sortDir=dir;
+rows.sort((a,b)=>{
+let av=a.cells[col]?.textContent.trim()||'';
+let bv=b.cells[col]?.textContent.trim()||'';
+const an=parseFloat(av.replace('%',''));
+const bn=parseFloat(bv.replace('%',''));
+if(!isNaN(an)&&!isNaN(bn))return dir==='asc'?an-bn:bn-an;
+return dir==='asc'?av.localeCompare(bv):bv.localeCompare(av);
+});
+rows.forEach(r=>tbody.appendChild(r));
+}
+function exportCSV(tid,fn){
+const table=document.getElementById(tid);
+let csv=[];
+const headers=Array.from(table.querySelectorAll('th')).map(h=>'"'+h.textContent.replace(/[⇅]/g,'').trim()+'"');
+csv.push(headers.join(','));
+table.querySelectorAll('tbody tr').forEach(r=>{
+if(r.style.display==='none')return;
+const cells=Array.from(r.cells).map(c=>'"'+c.textContent.trim().replace(/"/g,'""')+'"');
+csv.push(cells.join(','));
+});
+const blob=new Blob([csv.join('\n')],{type:'text/csv'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);a.download=fn;a.click();
+}
+function showDrill(riskId){
+const data=window.IKOS_DRILL_DATA||{};
+const risk=data[riskId];
+if(!risk){return}
+const body=document.getElementById('drill-body');
+body.innerHTML='<h3>'+risk.id+' — Risk Detail</h3>'+
+'<p style="margin:8px 0"><span class="badge b-'+risk.sevClass+'">'+risk.severity+'</span></p>'+
+'<p style="margin:8px 0;font-size:0.9rem">'+risk.statement+'</p>'+
+'<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Evidence Chain</h4>'+
+(risk.evidence||[]).map(e=>'<div class="evidence-item">'+e+'</div>').join('')+
+'<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Remediation Steps</h4>'+
+'<ol style="padding-left:20px;font-size:0.85rem;color:var(--text)">'+(risk.remediation||[]).map(s=>'<li style="margin:4px 0">'+s+'</li>').join('')+'</ol>'+
+'<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Policy References</h4>'+
+'<p style="font-size:0.82rem;color:var(--muted)">'+(risk.policies||'N/A')+'</p>';
+document.getElementById('drill-modal').classList.add('show');
+}
+function closeDrill(){document.getElementById('drill-modal').classList.remove('show')}
+{{CHART_SCRIPTS}}
+</script>
+</body>
+</html>

@@ -415,7 +415,7 @@ class AutoMemoryToolsTest {
 
 		@Test
 		@DisplayName("Documents all four memory types")
-		void documentsMemoryTypes() {
+		void documentsKnowledgeTypes() {
 			assertThat(prompt)
 				.contains("user")
 				.contains("feedback")

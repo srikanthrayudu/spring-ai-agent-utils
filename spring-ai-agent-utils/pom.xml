@@ -51,8 +51,8 @@
 	</ciManagement>
 
 	<properties>
-		<maven.compiler.target>17</maven.compiler.target>
-		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
 	</properties>
 
 	<dependencies>
@@ -127,6 +127,30 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<release>25</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.6.3</version>
+				<configuration>
+					<classpathScope>test</classpathScope>
+					<includeProjectDependencies>true</includeProjectDependencies>
+					<includePluginDependencies>false</includePluginDependencies>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencyManagement>
 		<dependencies>
