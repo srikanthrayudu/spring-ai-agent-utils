@@ -40,6 +40,9 @@
         <module>memory/memory-tools-demo</module>
         <module>memory/memory-tools-advisor-demo</module>
         <module>memory/memory-filesystem-tools-demo</module>
+        <module>ikos-lifecycle-demo</module>
+        <module>ikos-risk-detection-demo</module>
+        <module>ikos-agent-demo</module>
     </modules>
 
     <repositories>

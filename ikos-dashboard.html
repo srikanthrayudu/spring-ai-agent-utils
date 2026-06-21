@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/dist/vis-network.min.js"></script>
     <style>
         :root {
             --bg: #06080f;
@@ -573,7 +574,7 @@
                 <div class='label'>Offboarding Gaps</div>
             </div>
             <div class='card'>
-                <div class='value v-high'>87</div>
+                <div class='value v-high'>88</div>
                 <div class='label'>Behavioral Anomalies</div>
             </div>
             <div class='card'>
@@ -581,13 +582,14 @@
                 <div class='label'>Stale Exceptions</div>
             </div>
             <div class='card'>
-                <div class='value v-low'>78%</div>
+                <div class='value v-low'>82%</div>
                 <div class='label'>Alert Noise Reduction</div>
             </div>
         </div>
 
         <div class="tabs" role="tablist">
             <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab" onclick="switchTab('graph')">🕸️ Identity Graph</button>
             <button class="tab" onclick="switchTab('risks')">🔴 Risks</button>
             <button class="tab" onclick="switchTab('identities')">👤 Identities</button>
             <button class="tab" onclick="switchTab('offboarding')">⚠ Offboarding</button>
@@ -601,7 +603,144 @@
 
         <!-- OVERVIEW TAB -->
         <div class="tab-content active" id="tab-overview">
-            <div class="chart-grid"></div>
+            <!-- Row 1: Charts -->
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>📊 Risk Severity Distribution</h3>
+                    <canvas id="chart-risk-dist" height="280"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>🏢 Platform Account Distribution</h3>
+                    <canvas id="chart-platform-dist" height="280"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 2: Risk Type + Consolidation -->
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <h3>🔍 Risk Type Breakdown</h3>
+                    <canvas id="chart-risk-types" height="280"></canvas>
+                </div>
+                <div class="chart-box">
+                    <h3>🔗 Alert Consolidation</h3>
+                    <canvas id="chart-consolidation" height="280"></canvas>
+                </div>
+            </div>
+
+            <!-- Row 3: Knowledge Evolution Pipeline -->
+            <div class="chart-grid">
+                <div class="chart-box" style="grid-column: span 2">
+                    <h3>🧠 Knowledge Evolution Pipeline</h3>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:0;padding:24px 10px;flex-wrap:wrap">
+                        <div style="text-align:center;padding:18px 24px;background:rgba(99,102,241,0.12);border-radius:14px;border:1px solid rgba(99,102,241,0.25);min-width:150px;transition:transform 0.2s ease">
+                            <div style="font-size:2.2rem;font-weight:800;color:#6366f1">30%</div>
+                            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-top:4px">Observation</div>
+                            <div style="font-size:0.7rem;color:var(--muted);margin-top:3px">Raw detection signal</div>
+                            <div style="font-size:0.68rem;color:#6366f1;margin-top:2px">158 raw alerts →</div>
+                        </div>
+                        <div style="font-size:1.8rem;color:var(--muted);padding:0 10px;animation:pulse 2s ease-in-out infinite">→</div>
+                        <div style="text-align:center;padding:18px 24px;background:rgba(139,92,246,0.12);border-radius:14px;border:1px solid rgba(139,92,246,0.25);min-width:150px">
+                            <div style="font-size:2.2rem;font-weight:800;color:#8b5cf6">50%</div>
+                            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-top:4px">Pattern Candidate</div>
+                            <div style="font-size:0.7rem;color:var(--muted);margin-top:3px">Auto-discovered cluster</div>
+                            <div style="font-size:0.68rem;color:#8b5cf6;margin-top:2px">82% noise reduction</div>
+                        </div>
+                        <div style="font-size:1.8rem;color:var(--muted);padding:0 10px;animation:pulse 2s ease-in-out 0.5s infinite">→</div>
+                        <div style="text-align:center;padding:18px 24px;background:rgba(249,115,22,0.12);border-radius:14px;border:1px solid rgba(249,115,22,0.25);min-width:150px">
+                            <div style="font-size:2.2rem;font-weight:800;color:#f97316">70%</div>
+                            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-top:4px">Validated Pattern</div>
+                            <div style="font-size:0.7rem;color:var(--muted);margin-top:3px">Governance-approved</div>
+                            <div style="font-size:0.68rem;color:#f97316;margin-top:2px">26 actionable incidents</div>
+                        </div>
+                        <div style="font-size:1.8rem;color:var(--muted);padding:0 10px;animation:pulse 2s ease-in-out 1s infinite">→</div>
+                        <div style="text-align:center;padding:18px 24px;background:rgba(34,197,94,0.12);border-radius:14px;border:1px solid rgba(34,197,94,0.25);min-width:150px">
+                            <div style="font-size:2.2rem;font-weight:800;color:#22c55e">90%</div>
+                            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;margin-top:4px">Security Knowledge</div>
+                            <div style="font-size:0.7rem;color:var(--muted);margin-top:3px">Outcome-validated</div>
+                            <div style="font-size:0.68rem;color:#22c55e;margin-top:2px">Organizational memory</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:10px;padding-bottom:8px">
+                        Confidence = <strong>Evidence × Consistency × Validation × Outcomes</strong> &nbsp;|&nbsp;
+                        Remediation outcomes compound into organizational security memory
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 4: Agent Architecture -->
+            <div class="chart-grid">
+                <div class="chart-box" style="grid-column: span 2">
+                    <h3>🤖 Spring AI Agent Integration Architecture</h3>
+                    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:center;padding:20px 16px">
+                        <div style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);border-radius:14px;padding:18px 14px;text-align:center">
+                            <div style="font-size:1.4rem;margin-bottom:8px">💬</div>
+                            <div style="font-weight:700;font-size:0.9rem;color:#6366f1">ChatClient</div>
+                            <div style="font-size:0.72rem;color:var(--muted);margin-top:5px">Spring AI 2.0</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:2px">Autonomous agent loop</div>
+                        </div>
+                        <div style="font-size:1.3rem;color:var(--muted);animation:pulse 2s ease-in-out infinite">→</div>
+                        <div style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:14px;padding:18px 14px;text-align:center">
+                            <div style="font-size:1.4rem;margin-bottom:8px">🧠</div>
+                            <div style="font-weight:700;font-size:0.9rem;color:#8b5cf6">Advisors</div>
+                            <div style="font-size:0.72rem;color:var(--muted);margin-top:5px">KnowledgeEvolutionAdvisor</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:2px">AutoMemoryToolsAdvisor</div>
+                        </div>
+                        <div style="font-size:1.3rem;color:var(--muted);animation:pulse 2s ease-in-out 0.5s infinite">→</div>
+                        <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:14px;padding:18px 14px;text-align:center">
+                            <div style="font-size:1.4rem;margin-bottom:8px">🔧</div>
+                            <div style="font-weight:700;font-size:0.9rem;color:#22c55e">@Tool Methods</div>
+                            <div style="font-size:0.72rem;color:var(--muted);margin-top:5px">13 IKOS governance tools</div>
+                            <div style="font-size:0.68rem;color:var(--muted);margin-top:2px">+ agent-utils core tools</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:4px 16px 14px">
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">AnalyzeRisks</span>
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">DetectOffboarding</span>
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">ComplianceCheck</span>
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">BlastRadius</span>
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">IdentityGraph</span>
+                        <span style="padding:4px 12px;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:8px;font-size:0.72rem;color:#6366f1;font-weight:500">Remediation</span>
+                        <span style="padding:4px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:0.72rem;color:#ef4444;font-weight:600">🛡️ ContainIdentity</span>
+                        <span style="padding:4px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:0.72rem;color:#ef4444;font-weight:600">🚨 EscalateToSOC</span>
+                        <span style="padding:4px 12px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:8px;font-size:0.72rem;color:#8b5cf6;font-weight:500">TodoWrite</span>
+                        <span style="padding:4px 12px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:8px;font-size:0.72rem;color:#8b5cf6;font-weight:500">Skills</span>
+                        <span style="padding:4px 12px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.2);border-radius:8px;font-size:0.72rem;color:#8b5cf6;font-weight:500">Subagents</span>
+                        <span style="padding:4px 12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:0.72rem;color:#22c55e;font-weight:500">AutoMemory</span>
+                        <span style="padding:4px 12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:0.72rem;color:#22c55e;font-weight:500">Shell</span>
+                        <span style="padding:4px 12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;font-size:0.72rem;color:#22c55e;font-weight:500">FileSystem</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IDENTITY GRAPH TAB -->
+        <div class="tab-content" id="tab-graph">
+            <div class="section">
+                <h2>🕸️ Cross-Platform Identity Graph</h2>
+                <p style="color:var(--muted);font-size:0.85rem;margin-bottom:12px">Interactive visualization of identity-platform relationships. Node size = risk score. Red = critical risk. Click nodes for details.</p>
+                <div class="controls">
+                    <select id="graph-filter" onchange="filterGraph(this.value)">
+                        <option value="all">All Identities</option>
+                        <option value="critical">Critical Risk Only</option>
+                        <option value="offboarding">Offboarding Gaps</option>
+                        <option value="admin">Cross-Platform Admins</option>
+                        <option value="service">Service Accounts</option>
+                    </select>
+                    <button class="btn" onclick="resetGraphView()">Reset View</button>
+                    <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">Drag to pan • Scroll to zoom • Click nodes for details</span>
+                </div>
+                <div id="identity-graph" style="height:600px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-top:8px"></div>
+                <div class="cards" style="margin-top:16px">
+                    <div class="card"><div class="value v-crit">●</div><div class="label">Critical Risk</div></div>
+                    <div class="card"><div class="value v-high">●</div><div class="label">High Risk</div></div>
+                    <div class="card"><div class="value v-med">●</div><div class="label">Medium Risk</div></div>
+                    <div class="card"><div class="value v-low">●</div><div class="label">Low/Normal</div></div>
+                    <div class="card"><div class="value" style="color:#6366f1">⬡</div><div class="label">ActiveDirectory</div></div>
+                    <div class="card"><div class="value" style="color:#f97316">⬡</div><div class="label">AWS IAM</div></div>
+                    <div class="card"><div class="value" style="color:#06b6d4">⬡</div><div class="label">Okta</div></div>
+                    <div class="card"><div class="value" style="color:#8b5cf6">⬡</div><div class="label">Salesforce/ServiceNow</div></div>
+                </div>
+            </div>
         </div>
 
         <!-- RISKS TAB -->
@@ -1895,9 +2034,9 @@
             <div class="section">
                 <h2>🔗 Alert Consolidation</h2>
                 <div class="consolidation-bar">
-                    <div class="metric">78%</div>
+                    <div class="metric">82%</div>
                     <div>
-                        <div class="desc"><strong>Alert Noise Reduction</strong> — 158 raw alerts consolidated into 35
+                        <div class="desc"><strong>Alert Noise Reduction</strong> — 148 raw alerts consolidated into 26
                             actionable incidents</div>
                     </div>
                 </div>
@@ -2480,6 +2619,70 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Case Study Mapping -->
+            <div class="section" style="margin-top:24px">
+                <h2>🎯 Problem Statement Case Study Detection</h2>
+                <p style="color:var(--muted);font-size:0.85rem;margin-bottom:12px">Explicit mapping of each real incident case from the problem statement to IKOS detection capabilities.</p>
+                <div class="compliance-grid">
+                    <div class="comp-card" style="border-left:3px solid var(--critical)">
+                        <h3>Case 1: Contractor Offboarding Gap</h3>
+                        <p style="font-size:0.82rem;color:var(--muted);margin:4px 0"><em>"A contractor's AD account was disabled upon contract end, but their Okta and AWS IAM accounts remained active for 4 months..."</em></p>
+                        <p style="font-size:0.85rem;margin-top:8px;color:var(--success)">✅ <strong>DETECTED</strong> — Rule: OFFBOARDING_GAP</p>
+                        <p style="font-size:0.82rem;color:var(--text)">IKOS found <strong>18 offboarding gaps</strong> including Stephanie Johnson (AD disabled, AWS+Okta active 53+ days), Alex Wilson, Eric Perez, and 15 more.</p>
+                    </div>
+                    <div class="comp-card" style="border-left:3px solid var(--critical)">
+                        <h3>Case 2: Hidden Admin via Nested Groups</h3>
+                        <p style="font-size:0.82rem;color:var(--muted);margin:4px 0"><em>"svc-etl inherited Global Admin through a nested Azure AD group chain..."</em></p>
+                        <p style="font-size:0.85rem;margin-top:8px;color:var(--success)">✅ <strong>DETECTED</strong> — Rule: GROUP_HIERARCHY + BFS Traversal</p>
+                        <p style="font-size:0.82rem;color:var(--text)">IKOS resolves effective permissions through nested group chains: Contractors → IT-Team → AD-Admins → Domain Admins. <strong>25 groups</strong> modeled with inheritance.</p>
+                    </div>
+                    <div class="comp-card" style="border-left:3px solid var(--critical)">
+                        <h3>Case 3: Unrotated API Token → SaaS Breach</h3>
+                        <p style="font-size:0.82rem;color:var(--muted);margin:4px 0"><em>"An unrotated API token was used from an external IP to exfiltrate CRM data..."</em></p>
+                        <p style="font-size:0.85rem;margin-top:8px;color:var(--success)">✅ <strong>DETECTED</strong> — Rules: TOKEN_MISUSE + CREDENTIAL_ROTATION</p>
+                        <p style="font-size:0.82rem;color:var(--text)">Behavioral analyzer detects external IP token usage (+0.30 anomaly). <strong>7 stale service accounts</strong> with admin credentials >180 days old flagged.</p>
+                    </div>
+                    <div class="comp-card" style="border-left:3px solid var(--critical)">
+                        <h3>Case 4: Temporary Admin Never Revoked</h3>
+                        <p style="font-size:0.82rem;color:var(--muted);margin:4px 0"><em>"Temporary admin access granted for incident response was never revoked after the incident..."</em></p>
+                        <p style="font-size:0.85rem;margin-top:8px;color:var(--success)">✅ <strong>DETECTED</strong> — Rule: STALE_EXCEPTION</p>
+                        <p style="font-size:0.82rem;color:var(--text)">IKOS tracks <strong>10 stale exceptions</strong> including David Lee (77 days overdue), Tyler Carter (43 days), Thomas Anderson (77 days). All still have active admin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Consolidation Before/After -->
+            <div class="section" style="margin-top:24px">
+                <h2>📉 Alert Consolidation — Before vs After</h2>
+                <div class="cards">
+                    <div class="card" style="text-align:center">
+                        <div class="label">BEFORE (Raw Alerts)</div>
+                        <div class="value" style="font-size:2.5rem;color:var(--critical)">148</div>
+                        <div class="label">Standalone risk indicators</div>
+                    </div>
+                    <div class="card" style="text-align:center">
+                        <div class="label" style="font-size:2rem">→</div>
+                        <div class="value" style="font-size:2rem;color:var(--success)">82% Reduction</div>
+                        <div class="label">Alert noise eliminated</div>
+                    </div>
+                    <div class="card" style="text-align:center">
+                        <div class="label">AFTER (Consolidated)</div>
+                        <div class="value" style="font-size:2.5rem;color:var(--success)">26</div>
+                        <div class="label">Actionable incidents</div>
+                    </div>
+                </div>
+                <table class="data-table" style="margin-top:16px">
+                    <thead><tr>
+                        <th>Severity</th><th>Before (Raw)</th><th>After (Consolidated)</th><th>Reduction</th>
+                    </tr></thead>
+                    <tbody>
+                        <tr><td><span class="badge b-crit">CRITICAL</span></td><td>81</td><td>14</td><td style="color:var(--success)">83%</td></tr>
+                        <tr><td><span class="badge b-high">HIGH</span></td><td>52</td><td>8</td><td style="color:var(--success)">85%</td></tr>
+                        <tr><td><span class="badge b-med">MEDIUM</span></td><td>15</td><td>4</td><td style="color:var(--success)">73%</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- RISK REPORT TAB -->
@@ -3035,6 +3238,329 @@
             'RISK-0009': { id: 'RISK-0009', severity: 'CRITICAL', sevClass: 'crit', statement: 'STALE EXCEPTION: Diana Scott was granted temporary admin on [ActiveDirectory, AWS_IAM, Okta] for \'Infrastructure migration\' — expired 70 days ago but never revoked on [AWS_IAM, Okta]', evidence: ['Exception EXC-0184: granted 2026-04-08T18:42:01.761751935, expired 2026-04-11T18:42:01.761751935, approver: VP-Engineering', 'Still active on: AWS_IAM, Okta'], remediation: ['Revoke expired temporary access', 'Rotate credentials', 'Update exception tracker'], policies: 'Identity: Diana Scott (EMP-0185) | Risk: STALE_EXCEPTION (CRITICAL) | Overdue: 70 days' },
             'RISK-0010': { id: 'RISK-0010', severity: 'CRITICAL', sevClass: 'crit', statement: 'STALE EXCEPTION: Alex Chen was granted temporary admin on [ActiveDirectory, AWS_IAM, Okta] for \'Incident response P1\' — expired 31 days ago but never revoked on [AWS_IAM, Okta]', evidence: ['Exception EXC-0187: granted 2026-05-17T18:42:01.761858294, expired 2026-05-20T18:42:01.761858294, approver: IT-Director', 'Still active on: AWS_IAM, Okta'], remediation: ['Revoke expired temporary access', 'Rotate credentials', 'Update exception tracker'], policies: 'Identity: Alex Chen (EMP-0188) | Risk: STALE_EXCEPTION (CRITICAL) | Overdue: 31 days' },
         };
+
+        // ═══════════════════════════════════════════════════════════════
+        // IDENTITY GRAPH VISUALIZATION
+        // ═══════════════════════════════════════════════════════════════
+        let graphNetwork = null;
+        let graphNodes = null;
+        let graphEdges = null;
+        let allGraphNodes = null;
+        let allGraphEdges = null;
+
+        const PLATFORM_COLORS = {
+            'ActiveDirectory': '#6366f1',
+            'AWS_IAM': '#f97316',
+            'Okta': '#06b6d4',
+            'Salesforce': '#22c55e',
+            'ServiceNow': '#8b5cf6'
+        };
+
+        const IKOS_GRAPH_DATA = [
+            {id:'UID-0003',name:'Eric Carter',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION','CROSS_PLATFORM_ADMIN'],admin:true},
+            {id:'UID-0009',name:'svc-pipeline-8',type:'service',risk:'critical',riskScore:0.95,platforms:['AWS_IAM','ServiceNow'],flags:['STALE_SERVICE_ACCOUNT','DORMANT_ADMIN'],admin:true},
+            {id:'UID-0014',name:'Amanda Wright',type:'employee',risk:'high',riskScore:0.75,platforms:['ActiveDirectory','AWS_IAM'],flags:['DORMANT_ADMIN','SOD_VIOLATION'],admin:true},
+            {id:'UID-0016',name:'svc-dataflow-15',type:'service',risk:'critical',riskScore:0.95,platforms:['AWS_IAM','ServiceNow'],flags:['STALE_SERVICE_ACCOUNT'],admin:true},
+            {id:'UID-0017',name:'Dmitri Taylor',type:'employee',risk:'high',riskScore:0.65,platforms:['ActiveDirectory'],flags:['DORMANT_ADMIN'],admin:true},
+            {id:'UID-0018',name:'Stephanie Johnson',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0019',name:'Carlos Adams',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION','CROSS_PLATFORM_ADMIN'],admin:true},
+            {id:'UID-0022',name:'Stephanie Chen',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0026',name:'Mike Johnson',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0028',name:'Samantha Moore',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0035',name:'Andrew Mitchell',type:'employee',risk:'high',riskScore:0.65,platforms:['ActiveDirectory'],flags:['DORMANT_ADMIN'],admin:true},
+            {id:'UID-0038',name:'John Anderson',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0042',name:'Ahmed Chen',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0043',name:'Alex Lewis',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0045',name:'Stephanie Baker',type:'employee',risk:'critical',riskScore:0.85,platforms:['ActiveDirectory','AWS_IAM'],flags:['DORMANT_ADMIN','SOD_VIOLATION'],admin:true},
+            {id:'UID-0046',name:'svc-reporting-45',type:'service',risk:'critical',riskScore:0.95,platforms:['AWS_IAM'],flags:['STALE_SERVICE_ACCOUNT','ORPHANED'],admin:true},
+            {id:'UID-0047',name:'svc-deploy-46',type:'service',risk:'critical',riskScore:0.95,platforms:['AWS_IAM'],flags:['STALE_SERVICE_ACCOUNT'],admin:true},
+            {id:'UID-0052',name:'Megan Nelson',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0056',name:'Aisha Taylor',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0064',name:'Eric Perez',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0065',name:'Brian Clark',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0077',name:'Chris Garcia',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0079',name:'Michelle Green',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0089',name:'Jennifer Perez',type:'employee',risk:'high',riskScore:0.80,platforms:['ActiveDirectory','AWS_IAM'],flags:['DORMANT_ADMIN','SOD_VIOLATION'],admin:true},
+            {id:'UID-0093',name:'Alex Wilson',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0095',name:'svc-deploy-94',type:'service',risk:'critical',riskScore:0.95,platforms:['AWS_IAM','ServiceNow'],flags:['STALE_SERVICE_ACCOUNT'],admin:true},
+            {id:'UID-0097',name:'Sean Hill',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0099',name:'Heather Hill',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0102',name:'Carlos Williams',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0109',name:'Samantha Young',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            {id:'UID-0113',name:'Ryan White',type:'employee',risk:'critical',riskScore:0.90,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['OFFBOARDING_GAP'],admin:false,disabled:['ActiveDirectory']},
+            {id:'UID-0114',name:'Nathan Wilson',type:'employee',risk:'critical',riskScore:0.95,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:['SOD_VIOLATION'],admin:true},
+            // Normal/low-risk identities (sample)
+            {id:'UID-0001',name:'Sarah Miller',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory','Okta'],flags:[],admin:false},
+            {id:'UID-0002',name:'James Brown',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory'],flags:[],admin:false},
+            {id:'UID-0004',name:'Emily Davis',type:'employee',risk:'low',riskScore:0.10,platforms:['ActiveDirectory','AWS_IAM'],flags:[],admin:false},
+            {id:'UID-0005',name:'Lisa Garcia',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory','Okta'],flags:[],admin:false},
+            {id:'UID-0006',name:'David Wilson',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory'],flags:[],admin:false},
+            {id:'UID-0007',name:'Anna Thomas',type:'employee',risk:'low',riskScore:0.08,platforms:['ActiveDirectory','Okta','AWS_IAM'],flags:[],admin:false},
+            {id:'UID-0008',name:'Robert Harris',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory'],flags:[],admin:false},
+            {id:'UID-0010',name:'Jennifer Martin',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory','Okta'],flags:[],admin:false},
+            {id:'UID-0011',name:'Carlos Rodriguez',type:'employee',risk:'low',riskScore:0.10,platforms:['ActiveDirectory','AWS_IAM','Okta'],flags:[],admin:false},
+            {id:'UID-0012',name:'Priya Patel',type:'employee',risk:'low',riskScore:0.05,platforms:['ActiveDirectory'],flags:[],admin:false},
+            {id:'UID-0013',name:'Wei Zhang',type:'employee',risk:'low',riskScore:0.08,platforms:['ActiveDirectory','Okta'],flags:[],admin:false},
+        ];
+
+        function riskColor(risk) {
+            switch(risk) { case 'critical': return '#ef4444'; case 'high': return '#f97316'; case 'medium': return '#eab308'; default: return '#22c55e'; }
+        }
+
+        function buildGraphData(filter) {
+            let data = IKOS_GRAPH_DATA;
+            if (filter === 'critical') data = data.filter(d => d.risk === 'critical');
+            else if (filter === 'offboarding') data = data.filter(d => d.flags.includes('OFFBOARDING_GAP'));
+            else if (filter === 'admin') data = data.filter(d => d.flags.includes('CROSS_PLATFORM_ADMIN') || d.flags.includes('SOD_VIOLATION'));
+            else if (filter === 'service') data = data.filter(d => d.type === 'service');
+
+            const nodes = [];
+            const edges = [];
+            const platformSet = new Set();
+
+            data.forEach(identity => {
+                const size = 15 + identity.riskScore * 35;
+                const color = riskColor(identity.risk);
+                const shape = identity.type === 'service' ? 'diamond' : 'dot';
+                const borderWidth = identity.admin ? 3 : 1;
+                const borderColor = identity.admin ? '#fbbf24' : color;
+                nodes.push({
+                    id: identity.id,
+                    label: identity.name,
+                    size: size,
+                    color: { background: color, border: borderColor, highlight: { background: color, border: '#fff' } },
+                    shape: shape,
+                    borderWidth: borderWidth,
+                    font: { color: '#e5e7eb', size: 11, face: 'Inter' },
+                    title: `${identity.name}\nRisk: ${identity.risk.toUpperCase()} (${(identity.riskScore*100).toFixed(0)}%)\nPlatforms: ${identity.platforms.join(', ')}\nFlags: ${identity.flags.join(', ') || 'None'}`,
+                    _data: identity
+                });
+
+                identity.platforms.forEach(p => {
+                    platformSet.add(p);
+                    const isDis = identity.disabled && identity.disabled.includes(p);
+                    edges.push({
+                        from: identity.id,
+                        to: 'PLAT-' + p,
+                        color: { color: isDis ? '#ef444480' : PLATFORM_COLORS[p] + '90', highlight: PLATFORM_COLORS[p] },
+                        width: identity.admin ? 2.5 : 1,
+                        dashes: isDis ? [5, 5] : false,
+                        smooth: { type: 'continuous' }
+                    });
+                });
+            });
+
+            platformSet.forEach(p => {
+                nodes.push({
+                    id: 'PLAT-' + p,
+                    label: p.replace('_', ' '),
+                    size: 28,
+                    color: { background: PLATFORM_COLORS[p] + '30', border: PLATFORM_COLORS[p] },
+                    shape: 'hexagon',
+                    borderWidth: 3,
+                    font: { color: PLATFORM_COLORS[p], size: 13, face: 'Inter', bold: true },
+                    fixed: false,
+                    mass: 3
+                });
+            });
+
+            return { nodes, edges };
+        }
+
+        function initGraph() {
+            const container = document.getElementById('identity-graph');
+            if (!container || typeof vis === 'undefined') return;
+            const data = buildGraphData('all');
+            allGraphNodes = data.nodes;
+            allGraphEdges = data.edges;
+            graphNodes = new vis.DataSet(data.nodes);
+            graphEdges = new vis.DataSet(data.edges);
+
+            const options = {
+                nodes: { font: { color: '#e5e7eb' } },
+                edges: { smooth: { type: 'continuous', roundness: 0.3 } },
+                physics: {
+                    solver: 'forceAtlas2Based',
+                    forceAtlas2Based: { gravitationalConstant: -40, centralGravity: 0.008, springLength: 140, springConstant: 0.04 },
+                    stabilization: { iterations: 200 }
+                },
+                interaction: { hover: true, tooltipDelay: 100, zoomView: true, dragView: true },
+                layout: { improvedLayout: true }
+            };
+
+            graphNetwork = new vis.Network(container, { nodes: graphNodes, edges: graphEdges }, options);
+
+            graphNetwork.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    if (nodeId.startsWith('PLAT-')) return;
+                    const node = graphNodes.get(nodeId);
+                    if (node && node._data) {
+                        const d = node._data;
+                        const body = document.getElementById('drill-body');
+                        body.innerHTML = '<h3>' + d.name + ' (' + d.id + ')</h3>' +
+                            '<p style="margin:8px 0"><span class="badge b-' + (d.risk === 'critical' ? 'crit' : d.risk) + '">' + d.risk.toUpperCase() + '</span> Risk Score: ' + (d.riskScore * 100).toFixed(0) + '%</p>' +
+                            '<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Platform Accounts</h4>' +
+                            d.platforms.map(p => '<div class="evidence-item">' + (d.disabled && d.disabled.includes(p) ? '🔴 DISABLED' : '🟢 ACTIVE') + ' on <strong>' + p + '</strong>' + (d.admin ? ' (ADMIN)' : '') + '</div>').join('') +
+                            (d.flags.length ? '<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Risk Flags</h4>' + d.flags.map(f => '<div class="evidence-item" style="color:var(--critical)">' + f.replace(/_/g, ' ') + '</div>').join('') : '') +
+                            '<h4 style="margin-top:16px;font-size:0.85rem;color:var(--muted)">Identity Type</h4><div class="evidence-item">' + d.type.charAt(0).toUpperCase() + d.type.slice(1) + '</div>';
+                        document.getElementById('drill-modal').classList.add('show');
+                    }
+                }
+            });
+        }
+
+        function filterGraph(filter) {
+            if (!graphNetwork) return;
+            const data = buildGraphData(filter);
+            graphNodes.clear();
+            graphEdges.clear();
+            graphNodes.add(data.nodes);
+            graphEdges.add(data.edges);
+            graphNetwork.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
+        }
+
+        function resetGraphView() {
+            document.getElementById('graph-filter').value = 'all';
+            filterGraph('all');
+        }
+
+        // Initialize graph when tab is first shown (lazy load for performance)
+        let graphInitialized = false;
+        const origSwitchTab = switchTab;
+        switchTab = function(id) {
+            origSwitchTab(id);
+            if (id === 'graph' && !graphInitialized) {
+                graphInitialized = true;
+                setTimeout(initGraph, 100);
+            }
+        };
+        // ── Overview Charts ──────────────────────────────────────────
+        function initOverviewCharts() {
+            // Risk Severity Distribution (Doughnut)
+            const riskDistCtx = document.getElementById('chart-risk-dist');
+            if (riskDistCtx) {
+                new Chart(riskDistCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Critical', 'High', 'Medium'],
+                        datasets: [{
+                            data: [81, 52, 25],
+                            backgroundColor: ['rgba(239,68,68,0.8)', 'rgba(249,115,22,0.8)', 'rgba(234,179,8,0.8)'],
+                            borderColor: ['rgba(239,68,68,1)', 'rgba(249,115,22,1)', 'rgba(234,179,8,1)'],
+                            borderWidth: 2,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 12, family: "'Inter', sans-serif" }, padding: 16 } },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) { return c.label + ': ' + c.raw + ' risks (' + Math.round(c.raw / 158 * 100) + '%)'; }
+                                }
+                            }
+                        },
+                        cutout: '55%'
+                    }
+                });
+            }
+
+            // Platform Distribution Bar
+            const platDistCtx = document.getElementById('chart-platform-dist');
+            if (platDistCtx) {
+                new Chart(platDistCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Active Directory', 'AWS IAM', 'Okta', 'Salesforce', 'ServiceNow'],
+                        datasets: [{
+                            label: 'Accounts',
+                            data: [95, 87, 78, 72, 73],
+                            backgroundColor: ['rgba(99,102,241,0.7)', 'rgba(249,115,22,0.7)', 'rgba(6,182,212,0.7)', 'rgba(139,92,246,0.7)', 'rgba(236,72,153,0.7)'],
+                            borderColor: ['rgba(99,102,241,1)', 'rgba(249,115,22,1)', 'rgba(6,182,212,1)', 'rgba(139,92,246,1)', 'rgba(236,72,153,1)'],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(31,41,55,0.6)' }, ticks: { color: '#9ca3af', font: { family: "'Inter', sans-serif" } } },
+                            y: { grid: { display: false }, ticks: { color: '#e5e7eb', font: { weight: '600', family: "'Inter', sans-serif" } } }
+                        }
+                    }
+                });
+            }
+
+            // Risk Type Breakdown
+            const riskTypeCtx = document.getElementById('chart-risk-types');
+            if (riskTypeCtx) {
+                new Chart(riskTypeCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Dormant Admin', 'Stale Account', 'SoD Violation', 'Offboarding', 'Cross-Platform', 'Credential Rot.', 'Orphaned'],
+                        datasets: [{
+                            label: 'Risks',
+                            data: [35, 35, 25, 21, 17, 15, 10],
+                            backgroundColor: [
+                                'rgba(249,115,22,0.7)', 'rgba(234,179,8,0.7)', 'rgba(239,68,68,0.7)',
+                                'rgba(239,68,68,0.7)', 'rgba(139,92,246,0.7)', 'rgba(6,182,212,0.7)', 'rgba(107,114,128,0.5)'
+                            ],
+                            borderColor: [
+                                'rgba(249,115,22,1)', 'rgba(234,179,8,1)', 'rgba(239,68,68,1)',
+                                'rgba(239,68,68,1)', 'rgba(139,92,246,1)', 'rgba(6,182,212,1)', 'rgba(107,114,128,1)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(31,41,55,0.6)' }, ticks: { color: '#9ca3af', font: { family: "'Inter', sans-serif" } } },
+                            x: { grid: { display: false }, ticks: { color: '#e5e7eb', font: { family: "'Inter', sans-serif" } } }
+                        }
+                    }
+                });
+            }
+
+            // Alert Consolidation Before/After
+            const consCtx = document.getElementById('chart-consolidation');
+            if (consCtx) {
+                new Chart(consCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Before (Raw)', 'After (Consolidated)'],
+                        datasets: [{
+                            label: 'Alerts',
+                            data: [148, 26],
+                            backgroundColor: ['rgba(239,68,68,0.6)', 'rgba(34,197,94,0.6)'],
+                            borderColor: ['rgba(239,68,68,1)', 'rgba(34,197,94,1)'],
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: '82% Noise Reduction', color: '#22c55e', font: { size: 16, weight: '700', family: "'Inter', sans-serif" } }
+                        },
+                        scales: {
+                            y: { grid: { color: 'rgba(31,41,55,0.6)' }, ticks: { color: '#9ca3af', font: { family: "'Inter', sans-serif" } } },
+                            x: { grid: { display: false }, ticks: { color: '#e5e7eb', font: { weight: '600', family: "'Inter', sans-serif" } } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize overview charts on page load
+        document.addEventListener('DOMContentLoaded', initOverviewCharts);
 
     </script>
 </body>

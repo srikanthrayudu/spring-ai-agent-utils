@@ -1,8 +1,22 @@
-# Spring AI Agent Utils - Examples
+# Examples
 
-This directory contains comprehensive examples demonstrating how to build AI-powered agents using the spring-ai-agent-utils library.
+This directory contains IKOS hackathon demos plus lower-level Spring AI Agent Utils examples used by the implementation.
 
 ## Available Examples
+
+### [IKOS Risk Detection Demo](ikos-risk-detection-demo)
+
+Standalone identity-risk pipeline with no LLM required. It generates simulated hybrid identity data, correlates identities, detects risks, consolidates alerts, and writes an interactive dashboard.
+
+### [IKOS Agent Demo](ikos-agent-demo)
+
+Full Spring AI identity-governance analyst using IKOS tools, knowledge advisor, task tracking, and specialist agent resources.
+
+### [IKOS Lifecycle Demo](ikos-lifecycle-demo)
+
+Knowledge evolution lifecycle demo showing how observations, patterns, governance review, and remediation outcomes become reusable identity-security knowledge.
+
+## Lower-Level Utility Examples
 
 ### [Code Agent Demo](code-agent-demo)
 
@@ -50,7 +64,12 @@ See the [Todo Demo README](todo-demo/README.md) for full documentation.
 
 ## Prerequisites
 
-All examples require:
+IKOS risk detection demo:
+- Java 25, matching the root project configuration
+- Maven wrapper from the repository root
+- No LLM API key required
+
+Agent and utility demos may also require:
 - Java 17 or higher
 - Maven 3.6+
 - At least one AI provider API key (Anthropic, OpenAI, or Google)
@@ -60,14 +79,15 @@ All examples require:
 
 From the project root:
 ```bash
-mvn clean install
+./mvnw compile -pl ikos -am
 ```
 
 ## Documentation
 
-- [spring-ai-agent-utils Library](../spring-ai-agent-utils/README.md)
-- [Tool Documentation](../spring-ai-agent-utils/docs/)
-- [Spring AI Reference](https://docs.spring.io/spring-ai/reference/)
+- [IKOS Architecture](../docs/ARCHITECTURE.md)
+- [Enterprise Expectations](../docs/ENTERPRISE_EXPECTATIONS.md)
+- [Spring AI Agent Utils Integration](../docs/SPRING_AI_AGENT_UTILS_INTEGRATION.md)
+- [spring-ai-agent-utils implementation reference](../spring-ai-agent-utils/README.md)
 
 ## License
 

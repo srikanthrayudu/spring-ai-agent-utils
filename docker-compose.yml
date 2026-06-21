@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ikos-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ikos-dashboard
+    ports:
+      - "8080:8080"
+    volumes:
+      - ikos-data:/app/output
+    restart: unless-stopped
+
+volumes:
+  ikos-data:
