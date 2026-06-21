@@ -293,60 +293,129 @@ public class IkosDemo {
         header("Full IKOS Lifecycle: Identity Event → Risk → Knowledge → Recommendation");
 
         // ═══════ WAVE 1: Generate simulated data at scale ═══════
-        step("1", "SimulatedDataGenerator — generating 100 identities across 5 platforms");
+        step("1", "SimulatedDataGenerator — enterprise identity dataset");
         SimulatedDataGenerator generator = new SimulatedDataGenerator();
         SimulatedDataGenerator.GeneratedData data = generator.generate(200);
         List<IdentityAccount> accounts = data.accounts();
         GroupHierarchy hierarchy = data.groupHierarchy();
 
-        System.out.println("  " + BOLD + "Dataset Statistics:" + RESET);
+        tableHeader("METRIC", "VALUE");
         for (Map.Entry<String, String> e : data.dataStats().entrySet()) {
-            System.out.println("    " + GREEN + "✓" + RESET + " " + e.getKey() + ": " + BOLD + e.getValue() + RESET);
+            tableRow(e.getKey(), e.getValue());
         }
-        ok("Generated " + accounts.size() + " accounts from 5 platforms (AD, AWS, Okta, Salesforce, ServiceNow)");
+        tableFooter();
+        ok("Generated " + accounts.size() + " accounts from 5 platforms");
         pause();
 
         // ═══════ Step 2: Correlate identities ═══════
-        step("2", "Identity Correlation Engine — resolve cross-platform identities");
+        step("2", "Identity Correlation Engine — cross-platform resolution");
         List<UnifiedIdentity> identities = correlationEngine.correlate(accounts);
+
+        // Summary: platform distribution
+        Map<Integer, Long> platDist = new LinkedHashMap<>();
+        long highRiskCount = 0;
         for (UnifiedIdentity id : identities) {
-            String riskBadge = id.computeRiskScore() >= 0.5 ? RED + " ▲ HIGH RISK" + RESET : "";
-            System.out.println("  " + GREEN + "✓" + RESET + " " + BOLD + id.displayName() + RESET
-                    + " (" + id.unifiedId() + ") — " + id.platforms().size() + " platforms: "
-                    + String.join(", ", id.platforms()) + riskBadge);
+            platDist.merge(id.platforms().size(), 1L, Long::sum);
+            if (id.computeRiskScore() >= 0.5) highRiskCount++;
         }
+        tableHeader("PLATFORMS", "IDENTITIES");
+        for (var e : platDist.entrySet()) {
+            tableRow(e.getKey() + " platform(s)", String.valueOf(e.getValue()));
+        }
+        tableRow(RED + "▲ High Risk" + RESET, RED + String.valueOf(highRiskCount) + RESET);
+        tableFooter();
+
+        // Top 5 high-risk identities
+        subheader("Top High-Risk Identities");
+        identities.stream()
+                .sorted((a, b) -> Double.compare(b.computeRiskScore(), a.computeRiskScore()))
+                .limit(5)
+                .forEach(id -> System.out.println("    " + RED + "▸" + RESET + " " + BOLD + id.displayName() + RESET
+                        + GRAY + " (" + id.unifiedId() + ")" + RESET
+                        + " — " + id.platforms().size() + " platforms, risk " + RED
+                        + String.format("%.0f%%", id.computeRiskScore() * 100) + RESET));
+        if (identities.size() > 5) dimNote(identities.size() - 5 + " more identities resolved");
         ok(identities.size() + " unified identities resolved from " + accounts.size() + " accounts");
         pause();
 
         // ═══════ Step 3: Detect risks ═══════
         step("3", "Risk Detection Engine — scanning for security risks");
         List<KnowledgeUnit> risks = riskEngine.detectRisks(identities);
-        ok("Detected " + risks.size() + " risk(s):");
         for (KnowledgeUnit risk : risks) {
             storage.saveKnowledgeUnit(risk);
             pipeline.createObservation(risk.id() + "-OBS", risk.statement(),
                     risk.context() != null ? risk.context().toString() : "", "RiskDetectionEngine");
-            printRisk(risk);
         }
+
+        // Categorize risks for summary table
+        Map<String, int[]> riskCats = new LinkedHashMap<>(); // [count, critCount]
+        for (KnowledgeUnit r : risks) {
+            String cat = r.statement().contains("OFFBOARDING") ? "Offboarding Gap"
+                    : r.statement().contains("DORMANT") ? "Dormant Admin"
+                    : r.statement().contains("SOD") ? "SoD Violation"
+                    : r.statement().contains("CROSS-PLATFORM") ? "Cross-Platform Admin"
+                    : r.statement().contains("ORPHANED") ? "Orphaned Account"
+                    : r.statement().contains("STALE") ? "Stale Service Acct"
+                    : r.statement().contains("CREDENTIAL") ? "Credential Rotation"
+                    : "Other";
+            riskCats.computeIfAbsent(cat, k -> new int[]{0, 0});
+            riskCats.get(cat)[0]++;
+            if (r.confidence() >= 0.9) riskCats.get(cat)[1]++;
+        }
+        tableHeader("RISK CATEGORY", "COUNT  CRITICAL");
+        for (var e : riskCats.entrySet()) {
+            String critStr = e.getValue()[1] > 0 ? RED + String.valueOf(e.getValue()[1]) + RESET : GRAY + "0" + RESET;
+            tableRow(e.getKey(), e.getValue()[0] + "      " + critStr);
+        }
+        tableFooter();
+
+        // Top 5 critical risks
+        subheader("Top Critical Risks");
+        risks.stream()
+                .sorted((a, b) -> Double.compare(b.confidence(), a.confidence()))
+                .limit(5)
+                .forEach(this::printRisk);
+        if (risks.size() > 5) dimNote(risks.size() - 5 + " additional risks detected");
+        ok("Detected " + risks.size() + " risks across " + riskCats.size() + " categories");
         pause();
 
         // ═══════ Step 4: Privilege Analysis with Group Hierarchy ═══════
         step("4", "Privilege Intelligence — effective permissions via nested group traversal");
-        System.out.println("  " + BOLD + "Group Hierarchy: " + RESET + hierarchy.size() + " groups across AD, AWS, Okta, Salesforce, ServiceNow");
+
+        // Compute all profiles, then summarize
+        int highPriv = 0, medPriv = 0, lowPriv = 0, hiddenAdmins = 0;
+        List<Object[]> topProfiles = new ArrayList<>();
         for (UnifiedIdentity uid : identities) {
             EffectivePrivilegeProfile prof = EffectivePrivilegeProfile.fromIdentity(uid, hierarchy);
-            String color = prof.privilegeRiskScore() >= 0.5 ? RED : prof.privilegeRiskScore() >= 0.3 ? YELLOW : GREEN;
-            System.out.printf(
-                    "  %s● %s%-25s%s Perms: %-3d  Sensitive: %-2d  Admin on: %d platform(s)  Risk: %s%.0f%%%s%n",
-                    color, BOLD, uid.displayName(), RESET,
-                    prof.totalPermissionCount(), prof.sensitivePermissions().size(),
-                    prof.adminPlatforms().size(), color, prof.privilegeRiskScore() * 100, RESET);
-            if (prof.hasHiddenAdmin()) {
-                for (String chain : prof.inheritanceChains()) {
-                    System.out.println("    " + RED + "⚠ Hidden Admin: " + RESET + chain);
-                }
-            }
+            if (prof.privilegeRiskScore() >= 0.5) highPriv++;
+            else if (prof.privilegeRiskScore() >= 0.3) medPriv++;
+            else lowPriv++;
+            if (prof.hasHiddenAdmin()) hiddenAdmins++;
+            topProfiles.add(new Object[]{uid, prof});
         }
+        topProfiles.sort((a, b) -> Double.compare(
+                ((EffectivePrivilegeProfile) b[1]).privilegeRiskScore(),
+                ((EffectivePrivilegeProfile) a[1]).privilegeRiskScore()));
+
+        tableHeader("PRIVILEGE RISK", "COUNT");
+        tableRow(RED + "▲ High (≥50%)" + RESET, RED + String.valueOf(highPriv) + RESET);
+        tableRow(ORANGE + "● Medium (30-49%)" + RESET, ORANGE + String.valueOf(medPriv) + RESET);
+        tableRow(GREEN + "○ Low (<30%)" + RESET, String.valueOf(lowPriv));
+        tableRow(RED + "⚠ Hidden Admin" + RESET, RED + String.valueOf(hiddenAdmins) + RESET);
+        tableRow("Groups analyzed", String.valueOf(hierarchy.size()));
+        tableFooter();
+
+        subheader("Top Privilege-Risk Identities");
+        for (int i = 0; i < Math.min(5, topProfiles.size()); i++) {
+            UnifiedIdentity uid = (UnifiedIdentity) topProfiles.get(i)[0];
+            EffectivePrivilegeProfile prof = (EffectivePrivilegeProfile) topProfiles.get(i)[1];
+            String color = prof.privilegeRiskScore() >= 0.5 ? RED : ORANGE;
+            System.out.printf("    %s▸%s %-22s %sPerms:%-3d  Sensitive:%-2d  Admin:%d  Risk:%s%.0f%%%s%n",
+                    color, RESET, BOLD + uid.displayName() + RESET,
+                    GRAY, prof.totalPermissionCount(), prof.sensitivePermissions().size(),
+                    prof.adminPlatforms().size(), color, prof.privilegeRiskScore() * 100, RESET);
+        }
+        if (identities.size() > 5) dimNote(identities.size() - 5 + " more identities analyzed");
         pause();
 
         // ═══════ Step 5: Auto-discover patterns ═══════
@@ -375,9 +444,12 @@ public class IkosDemo {
 
         // ═══════ Step 6: Generate recommendations ═══════
         step("6", "Generate explainable recommendations");
-        for (KnowledgeUnit risk : risks) {
-            printRecommendation(risk);
-        }
+        // Show top 3 most critical recommendations only
+        risks.stream()
+                .sorted((a, b) -> Double.compare(b.confidence(), a.confidence()))
+                .limit(3)
+                .forEach(this::printRecommendation);
+        if (risks.size() > 3) dimNote(risks.size() - 3 + " additional recommendations generated");
         pause();
 
         // ═══════ Step 7: Context assembly ═══════
@@ -387,49 +459,37 @@ public class IkosDemo {
         pause();
 
         // ═══════ Step 8: Simulate remediation + outcome learning ═══════
-        step("8", "Remediation & Outcome Learning — closing the loop (TodoWriteTool)");
+        step("8", "Remediation & Outcome Learning — closing the loop");
 
-        // Create remediation task list via TodoWriteTool
-        List<TodoWriteTool.Todos.TodoItem> taskItems = new ArrayList<>();
+        // Process all remediations silently, then show summary
+        int remSuccess = 0, remEscalated = 0;
         for (KnowledgeUnit risk : risks) {
-            taskItems.add(new TodoWriteTool.Todos.TodoItem(
-                    "Remediate: " + truncate(risk.statement(), 50),
-                    TodoWriteTool.Todos.Status.pending,
-                    "Remediating " + risk.id()));
-        }
-        todoTool.todoWrite(new TodoWriteTool.Todos(taskItems));
-        System.out.println();
-
-        int remCount = 0;
-        for (int ri = 0; ri < risks.size(); ri++) {
-            KnowledgeUnit risk = risks.get(ri);
             boolean success = risk.confidence() >= 0.8;
             Outcome outcome = new Outcome(success,
                     success ? "Remediated: account disabled, tokens revoked." : "Partial: escalated to security team.",
                     LocalDateTime.now());
-            Optional<KnowledgeUnit> updated = learningEngine.learn(risk.id(), outcome);
-            if (updated.isPresent()) {
-                remCount++;
-                // Update task status via TodoWriteTool
-                List<TodoWriteTool.Todos.TodoItem> updatedTasks = new ArrayList<>();
-                for (int j = 0; j < risks.size(); j++) {
-                    TodoWriteTool.Todos.Status status = j < ri ? TodoWriteTool.Todos.Status.completed
-                            : j == ri
-                                    ? (success ? TodoWriteTool.Todos.Status.completed
-                                            : TodoWriteTool.Todos.Status.in_progress)
-                                    : TodoWriteTool.Todos.Status.pending;
-                    updatedTasks.add(new TodoWriteTool.Todos.TodoItem(
-                            "Remediate: " + truncate(risks.get(j).statement(), 50), status,
-                            "Remediating " + risks.get(j).id()));
-                }
-                todoTool.todoWrite(new TodoWriteTool.Todos(updatedTasks));
-
-                String icon = success ? GREEN + "✓" : YELLOW + "◐";
-                System.out.println("  " + icon + RESET + " " + risk.id() + " → Conf: " + f(updated.get().confidence())
-                        + " | " + (success ? "REMEDIATED" : "ESCALATED"));
-            }
+            learningEngine.learn(risk.id(), outcome);
+            if (success) remSuccess++; else remEscalated++;
         }
-        ok(remCount + " outcomes recorded. Knowledge confidence updated.");
+
+        // Single TodoWriteTool update with final state
+        List<TodoWriteTool.Todos.TodoItem> finalTasks = new ArrayList<>();
+        for (KnowledgeUnit risk : risks) {
+            boolean success = risk.confidence() >= 0.8;
+            finalTasks.add(new TodoWriteTool.Todos.TodoItem(
+                    "Remediate: " + truncate(risk.statement(), 50),
+                    success ? TodoWriteTool.Todos.Status.completed : TodoWriteTool.Todos.Status.in_progress,
+                    "Remediating " + risk.id()));
+        }
+        todoTool.todoWrite(new TodoWriteTool.Todos(finalTasks.subList(0, Math.min(10, finalTasks.size()))));
+
+        System.out.println();
+        tableHeader("REMEDIATION", "COUNT");
+        tableRow(GREEN + "✔ Auto-Remediated" + RESET, GREEN + String.valueOf(remSuccess) + RESET);
+        tableRow(ORANGE + "↗ Escalated to SOC" + RESET, ORANGE + String.valueOf(remEscalated) + RESET);
+        tableRow("Total Processed", String.valueOf(risks.size()));
+        tableFooter();
+        ok(risks.size() + " outcomes recorded. Knowledge confidence updated.");
         pause();
 
         // ═══════ Step 9: Show dashboard ═══════
@@ -1818,6 +1878,35 @@ public class IkosDemo {
             System.out.printf("  %2d. " + BOLD + "[%s]" + RESET + " %s%n", rank++, u.id(), u.statement());
             System.out.printf("      Type: %-22s Confidence: %s%n", u.type(), f(u.confidence()));
         }
+    }
+    // ── Table & Display Helpers ───────────────────────────────────────────────
+
+    private static final int TBL_W = 50;
+
+    private static void tableHeader(String col1, String col2) {
+        System.out.println();
+        System.out.println("    " + GRAY + "┌" + "─".repeat(22) + "┬" + "─".repeat(TBL_W - 23) + "┐" + RESET);
+        System.out.printf("    " + GRAY + "│" + RESET + BOLD + " %-20s" + RESET + GRAY + "│" + RESET
+                + BOLD + " %-" + (TBL_W - 24) + "s" + RESET + GRAY + "│" + RESET + "%n", col1, col2);
+        System.out.println("    " + GRAY + "├" + "─".repeat(22) + "┼" + "─".repeat(TBL_W - 23) + "┤" + RESET);
+    }
+
+    private static void tableRow(String col1, String col2) {
+        System.out.printf("    " + GRAY + "│" + RESET + " %-20s" + GRAY + "│" + RESET
+                + " %-" + (TBL_W - 24) + "s" + GRAY + "│" + RESET + "%n", col1, col2);
+    }
+
+    private static void tableFooter() {
+        System.out.println("    " + GRAY + "└" + "─".repeat(22) + "┴" + "─".repeat(TBL_W - 23) + "┘" + RESET);
+    }
+
+    private static void subheader(String title) {
+        System.out.println();
+        System.out.println("    " + DIM + CYAN + "▸ " + RESET + BOLD + WHITE + title + RESET);
+    }
+
+    private static void dimNote(String note) {
+        System.out.println("    " + DIM + GRAY + "  ⋯ " + note + RESET);
     }
 
     private static void banner() {
