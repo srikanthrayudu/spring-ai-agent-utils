@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Migration Guide: 0.4.x to 0.5.0 - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Migration Guide: 0.4.x to 0.5.0";
+        var mkdocs_page_input_path = "tools/migration-0.5.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Migration Guide: 0.4.x to 0.5.0</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/migration-0.5.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="migration-guide-04x-to-050">Migration Guide: 0.4.x to 0.5.0<a class="headerlink" href="#migration-guide-04x-to-050" title="Permanent link">&para;</a></h1>
+<h2 id="module-changes">Module Changes<a class="headerlink" href="#module-changes" title="Permanent link">&para;</a></h2>
+<p>The single <code>spring-ai-agent-utils</code> module has been split into three:</p>
+<table>
+<thead>
+<tr>
+<th>New Module</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring-ai-agent-utils-common</code></td>
+<td>Shared subagent SPI (interfaces &amp; records)</td>
+</tr>
+<tr>
+<td><code>spring-ai-agent-utils</code></td>
+<td>Core library (tools, skills, Claude subagents)</td>
+</tr>
+<tr>
+<td><code>spring-ai-agent-utils-a2a</code></td>
+<td>A2A protocol subagent implementation</td>
+</tr>
+<tr>
+<td><code>spring-ai-agent-utils-bom</code></td>
+<td>Bill of Materials for version management</td>
+</tr>
+</tbody>
+</table>
+<p>Add <code>spring-ai-agent-utils-common</code> as a transitive dependency (pulled in automatically by the core module). Add <code>spring-ai-agent-utils-a2a</code> only if you use A2A subagents:</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springaicommunity&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-ai-agent-utils-a2a&lt;/artifactId&gt;
+    &lt;version&gt;0.5.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 id="package-relocations">Package Relocations<a class="headerlink" href="#package-relocations" title="Permanent link">&para;</a></h2>
+<p>The subagent SPI types moved from <code>org.springaicommunity.agent.tools.task.subagent</code> to <code>org.springaicommunity.agent.common.task.subagent</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Old Import</th>
+<th>New Import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.SubagentDefinition</code></td>
+<td><code>o.s.agent.common.task.subagent.SubagentDefinition</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.SubagentExecutor</code></td>
+<td><code>o.s.agent.common.task.subagent.SubagentExecutor</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.SubagentResolver</code></td>
+<td><code>o.s.agent.common.task.subagent.SubagentResolver</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.SubagentReference</code></td>
+<td><code>o.s.agent.common.task.subagent.SubagentReference</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.SubagentType</code></td>
+<td><code>o.s.agent.common.task.subagent.SubagentType</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.TaskTool.TaskCall</code></td>
+<td><code>o.s.agent.common.task.subagent.TaskCall</code></td>
+</tr>
+</tbody>
+</table>
+<p>Claude-specific classes moved up one level (the intermediate <code>subagent</code> package was removed):</p>
+<table>
+<thead>
+<tr>
+<th>Old Import</th>
+<th>New Import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.claude.ClaudeSubagentDefinition</code></td>
+<td><code>o.s.agent.tools.task.claude.ClaudeSubagentDefinition</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.claude.ClaudeSubagentExecutor</code></td>
+<td><code>o.s.agent.tools.task.claude.ClaudeSubagentExecutor</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.claude.ClaudeSubagentReferences</code></td>
+<td><code>o.s.agent.tools.task.claude.ClaudeSubagentReferences</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.claude.ClaudeSubagentResolver</code></td>
+<td><code>o.s.agent.tools.task.claude.ClaudeSubagentResolver</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.tools.task.subagent.claude.ClaudeSubagentType</code></td>
+<td><code>o.s.agent.tools.task.claude.ClaudeSubagentType</code></td>
+</tr>
+</tbody>
+</table>
+<p>A2A classes moved from the example package to the new module:</p>
+<table>
+<thead>
+<tr>
+<th>Old Import</th>
+<th>New Import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>o.s.agent.a2a.A2ASubagentDefinition</code></td>
+<td><code>o.s.agent.subagent.a2a.A2ASubagentDefinition</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.a2a.A2ASubagentExecutor</code></td>
+<td><code>o.s.agent.subagent.a2a.A2ASubagentExecutor</code></td>
+</tr>
+<tr>
+<td><code>o.s.agent.a2a.A2ASubagentResolver</code></td>
+<td><code>o.s.agent.subagent.a2a.A2ASubagentResolver</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="api-changes">API Changes<a class="headerlink" href="#api-changes" title="Permanent link">&para;</a></h2>
+<h3 id="tasktoolcallbackprovider-removed"><code>TaskToolCallbackProvider</code> removed<a class="headerlink" href="#tasktoolcallbackprovider-removed" title="Permanent link">&para;</a></h3>
+<p><code>TaskToolCallbackProvider</code> has been deleted. Replace it with <code>TaskTool.builder()</code> plus <code>ClaudeSubagentType.builder()</code>.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">var taskTools = TaskToolCallbackProvider.builder()
+    .subagentReferences(ClaudeSubagentReferences.fromResources(agentPaths))
+    .chatClientBuilder(&quot;default&quot;, chatClientBuilder.clone())
+    .skillsResources(skillPaths)
+    .braveApiKey(braveApiKey)
+    .build();
+
+// Used as ToolCallbackProvider
+chatClientBuilder.defaultToolCallbacks(taskTools);
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">var taskTools = TaskTool.builder()
+    .subagentTypes(ClaudeSubagentType.builder()
+        .chatClientBuilder(&quot;default&quot;, chatClientBuilder.clone())
+        .skillsResources(skillPaths)
+        .braveApiKey(braveApiKey)
+        .build())
+    .build();
+
+// Now returns a single ToolCallback (not a provider)
+chatClientBuilder.defaultToolCallbacks(taskTools);
+</code></pre>
+<p>Key differences:
+- Claude-specific config (<code>chatClientBuilder</code>, <code>skillsResources</code>, <code>braveApiKey</code>) moves into <code>ClaudeSubagentType.builder()</code>
+- Built-in Claude subagent references are auto-registered when a Claude subagent type is present
+- Custom subagent references are added via <code>TaskTool.builder().subagentReferences(...)</code>
+- <code>TaskTool.builder().build()</code> returns a <code>ToolCallback</code>, not a <code>ToolCallbackProvider</code></p>
+<h3 id="tasktoolbuilder-simplified"><code>TaskTool.Builder</code> simplified<a class="headerlink" href="#tasktoolbuilder-simplified" title="Permanent link">&para;</a></h3>
+<p>The separate <code>subagentResolvers()</code> and <code>subagentExecutors()</code> methods are replaced by <code>subagentTypes()</code>:</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">TaskTool.builder()
+    .subagentResolvers(new MyResolver())
+    .subagentExecutors(new MyExecutor())
+    .taskRepository(repo)
+    .build();
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">TaskTool.builder()
+    .subagentTypes(new SubagentType(new MyResolver(), new MyExecutor()))
+    .build();
+</code></pre>
+<p>Note: <code>taskRepository</code> now defaults to <code>DefaultTaskRepository</code> and no longer needs to be set explicitly.</p>
+<h3 id="taskcall-is-now-a-top-level-record"><code>TaskCall</code> is now a top-level record<a class="headerlink" href="#taskcall-is-now-a-top-level-record" title="Permanent link">&para;</a></h3>
+<p>If you reference <code>TaskTool.TaskCall</code> directly, change to <code>org.springaicommunity.agent.common.task.subagent.TaskCall</code>.</p>
+<h3 id="a2a-subagents-with-claude-subagents">A2A subagents with Claude subagents<a class="headerlink" href="#a2a-subagents-with-claude-subagents" title="Permanent link">&para;</a></h3>
+<p>When mixing local Claude and remote A2A subagents, register each type separately:</p>
+<pre><code class="language-java">var taskTools = TaskTool.builder()
+    // Claude (local)
+    .subagentReferences(ClaudeSubagentReferences.fromResources(agentPaths))
+    .subagentTypes(ClaudeSubagentType.builder()
+        .chatClientBuilder(&quot;default&quot;, chatClientBuilder.clone())
+        .build())
+    // A2A (remote)
+    .subagentReferences(new SubagentReference(&quot;http://host:port/path&quot;, A2ASubagentDefinition.KIND))
+    .subagentTypes(new SubagentType(new A2ASubagentResolver(), new A2ASubagentExecutor()))
+    .build();
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

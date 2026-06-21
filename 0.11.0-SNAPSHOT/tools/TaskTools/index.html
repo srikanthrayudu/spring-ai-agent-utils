@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Task Tools - Extensible Sub-Agent System - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Task Tools - Extensible Sub-Agent System";
+        var mkdocs_page_input_path = "tools/TaskTools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Task Tools - Extensible Sub-Agent System</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/TaskTools.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="task-tools-extensible-sub-agent-system">Task Tools - Extensible Sub-Agent System<a class="headerlink" href="#task-tools-extensible-sub-agent-system" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The Task Tools provide an extensible hierarchical sub-agent system for Spring AI, inspired by <a href="https://code.claude.com/docs/en/sub-agents">Claude Code's sub-agents</a>. This architecture enables your main AI agent to delegate complex, multi-step tasks to specialized sub-agents while supporting multiple execution backends (Claude-based, A2A, custom implementations).</p>
+<h2 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="what-are-sub-agents">What Are Sub-Agents?<a class="headerlink" href="#what-are-sub-agents" title="Permanent link">&para;</a></h3>
+<p>Sub-agents are specialized AI assistants that your main agent can delegate tasks to. Each operates with:</p>
+<ul>
+<li><strong>Dedicated context window</strong> - Separate from the main conversation, preventing context pollution</li>
+<li><strong>Custom system prompt</strong> - Tailored instructions for specific domains (exploration, planning, custom expertise)</li>
+<li><strong>Configurable tool access</strong> - Limited to only the necessary capabilities for their role</li>
+<li><strong>Independent execution</strong> - Works autonomously and returns results to the parent agent</li>
+</ul>
+<h3 id="extensible-architecture">Extensible Architecture<a class="headerlink" href="#extensible-architecture" title="Permanent link">&para;</a></h3>
+<p>The system is built on pluggable abstractions that allow:</p>
+<ul>
+<li><strong>Multiple subagent types</strong> - Claude-based, A2A protocol, or custom implementations</li>
+<li><strong>Pluggable resolvers</strong> - Load subagent definitions from various sources (files, classpath, remote)</li>
+<li><strong>Pluggable executors</strong> - Execute subagents using different backends (Spring AI ChatClient, A2A, etc.)</li>
+<li><strong>Multi-model support</strong> - Different ChatClient configurations per model (sonnet, opus, haiku)</li>
+</ul>
+<h3 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Benefit</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Context Preservation</strong></td>
+<td>Keeps main conversation focused on high-level objectives while sub-agents handle details</td>
+</tr>
+<tr>
+<td><strong>Specialized Expertise</strong></td>
+<td>Fine-tuned for specific domains with higher success rates</td>
+</tr>
+<tr>
+<td><strong>Extensibility</strong></td>
+<td>Add new subagent types by implementing simple interfaces</td>
+</tr>
+<tr>
+<td><strong>Multi-Model</strong></td>
+<td>Route to different models based on subagent configuration</td>
+</tr>
+<tr>
+<td><strong>Flexible Permissions</strong></td>
+<td>Granular control over tool access per sub-agent</td>
+</tr>
+<tr>
+<td><strong>Async Execution</strong></td>
+<td>Run sub-agents in background for long-running tasks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<h3 id="module-structure">Module Structure<a class="headerlink" href="#module-structure" title="Permanent link">&para;</a></h3>
+<p>The subagent system is split across three modules:</p>
+<pre><code>spring-ai-agent-utils-common      # Core SPI: SubagentDefinition, SubagentResolver,
+                                   #   SubagentExecutor, SubagentType, SubagentReference, TaskCall
+
+spring-ai-agent-utils              # TaskTool, TaskOutputTool, ClaudeSubagentType,
+                                   #   ClaudeSubagentExecutor, ClaudeSubagentResolver
+
+spring-ai-agent-utils-a2a          # A2ASubagentDefinition, A2ASubagentResolver,
+                                   #   A2ASubagentExecutor (optional dependency)
+</code></pre>
+<h3 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h3>
+<pre><code>TaskTool.builder()
+    ├── SubagentReference[] ──────► (URIs pointing to subagent definitions)
+    ├── SubagentType[] ───────────► (bundles resolver + executor per kind)
+    │   └── SubagentType
+    │       ├── SubagentResolver ─► (parse references into SubagentDefinition)
+    │       └── SubagentExecutor ─► (execute subagents)
+    └── ClaudeSubagentType.builder()
+        ├── ClaudeSubagentResolver  (auto-registered)
+        └── ClaudeSubagentExecutor
+            └── Map&lt;String, ChatClient.Builder&gt; (model routing)
+</code></pre>
+<h3 id="abstractions">Abstractions<a class="headerlink" href="#abstractions" title="Permanent link">&para;</a></h3>
+<p>These interfaces live in the <code>spring-ai-agent-utils-common</code> module and are shared across all subagent implementations.</p>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SubagentDefinition</code></td>
+<td>Core interface representing a subagent with name, description, kind, and reference</td>
+</tr>
+<tr>
+<td><code>SubagentReference</code></td>
+<td>Record holding URI, kind, and metadata for locating a subagent definition</td>
+</tr>
+<tr>
+<td><code>SubagentResolver</code></td>
+<td>Strategy for resolving <code>SubagentReference</code> → <code>SubagentDefinition</code></td>
+</tr>
+<tr>
+<td><code>SubagentExecutor</code></td>
+<td>Strategy for executing a <code>TaskCall</code> against a <code>SubagentDefinition</code></td>
+</tr>
+<tr>
+<td><code>SubagentType</code></td>
+<td>Record bundling a <code>SubagentResolver</code> and <code>SubagentExecutor</code> together for a specific kind</td>
+</tr>
+<tr>
+<td><code>TaskCall</code></td>
+<td>Input record describing the task to execute (prompt, subagent type, model, etc.)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="main-components">Main Components<a class="headerlink" href="#main-components" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>TaskTool</strong> - Launches and manages sub-agents using pluggable resolvers and executors</li>
+<li><strong>TaskOutputTool</strong> - Retrieves results from background sub-agents</li>
+<li><strong>ClaudeSubagentType</strong> - Convenience builder for configuring the Claude subagent type with tools, skills, and model routing</li>
+</ol>
+<h2 id="built-in-sub-agents">Built-in Sub-Agents<a class="headerlink" href="#built-in-sub-agents" title="Permanent link">&para;</a></h2>
+<p>When a <code>ClaudeSubagentType</code> is registered, TaskTool automatically adds four built-in Claude subagents.</p>
+<h3 id="general-purpose-sub-agent">General-Purpose Sub-Agent<a class="headerlink" href="#general-purpose-sub-agent" title="Permanent link">&para;</a></h3>
+<p>A versatile agent for complex research and execution tasks:</p>
+<pre><code class="language-markdown">---
+name: general-purpose
+description: General-purpose agent for researching complex questions, searching for code, and executing multi-step tasks
+---
+</code></pre>
+<p><strong>Capabilities:</strong>
+- Searching code and configurations across large codebases
+- Analyzing multiple files to understand system architecture
+- Performing multi-step research tasks
+- Full read/write access to tools</p>
+<h3 id="explore-sub-agent">Explore Sub-Agent<a class="headerlink" href="#explore-sub-agent" title="Permanent link">&para;</a></h3>
+<p>A fast, read-only agent specialized for codebase exploration:</p>
+<pre><code class="language-markdown">---
+name: Explore
+description: Fast agent specialized for exploring codebases. Use for finding files, searching code, or answering questions about the codebase
+---
+</code></pre>
+<p><strong>Capabilities:</strong>
+- Rapidly finding files using glob patterns
+- Searching code with regex patterns
+- Reading and analyzing file contents
+- <strong>Strictly read-only</strong> - no file modifications</p>
+<p><strong>Thoroughness Levels:</strong>
+- <code>quick</code> - Basic searches, minimal exploration
+- <code>medium</code> - Moderate exploration, multiple search strategies
+- <code>very thorough</code> - Comprehensive analysis across multiple locations</p>
+<h3 id="plan-sub-agent">Plan Sub-Agent<a class="headerlink" href="#plan-sub-agent" title="Permanent link">&para;</a></h3>
+<p>A software architect agent specialized for designing implementation plans:</p>
+<pre><code class="language-markdown">---
+name: Plan
+description: Software architect agent for designing implementation plans. Use this when you need to plan the implementation strategy for a task.
+---
+</code></pre>
+<p><strong>Capabilities:</strong>
+- Exploring codebases to understand existing patterns and architecture
+- Identifying critical files that need modification or creation
+- Designing step-by-step implementation approaches
+- Considering architectural trade-offs and presenting alternatives
+- Surfacing potential risks or challenges early
+- <strong>Strictly read-only</strong> - planning only, no file modifications</p>
+<h3 id="bash-sub-agent">Bash Sub-Agent<a class="headerlink" href="#bash-sub-agent" title="Permanent link">&para;</a></h3>
+<p>A command execution specialist for terminal operations:</p>
+<pre><code class="language-markdown">---
+name: Bash
+description: Command execution specialist for running bash commands. Use this for git operations, command execution, and other terminal tasks.
+---
+</code></pre>
+<p><strong>Capabilities:</strong>
+- Git operations (commits, branches, merges, status checks)
+- Build and test commands (npm, cargo, make, pytest)
+- Package management operations
+- System operations and environment setup
+- DevOps tasks (Docker, deployment scripts)</p>
+<p><strong>Guidelines:</strong>
+- Follows git safety protocols (no force push to main, no destructive commands without confirmation)
+- Limited to Bash tool only - file reading/editing handled by parent agent</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="basic-setup-claude-subagents-only">Basic Setup (Claude subagents only)<a class="headerlink" href="#basic-setup-claude-subagents-only" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">import org.springaicommunity.agent.tools.task.TaskTool;
+import org.springaicommunity.agent.tools.task.claude.ClaudeSubagentType;
+
+@Configuration
+public class AgentConfig {
+
+    @Bean
+    CommandLineRunner demo(ChatClient.Builder chatClientBuilder) {
+        return args -&gt; {
+            // Configure Task tool with Claude subagents
+            var taskTool = TaskTool.builder()
+                .subagentTypes(ClaudeSubagentType.builder()
+                    .chatClientBuilder(&quot;default&quot;, chatClientBuilder)
+                    .build())
+                .build();
+
+            // Build main chat client with Task tool
+            ChatClient chatClient = chatClientBuilder
+                .defaultToolCallbacks(taskTool)
+                .build();
+
+            // Use naturally - agent will delegate to sub-agents
+            String response = chatClient
+                .prompt(&quot;Explore the authentication module and explain how it works&quot;)
+                .call()
+                .content();
+        };
+    }
+}
+</code></pre>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="using-claudesubagenttype">Using ClaudeSubagentType<a class="headerlink" href="#using-claudesubagenttype" title="Permanent link">&para;</a></h3>
+<p><code>ClaudeSubagentType</code> is a convenience builder that creates a <code>SubagentType</code> bundling the Claude resolver and executor with default tools (Grep, Glob, Shell, FileSystem, WebFetch, TodoWrite) and optional extras (BraveWebSearch, Skills):</p>
+<pre><code class="language-java">SubagentType claudeType = ClaudeSubagentType.builder()
+    // Required: At least one ChatClient builder with key &quot;default&quot;
+    .chatClientBuilder(&quot;default&quot;, chatClientBuilder)
+
+    // Optional: Additional model-specific ChatClient builders
+    .chatClientBuilder(&quot;opus&quot;, opusChatClientBuilder)
+    .chatClientBuilder(&quot;haiku&quot;, haikuChatClientBuilder)
+
+    // Optional: Skills for sub-agents (preloaded into system prompt)
+    .skillsResources(skillResources)
+
+    // Optional: For web search
+    .braveApiKey(System.getenv(&quot;BRAVE_API_KEY&quot;))
+
+    .build();
+</code></pre>
+<h3 id="using-tasktoolbuilder">Using TaskTool.builder()<a class="headerlink" href="#using-tasktoolbuilder" title="Permanent link">&para;</a></h3>
+<p>Register one or more <code>SubagentType</code> instances, plus any additional subagent references:</p>
+<pre><code class="language-java">ToolCallback taskTool = TaskTool.builder()
+    // Register Claude subagent type (includes built-in subagents)
+    .subagentTypes(claudeType)
+
+    // Optional: Custom subagent references (for Claude-based subagents)
+    .subagentReferences(ClaudeSubagentReferences.fromRootDirectory(&quot;/path/to/agents&quot;))
+
+    // Optional: Custom task storage
+    .taskRepository(new DefaultTaskRepository())
+
+    .build();
+</code></pre>
+<h3 id="combining-claude-and-a2a-subagents">Combining Claude and A2A Subagents<a class="headerlink" href="#combining-claude-and-a2a-subagents" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">import org.springaicommunity.agent.common.task.subagent.SubagentReference;
+import org.springaicommunity.agent.common.task.subagent.SubagentType;
+import org.springaicommunity.agent.subagent.a2a.A2ASubagentDefinition;
+import org.springaicommunity.agent.subagent.a2a.A2ASubagentExecutor;
+import org.springaicommunity.agent.subagent.a2a.A2ASubagentResolver;
+
+ToolCallback taskTool = TaskTool.builder()
+    // Local Claude subagents
+    .subagentTypes(ClaudeSubagentType.builder()
+        .chatClientBuilder(&quot;default&quot;, chatClientBuilder)
+        .skillsResources(skillPaths)
+        .braveApiKey(braveApiKey)
+        .build())
+
+    // Remote A2A subagent
+    .subagentReferences(new SubagentReference(&quot;http://localhost:10001/myagent&quot;, A2ASubagentDefinition.KIND))
+    .subagentTypes(new SubagentType(new A2ASubagentResolver(), new A2ASubagentExecutor()))
+
+    .build();
+</code></pre>
+<h3 id="multi-provider-and-multi-model-configuration">Multi-Provider and Multi-Model Configuration<a class="headerlink" href="#multi-provider-and-multi-model-configuration" title="Permanent link">&para;</a></h3>
+<p>Route subagents to different LLM providers and models based on their frontmatter <code>model</code> field. The <code>chatClientBuilder</code> keys represent named providers — these can be any Spring AI supported LLM provider (Anthropic, OpenAI, Ollama, etc.), not just Claude variants:</p>
+<pre><code class="language-java">SubagentType claudeType = ClaudeSubagentType.builder()
+    .chatClientBuilder(&quot;default&quot;, anthropicBuilder)  // Fallback provider
+    .chatClientBuilder(&quot;openai&quot;, openAiBuilder)      // OpenAI provider
+    .chatClientBuilder(&quot;ollama&quot;, ollamaBuilder)      // Ollama provider
+    .build();
+</code></pre>
+<p>The <code>model</code> frontmatter field supports two formats:</p>
+<ul>
+<li><strong><code>model</code></strong> — Uses the default provider with the specified model. Short aliases (<code>opus</code>, <code>haiku</code>, <code>sonnet</code>) are mapped to their full Claude model identifiers. The model can also be the full model name of any provider (e.g., <code>gpt-4o</code>).</li>
+<li><strong><code>provider:model</code></strong> — Uses the named provider with the specified model (e.g., <code>openai:gpt-4o</code>, <code>ollama:llama3</code>).</li>
+</ul>
+<p>If the specified provider is not found in the builder map, or if no model is specified, the default builder is used as a fallback.</p>
+<h3 id="loading-subagent-references">Loading Subagent References<a class="headerlink" href="#loading-subagent-references" title="Permanent link">&para;</a></h3>
+<h4 id="from-directories">From Directories<a class="headerlink" href="#from-directories" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">import org.springaicommunity.agent.tools.task.claude.ClaudeSubagentReferences;
+
+List&lt;SubagentReference&gt; refs = ClaudeSubagentReferences.fromRootDirectory(&quot;/path/to/agents&quot;);
+</code></pre>
+<h4 id="from-spring-resources">From Spring Resources<a class="headerlink" href="#from-spring-resources" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">@Value(&quot;${agent.tasks.paths}&quot;)
+List&lt;Resource&gt; agentPaths;
+
+List&lt;SubagentReference&gt; refs = ClaudeSubagentReferences.fromResources(agentPaths);
+</code></pre>
+<h4 id="multiple-sources">Multiple Sources<a class="headerlink" href="#multiple-sources" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">List&lt;SubagentReference&gt; refs = ClaudeSubagentReferences.fromRootDirectories(List.of(
+    &quot;src/main/resources/agents&quot;,
+    System.getProperty(&quot;user.home&quot;) + &quot;/.claude/agents&quot;
+));
+</code></pre>
+<h2 id="creating-custom-sub-agents">Creating Custom Sub-Agents<a class="headerlink" href="#creating-custom-sub-agents" title="Permanent link">&para;</a></h2>
+<h3 id="file-structure">File Structure<a class="headerlink" href="#file-structure" title="Permanent link">&para;</a></h3>
+<p>Custom sub-agents are defined as Markdown files with YAML front matter:</p>
+<pre><code>project-root/
+├── .claude/
+│   └── agents/
+│       ├── code-reviewer.md
+│       ├── test-runner.md
+│       └── spring-ai-expert.md
+</code></pre>
+<h3 id="sub-agent-file-format">Sub-Agent File Format<a class="headerlink" href="#sub-agent-file-format" title="Permanent link">&para;</a></h3>
+<pre><code class="language-markdown">---
+name: your-sub-agent-name
+description: When and how to use this subagent. Include trigger keywords and example scenarios.
+tools: Read, Edit, Grep, Glob       # Optional: inherits all if omitted
+disallowedTools: Bash, Shell        # Optional: explicitly deny specific tools
+model: sonnet                        # Optional: sonnet, opus, haiku
+skills: ai-tutor                     # Optional: skills to preload
+permissionMode: default              # Optional: permission handling mode
+---
+
+# Your Sub-Agent's System Prompt
+
+You are a [role description]. You specialize in [domain].
+
+**Your Primary Responsibilities:**
+1. [Responsibility 1]
+2. [Responsibility 2]
+
+**Guidelines:**
+- [Guideline 1]
+- [Guideline 2]
+</code></pre>
+<h3 id="configuration-fields">Configuration Fields<a class="headerlink" href="#configuration-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Yes</td>
+<td>Unique identifier (lowercase with hyphens)</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Yes</td>
+<td>Natural language purpose description with usage examples</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>No</td>
+<td>Comma-separated list of allowed tool names (inherits all if omitted)</td>
+</tr>
+<tr>
+<td><code>disallowedTools</code></td>
+<td>No</td>
+<td>Comma-separated list of tools to explicitly deny</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>No</td>
+<td>Model specification: a short alias (<code>sonnet</code>, <code>opus</code>, <code>haiku</code>), a full model name (<code>gpt-4o</code>), or <code>provider:model</code> (<code>openai:gpt-4o</code>)</td>
+</tr>
+<tr>
+<td><code>skills</code></td>
+<td>No</td>
+<td>Comma-separated list of skill names to preload into the subagent's system prompt</td>
+</tr>
+<tr>
+<td><code>permissionMode</code></td>
+<td>No</td>
+<td>Permission handling mode (default: <code>default</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-code-reviewer-sub-agent">Example: Code Reviewer Sub-Agent<a class="headerlink" href="#example-code-reviewer-sub-agent" title="Permanent link">&para;</a></h3>
+<pre><code class="language-markdown">---
+name: code-reviewer
+description: Expert code reviewer. Use proactively after writing or modifying code. Focuses on code quality, security, and best practices.
+tools: Read, Grep, Glob, Bash
+disallowedTools: Edit, Write
+model: sonnet
+---
+
+You are a senior code reviewer with expertise in software quality and security.
+
+**When Invoked:**
+1. Run `git diff` to see recent changes
+2. Focus analysis on modified files
+3. Check context of surrounding code
+
+**Review Checklist:**
+- Code clarity and readability
+- Proper naming conventions
+- No code duplication
+- Comprehensive error handling
+- Security (no exposed secrets, SQL injection, XSS)
+
+**Output Format:**
+Provide clear, actionable feedback with file references and line numbers.
+</code></pre>
+<h2 id="extending-the-system">Extending the System<a class="headerlink" href="#extending-the-system" title="Permanent link">&para;</a></h2>
+<h3 id="creating-a-custom-subagent-type">Creating a Custom Subagent Type<a class="headerlink" href="#creating-a-custom-subagent-type" title="Permanent link">&para;</a></h3>
+<p>To add support for a new subagent protocol, implement three interfaces from <code>spring-ai-agent-utils-common</code> and register them as a <code>SubagentType</code>. See the <a href="../Subagent/">Subagent Framework</a> documentation for the full SPI reference, or the <a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/spring-ai-agent-utils-a2a">spring-ai-agent-utils-a2a</a> module for a complete A2A protocol implementation.</p>
+<pre><code class="language-java">// 1. Implement SubagentDefinition, SubagentResolver, SubagentExecutor
+// 2. Bundle them into a SubagentType
+SubagentType myType = new SubagentType(new MyResolver(), new MyExecutor());
+
+// 3. Register with TaskTool
+TaskTool.builder()
+    .subagentReferences(new SubagentReference(&quot;my://agent-1&quot;, &quot;MY_KIND&quot;))
+    .subagentTypes(myType)
+    .build();
+</code></pre>
+<h2 id="usage-patterns">Usage Patterns<a class="headerlink" href="#usage-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="automatic-delegation">Automatic Delegation<a class="headerlink" href="#automatic-delegation" title="Permanent link">&para;</a></h3>
+<p>The main agent automatically delegates to sub-agents based on their descriptions:</p>
+<pre><code class="language-java">String response = chatClient
+    .prompt(&quot;How does authentication work in this codebase?&quot;)
+    .call()
+    .content();
+// Main agent recognizes this as exploration task and delegates to Explore sub-agent
+</code></pre>
+<h3 id="explicit-invocation">Explicit Invocation<a class="headerlink" href="#explicit-invocation" title="Permanent link">&para;</a></h3>
+<p>Users can explicitly request specific sub-agents:</p>
+<pre><code class="language-java">String response = chatClient
+    .prompt(&quot;Use the code-reviewer subagent to review my recent changes&quot;)
+    .call()
+    .content();
+</code></pre>
+<h3 id="background-execution">Background Execution<a class="headerlink" href="#background-execution" title="Permanent link">&para;</a></h3>
+<p>Long-running tasks can execute in the background:</p>
+<pre><code class="language-java">// Main agent can launch background sub-agents
+String response = chatClient
+    .prompt(&quot;Run the test-runner in the background and let me know when tests complete&quot;)
+    .call()
+    .content();
+// Returns task_id for later retrieval
+
+// Later, retrieve results via TaskOutputTool
+String results = chatClient
+    .prompt(&quot;Get the results from task task_12345&quot;)
+    .call()
+    .content();
+</code></pre>
+<h3 id="tool-parameters">Tool Parameters<a class="headerlink" href="#tool-parameters" title="Permanent link">&para;</a></h3>
+<p>When the main agent calls TaskTool, it uses these parameters (defined in <code>TaskCall</code>):</p>
+<pre><code class="language-java">public record TaskCall(
+    String description,        // Short 3-5 word description
+    String prompt,            // The task for the sub-agent
+    String subagent_type,     // Which sub-agent to use
+    String model,             // Optional: override model
+    String resume,            // Optional: resume previous sub-agent
+    Boolean run_in_background // Optional: run async
+) {}
+</code></pre>
+<h2 id="background-task-management">Background Task Management<a class="headerlink" href="#background-task-management" title="Permanent link">&para;</a></h2>
+<h3 id="taskrepository">TaskRepository<a class="headerlink" href="#taskrepository" title="Permanent link">&para;</a></h3>
+<p>The <code>TaskRepository</code> manages background task execution:</p>
+<pre><code class="language-java">public interface TaskRepository {
+    BackgroundTask putTask(String taskId, Supplier&lt;String&gt; taskExecution);
+    BackgroundTask getTasks(String taskId);
+}
+</code></pre>
+<h3 id="default-implementation">Default Implementation<a class="headerlink" href="#default-implementation" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">import org.springaicommunity.agent.tools.task.repository.DefaultTaskRepository;
+
+TaskRepository repository = new DefaultTaskRepository();
+</code></pre>
+<p><code>TaskTool.builder()</code> uses <code>DefaultTaskRepository</code> by default. Override with <code>.taskRepository(...)</code> for custom implementations.</p>
+<h3 id="custom-implementation">Custom Implementation<a class="headerlink" href="#custom-implementation" title="Permanent link">&para;</a></h3>
+<p>For distributed systems or persistence:</p>
+<pre><code class="language-java">@Component
+public class RedisTaskRepository implements TaskRepository {
+
+    @Override
+    public BackgroundTask putTask(String taskId, Supplier&lt;String&gt; taskExecution) {
+        // Store in Redis, execute via message queue, etc.
+    }
+
+    @Override
+    public BackgroundTask getTasks(String taskId) {
+        return redisTemplate.opsForValue().get(taskId);
+    }
+}
+</code></pre>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">@SpringBootApplication
+public class Application {
+
+    @Bean
+    CommandLineRunner demo(
+            ChatClient.Builder chatClientBuilder,
+            @Value(&quot;${agent.skills.paths}&quot;) List&lt;Resource&gt; skillPaths,
+            @Value(&quot;${BRAVE_API_KEY:#{null}}&quot;) String braveApiKey) {
+
+        return args -&gt; {
+            // Configure Task tool with Claude subagents
+            var taskTool = TaskTool.builder()
+                .subagentTypes(ClaudeSubagentType.builder()
+                    .chatClientBuilder(&quot;default&quot;,
+                        chatClientBuilder.clone().defaultAdvisors(new MyLoggingAdvisor(0, &quot;[TASK]&quot;)))
+                    .skillsResources(skillPaths)
+                    .braveApiKey(braveApiKey)
+                    .build())
+                .build();
+
+            // Build main chat client
+            ChatClient chatClient = chatClientBuilder
+                .defaultToolCallbacks(taskTool)
+                .defaultTools(
+                    FileSystemTools.builder().build(),
+                    GrepTool.builder().build(),
+                    GlobTool.builder().build(),
+                    ShellTools.builder().build(),
+                    TodoWriteTool.builder().build()
+                )
+                .defaultAdvisors(
+                    ToolCallAdvisor.builder()
+                        .conversationHistoryEnabled(false)
+                        .build(),
+                    MessageChatMemoryAdvisor.builder(
+                        MessageWindowChatMemory.builder().maxMessages(500).build()
+                    ).build()
+                )
+                .build();
+
+            // Interactive chat loop
+            try (Scanner scanner = new Scanner(System.in)) {
+                while (true) {
+                    System.out.print(&quot;\nUSER: &quot;);
+                    String response = chatClient
+                        .prompt(scanner.nextLine())
+                        .call()
+                        .content();
+                    System.out.println(&quot;\nASSISTANT: &quot; + response);
+                }
+            }
+        };
+    }
+}
+</code></pre>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-design-focused-sub-agents">1. Design Focused Sub-Agents<a class="headerlink" href="#1-design-focused-sub-agents" title="Permanent link">&para;</a></h3>
+<p>Each sub-agent should have a single, clear responsibility.</p>
+<h3 id="2-use-disallowedtools-for-safety">2. Use <code>disallowedTools</code> for Safety<a class="headerlink" href="#2-use-disallowedtools-for-safety" title="Permanent link">&para;</a></h3>
+<p>Explicitly deny dangerous tools for read-only agents:</p>
+<pre><code class="language-markdown">---
+name: explorer
+tools: Read, Grep, Glob
+disallowedTools: Edit, Write, Bash, Shell
+---
+</code></pre>
+<h3 id="3-leverage-multi-provider-and-multi-model-routing">3. Leverage Multi-Provider and Multi-Model Routing<a class="headerlink" href="#3-leverage-multi-provider-and-multi-model-routing" title="Permanent link">&para;</a></h3>
+<p>Use faster/cheaper models for simple tasks:</p>
+<pre><code class="language-markdown">---
+name: quick-search
+model: haiku
+---
+</code></pre>
+<p>Use more capable models for complex analysis:</p>
+<pre><code class="language-markdown">---
+name: deep-analyzer
+model: opus
+---
+</code></pre>
+<p>Route to a different provider entirely:</p>
+<pre><code class="language-markdown">---
+name: local-searcher
+model: ollama:llama3
+---
+</code></pre>
+<h3 id="4-register-custom-subagent-types">4. Register Custom Subagent Types<a class="headerlink" href="#4-register-custom-subagent-types" title="Permanent link">&para;</a></h3>
+<p>Extend the system for new protocols like A2A rather than modifying core code.</p>
+<h3 id="5-version-control-custom-agents">5. Version Control Custom Agents<a class="headerlink" href="#5-version-control-custom-agents" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">git add .claude/agents/
+git commit -m &quot;Add code-reviewer and test-runner sub-agents&quot;
+</code></pre>
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<h3 id="tasktool">TaskTool<a class="headerlink" href="#tasktool" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">public class TaskTool {
+
+    public static Builder builder() { ... }
+
+    public static class Builder {
+        Builder subagentReferences(List&lt;SubagentReference&gt; refs);
+        Builder subagentReferences(SubagentReference... refs);
+        Builder subagentTypes(List&lt;SubagentType&gt; types);
+        Builder subagentTypes(SubagentType... types);
+        Builder taskRepository(TaskRepository taskRepository);
+        Builder taskDescriptionTemplate(String template);
+
+        ToolCallback build();
+    }
+}
+</code></pre>
+<h3 id="claudesubagenttype">ClaudeSubagentType<a class="headerlink" href="#claudesubagenttype" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">public class ClaudeSubagentType {
+
+    public static Builder builder() { ... }
+
+    public static class Builder {
+        Builder chatClientBuilder(String modelId, ChatClient.Builder builder);
+        Builder chatClientBuilders(Map&lt;String, ChatClient.Builder&gt; builders);
+        Builder skillsResources(List&lt;Resource&gt; resources);
+        Builder skillsResource(Resource resource);
+        Builder skillsDirectories(List&lt;String&gt; dirs);
+        Builder skillsDirectories(String dir);
+        Builder braveApiKey(String apiKey);
+
+        SubagentType build();  // Returns SubagentType (resolver + executor pair)
+    }
+}
+</code></pre>
+<h3 id="subagent-interfaces-from-spring-ai-agent-utils-common">Subagent Interfaces (from spring-ai-agent-utils-common)<a class="headerlink" href="#subagent-interfaces-from-spring-ai-agent-utils-common" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">public interface SubagentDefinition {
+    String getName();
+    String getDescription();
+    String getKind();
+    SubagentReference getReference();
+    default String toSubagentRegistrations() { ... }
+}
+
+public interface SubagentResolver {
+    boolean canResolve(SubagentReference ref);
+    SubagentDefinition resolve(SubagentReference ref);
+}
+
+public interface SubagentExecutor {
+    String getKind();
+    String execute(TaskCall taskCall, SubagentDefinition subagent);
+}
+
+public record SubagentReference(String uri, String kind, Map&lt;String, String&gt; metadata) {
+    public SubagentReference(String uri, String kind) { this(uri, kind, Map.of()); }
+}
+
+public record SubagentType(SubagentResolver resolver, SubagentExecutor executor) {
+    public String kind() { return executor.getKind(); }
+}
+
+public record TaskCall(
+    String description, String prompt, String subagent_type,
+    String model, String resume, Boolean run_in_background
+) {}
+</code></pre>
+<h3 id="claudesubagentdefinition">ClaudeSubagentDefinition<a class="headerlink" href="#claudesubagentdefinition" title="Permanent link">&para;</a></h3>
+<p>The built-in Claude subagent definition uses the kind constant <code>"CLAUDE"</code>:</p>
+<pre><code class="language-java">public class ClaudeSubagentDefinition implements SubagentDefinition {
+    public static final String KIND = &quot;CLAUDE&quot;;
+
+    // Additional Claude-specific methods:
+    public String getModel();           // Model override (sonnet, opus, haiku)
+    public List&lt;String&gt; tools();        // Allowed tool names
+    public List&lt;String&gt; disallowedTools(); // Tools to deny
+    public List&lt;String&gt; skills();       // Skills to preload
+    public String permissionMode();     // Permission handling mode
+    public String getContent();         // System prompt content
+}
+</code></pre>
+<h3 id="claudesubagentreferences">ClaudeSubagentReferences<a class="headerlink" href="#claudesubagentreferences" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">public class ClaudeSubagentReferences {
+    static List&lt;SubagentReference&gt; fromRootDirectory(String rootDirectory);
+    static List&lt;SubagentReference&gt; fromRootDirectories(List&lt;String&gt; rootDirectories);
+    static List&lt;SubagentReference&gt; fromResource(Resource resource);
+    static List&lt;SubagentReference&gt; fromResources(List&lt;Resource&gt; resources);
+    static List&lt;SubagentReference&gt; fromResources(Resource... resources);
+}
+</code></pre>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../Subagent/"><strong>Subagent Framework</strong></a> - Protocol-agnostic subagent SPI for integrating A2A, MCP, and custom agent protocols</li>
+<li><a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/spring-ai-agent-utils-common"><strong>spring-ai-agent-utils-common</strong></a> - Shared subagent SPI module</li>
+<li><a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/spring-ai-agent-utils-a2a"><strong>spring-ai-agent-utils-a2a</strong></a> - A2A protocol subagent implementation</li>
+<li><a href="../FileSystemTools/"><strong>FileSystemTools</strong></a> - File operations for sub-agents</li>
+<li><a href="../GrepTool/"><strong>GrepTool</strong></a> - Code search capabilities</li>
+<li><a href="../GlobTool/"><strong>GlobTool</strong></a> - File pattern matching</li>
+<li><a href="../ShellTools/"><strong>ShellTools</strong></a> - Command execution</li>
+<li><a href="../SkillsTool/"><strong>SkillsTool</strong></a> - Reusable knowledge modules for sub-agents</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/sub-agents">Claude Code Sub-Agents Documentation</a></li>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/subagents">Claude Agent SDK Sub-Agents</a></li>
+<li><a href="https://docs.spring.io/spring-ai/reference/">Spring AI Documentation</a></li>
+<li><a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/examples/subagent-demo">Example: subagent-demo</a></li>
+<li><a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/examples/subagent-a2a-demo">Example: subagent-a2a-demo</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>GrepTool - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "GrepTool";
+        var mkdocs_page_input_path = "tools/GrepTool.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">GrepTool</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/GrepTool.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="greptool">GrepTool<a class="headerlink" href="#greptool" title="Permanent link">&para;</a></h1>
+<p>A pure Java implementation of grep functionality that doesn't require external ripgrep installation. Provides powerful search capabilities with regex patterns, glob filtering, and multiple output modes.</p>
+<p><strong>Features:</strong>
+- Full Java regex support for pattern matching
+- File type filtering (java, js, ts, py, rust, go, etc.)
+- Glob pattern matching (<code>*.java</code>, <code>**/*.tsx</code>)
+- Multiple output modes: <code>files_with_matches</code>, <code>count</code>, <code>content</code>
+- Context lines (before/after matching lines)
+- Case-insensitive search
+- Multiline pattern matching
+- Configurable limits and depth
+- No external dependencies required
+- Thread-safe for concurrent use</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The <code>GrepTool</code> is a Spring AI tool that brings powerful code search capabilities to AI agents. Unlike traditional grep that requires external tools, this is a pure Java implementation that works cross-platform without any setup.</p>
+<p><strong>Why use GrepTool?</strong>
+- <strong>Zero dependencies</strong>: No need to install ripgrep or grep
+- <strong>AI-optimized</strong>: Designed for agents to search codebases efficiently
+- <strong>Flexible filtering</strong>: Combine regex, globs, and file types
+- <strong>Smart output</strong>: Three modes optimized for different use cases</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">// Default configuration
+GrepTool grepTool = GrepTool.builder().build();
+
+// Search for pattern in current directory
+String result = grepTool.grep(
+    &quot;TODO&quot;,              // pattern
+    null,                // path (uses current directory)
+    null,                // glob
+    OutputMode.files_with_matches,  // outputMode
+    null, null, null,    // context lines (before, after, surrounding)
+    null,                // showLineNumbers
+    null,                // caseInsensitive
+    null,                // type
+    null, null, null     // headLimit, offset, multiline
+);
+</code></pre>
+<h3 id="custom-configuration">Custom Configuration<a class="headerlink" href="#custom-configuration" title="Permanent link">&para;</a></h3>
+<p>For large codebases or specific requirements, configure limits:</p>
+<pre><code class="language-java">GrepTool customGrepTool = new GrepTool(
+    200000,  // maxOutputLength - Maximum output before truncation (default: 100000)
+    50,      // maxDepth - Directory traversal depth (default: 100)
+    5000     // maxLineLength - Max line length to process (default: 10000)
+);
+</code></pre>
+<h2 id="configuration-parameters">Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxOutputLength</code></td>
+<td>100,000</td>
+<td>Maximum output length before truncation</td>
+</tr>
+<tr>
+<td><code>maxDepth</code></td>
+<td>100</td>
+<td>Maximum directory traversal depth (prevents infinite recursion)</td>
+</tr>
+<tr>
+<td><code>maxLineLength</code></td>
+<td>10,000</td>
+<td>Maximum line length to process (longer lines are skipped)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to adjust:</strong>
+- <strong>maxOutputLength</strong>: Increase for large search results (e.g., 200,000 for monorepos)
+- <strong>maxDepth</strong>: Decrease for shallow searches (e.g., 10 for root-level only)
+- <strong>maxLineLength</strong>: Increase for minified code or long lines (e.g., 50,000)</p>
+<h2 id="method-parameters">Method Parameters<a class="headerlink" href="#method-parameters" title="Permanent link">&para;</a></h2>
+<p>The <code>grep</code> method signature:</p>
+<pre><code class="language-java">String grep(
+    String pattern,          // Required: Regex pattern to search
+    String path,             // Optional: Directory/file to search (default: current dir)
+    String glob,             // Optional: Glob pattern to filter files (e.g., &quot;*.java&quot;)
+    OutputMode outputMode,   // Optional: Output format (default: files_with_matches)
+    Integer linesBefore,     // Optional: Context lines before match (-B)
+    Integer linesAfter,      // Optional: Context lines after match (-A)
+    Integer linesSurrounding,// Optional: Context lines before+after (-C)
+    Boolean showLineNumbers, // Optional: Show line numbers in content mode (-n)
+    Boolean caseInsensitive, // Optional: Case-insensitive search (-i)
+    String type,             // Optional: File type filter (e.g., &quot;java&quot;, &quot;js&quot;)
+    Integer headLimit,       // Optional: Limit output lines/entries
+    Integer offset,          // Optional: Skip first N lines/entries
+    Boolean multiline        // Optional: Enable multiline matching
+)
+</code></pre>
+<h2 id="output-modes">Output Modes<a class="headerlink" href="#output-modes" title="Permanent link">&para;</a></h2>
+<h3 id="1-files_with_matches-default">1. files_with_matches (Default)<a class="headerlink" href="#1-files_with_matches-default" title="Permanent link">&para;</a></h3>
+<p>Returns only file paths containing matches. Most efficient for finding files.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;class UserService&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/main/java/com/example/UserService.java
+./src/test/java/com/example/UserServiceTest.java
+</code></pre>
+<p><strong>Use when:</strong>
+- Finding which files contain a pattern
+- Locating specific classes or functions
+- Quick file discovery</p>
+<h3 id="2-count">2. count<a class="headerlink" href="#2-count" title="Permanent link">&para;</a></h3>
+<p>Shows the number of matches per file.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;TODO&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null, null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/main/java/Controller.java: 5
+./src/main/java/Service.java: 12
+./src/main/java/Repository.java: 3
+</code></pre>
+<p><strong>Use when:</strong>
+- Counting occurrences (TODOs, FIXMEs, deprecations)
+- Analyzing code patterns across files
+- Finding files with most matches</p>
+<h3 id="3-content">3. content<a class="headerlink" href="#3-content" title="Permanent link">&para;</a></h3>
+<p>Shows matching lines with optional context and line numbers.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;public class.*&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, null, null,
+    true,                // Show line numbers
+    null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/main/java/UserService.java:
+   15→public class UserService {
+
+./src/main/java/OrderService.java:
+   23→public class OrderService extends BaseService {
+</code></pre>
+<p><strong>Use when:</strong>
+- Examining actual matching code
+- Understanding context around matches
+- Code review or analysis</p>
+<h2 id="context-lines">Context Lines<a class="headerlink" href="#context-lines" title="Permanent link">&para;</a></h2>
+<p>Show surrounding lines for better context (similar to grep's -A, -B, -C options).</p>
+<h3 id="lines-after-match-a">Lines After Match (-A)<a class="headerlink" href="#lines-after-match-a" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;@Override&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null,                // linesBefore
+    3,                   // linesAfter - show 3 lines after
+    null,                // linesSurrounding
+    true,                // showLineNumbers
+    null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/Service.java:
+   42→    @Override
+   43→    public void process() {
+   44→        // Implementation
+   45→    }
+</code></pre>
+<h3 id="lines-before-match-b">Lines Before Match (-B)<a class="headerlink" href="#lines-before-match-b" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;throw new.*Exception&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    2,                   // linesBefore - show 2 lines before
+    null,                // linesAfter
+    null,                // linesSurrounding
+    true,                // showLineNumbers
+    null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/Service.java:
+   38→    if (user == null) {
+   39→        logger.error(&quot;User not found&quot;);
+   40→        throw new UserNotFoundException(&quot;User not found&quot;);
+</code></pre>
+<h3 id="lines-surrounding-match-c">Lines Surrounding Match (-C)<a class="headerlink" href="#lines-surrounding-match-c" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;TODO&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, null,
+    2,                   // linesSurrounding - 2 lines before AND after
+    true,                // showLineNumbers
+    null, null, null, null, null
+);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/Service.java:
+   15→    public void process() {
+   16→        // Process data
+   17→        // TODO: Add validation
+   18→        save(data);
+   19→    }
+</code></pre>
+<p><strong>Priority:</strong> If multiple context options are provided, <code>linesSurrounding</code> takes precedence.</p>
+<h2 id="file-filtering">File Filtering<a class="headerlink" href="#file-filtering" title="Permanent link">&para;</a></h2>
+<h3 id="by-file-type">By File Type<a class="headerlink" href="#by-file-type" title="Permanent link">&para;</a></h3>
+<p>Filter by programming language or file type:</p>
+<pre><code class="language-java">// Search only Java files
+String result = grepTool.grep(
+    &quot;interface.*Repository&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null,
+    &quot;java&quot;,              // type filter
+    null, null, null
+);
+
+// Search only TypeScript files
+String result = grepTool.grep(
+    &quot;export.*Component&quot;,
+    &quot;./src&quot;,
+    null, null, null, null, null, null, null,
+    &quot;ts&quot;,                // type filter
+    null, null, null
+);
+</code></pre>
+<p><strong>Supported file types:</strong>
+- <code>java</code> - .java files
+- <code>js</code> - .js files
+- <code>ts</code> - .ts, .tsx files
+- <code>py</code> - .py files
+- <code>rust</code> - .rs files
+- <code>go</code> - .go files
+- <code>cpp</code> - .cpp, .cc, .cxx, .h, .hpp files
+- <code>xml</code> - .xml files
+- <code>json</code> - .json files
+- <code>yaml</code> - .yml, .yaml files
+- <code>md</code> - .md, .markdown files
+- <code>txt</code> - .txt files</p>
+<h3 id="by-glob-pattern">By Glob Pattern<a class="headerlink" href="#by-glob-pattern" title="Permanent link">&para;</a></h3>
+<p>Use glob patterns for custom file filtering:</p>
+<pre><code class="language-java">// Search only React components
+String result = grepTool.grep(
+    &quot;useState&quot;,
+    &quot;./src&quot;,
+    &quot;**/*.tsx&quot;,          // glob pattern
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null
+);
+
+// Search only test files
+String result = grepTool.grep(
+    &quot;@Test&quot;,
+    &quot;./src&quot;,
+    &quot;**/*Test.java&quot;,     // glob pattern
+    OutputMode.content,
+    null, null, null, true, null, null, null, null, null
+);
+
+// Search multiple extensions
+String result = grepTool.grep(
+    &quot;API_KEY&quot;,
+    &quot;.&quot;,
+    &quot;**/*.{java,properties,yml}&quot;,  // multiple extensions
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null
+);
+</code></pre>
+<p><strong>Glob patterns:</strong>
+- <code>*.java</code> - All .java files in directory
+- <code>**/*.java</code> - All .java files recursively
+- <code>src/**/*.test.js</code> - All .test.js files under src
+- <code>**/*.{ts,tsx}</code> - All .ts and .tsx files
+- <code>**/test-*.java</code> - Files starting with "test-"</p>
+<h3 id="combining-type-and-glob">Combining Type and Glob<a class="headerlink" href="#combining-type-and-glob" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Type filter takes precedence over glob
+String result = grepTool.grep(
+    &quot;pattern&quot;,
+    &quot;./src&quot;,
+    &quot;**/*.txt&quot;,          // glob
+    OutputMode.files_with_matches,
+    null, null, null, null, null,
+    &quot;java&quot;,              // type overrides glob
+    null, null, null
+);
+// Only searches .java files (glob is ignored)
+</code></pre>
+<p><strong>Best practice:</strong> Use <code>type</code> for standard languages, <code>glob</code> for custom patterns.</p>
+<h2 id="pattern-matching">Pattern Matching<a class="headerlink" href="#pattern-matching" title="Permanent link">&para;</a></h2>
+<h3 id="basic-regex-patterns">Basic Regex Patterns<a class="headerlink" href="#basic-regex-patterns" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Literal string
+grepTool.grep(&quot;UserService&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+
+// Word boundary
+grepTool.grep(&quot;\\bclass\\b&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+
+// Alternation
+grepTool.grep(&quot;Error|Exception|Throwable&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+
+// Character class
+grepTool.grep(&quot;[A-Z][a-z]+Service&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+
+// Quantifiers
+grepTool.grep(&quot;TODO.*urgent&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="common-search-patterns">Common Search Patterns<a class="headerlink" href="#common-search-patterns" title="Permanent link">&para;</a></h3>
+<p><strong>Find class definitions:</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;^public class \\w+&quot;, &quot;./src&quot;, null, OutputMode.content, null, null, null, true, null, &quot;java&quot;, null, null, null);
+</code></pre>
+<p><strong>Find method definitions:</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;^\\s+public \\w+ \\w+\\(&quot;, &quot;./src&quot;, null, OutputMode.content, null, null, null, true, null, &quot;java&quot;, null, null, null);
+</code></pre>
+<p><strong>Find TODO comments:</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;//\\s*TODO&quot;, &quot;./src&quot;, null, OutputMode.count, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<p><strong>Find imports:</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;^import .*springframework&quot;, &quot;./src&quot;, null, OutputMode.files_with_matches, null, null, null, null, null, &quot;java&quot;, null, null, null);
+</code></pre>
+<p><strong>Find API endpoints:</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;@(Get|Post|Put|Delete)Mapping&quot;, &quot;./src&quot;, null, OutputMode.content, null, 2, null, true, null, &quot;java&quot;, null, null, null);
+</code></pre>
+<p><strong>Find hardcoded credentials (security audit):</strong></p>
+<pre><code class="language-java">grepTool.grep(&quot;password\\s*=\\s*[\&quot;']\\w+[\&quot;']&quot;, &quot;.&quot;, null, OutputMode.content, 1, 1, null, true, true, null, null, null, null);
+</code></pre>
+<h3 id="case-insensitive-search">Case-Insensitive Search<a class="headerlink" href="#case-insensitive-search" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;todo&quot;,              // lowercase pattern
+    &quot;./src&quot;,
+    null, null, null, null, null, null,
+    true,                // caseInsensitive = true
+    null, null, null, null
+);
+// Matches: TODO, Todo, todo, tOdO, etc.
+</code></pre>
+<h3 id="multiline-patterns">Multiline Patterns<a class="headerlink" href="#multiline-patterns" title="Permanent link">&para;</a></h3>
+<p>For patterns that span multiple lines:</p>
+<pre><code class="language-java">String result = grepTool.grep(
+    &quot;class.*\\{[\\s\\S]*?private&quot;,  // Match class with private field
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, null, null, true, null, &quot;java&quot;,
+    null, null,
+    true                 // multiline = true (. matches newlines)
+);
+</code></pre>
+<p><strong>Note:</strong> Multiline mode allows <code>.</code> to match newline characters.</p>
+<h2 id="limiting-results">Limiting Results<a class="headerlink" href="#limiting-results" title="Permanent link">&para;</a></h2>
+<h3 id="head-limit">Head Limit<a class="headerlink" href="#head-limit" title="Permanent link">&para;</a></h3>
+<p>Limit the number of output lines or entries:</p>
+<pre><code class="language-java">// Limit to first 10 matching files
+String result = grepTool.grep(
+    &quot;TODO&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null,
+    10,                  // headLimit
+    null, null
+);
+
+// Limit to first 20 matching lines
+String result = grepTool.grep(
+    &quot;public.*method&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, null, null, true, null, null,
+    20,                  // headLimit
+    null, null
+);
+</code></pre>
+<h3 id="offset">Offset<a class="headerlink" href="#offset" title="Permanent link">&para;</a></h3>
+<p>Skip first N results:</p>
+<pre><code class="language-java">// Skip first 10 files, then show next 10
+String result = grepTool.grep(
+    &quot;class&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null,
+    10,                  // headLimit (show 10)
+    10,                  // offset (skip first 10)
+    null
+);
+</code></pre>
+<p><strong>Use case:</strong> Pagination through large result sets.</p>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="1-find-all-todos">1. Find All TODOs<a class="headerlink" href="#1-find-all-todos" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GrepTool grepTool = GrepTool.builder().build();
+
+// Count TODOs per file
+String counts = grepTool.grep(
+    &quot;TODO|FIXME&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null,
+    true,                // case insensitive
+    null, null, null, null
+);
+
+// Show TODO comments with context
+String todos = grepTool.grep(
+    &quot;TODO|FIXME&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, null,
+    2,                   // 2 lines context
+    true,                // line numbers
+    true,                // case insensitive
+    null, null, null, null
+);
+</code></pre>
+<h3 id="2-find-class-definitions">2. Find Class Definitions<a class="headerlink" href="#2-find-class-definitions" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all Spring Controllers
+String controllers = grepTool.grep(
+    &quot;@RestController|@Controller&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null,
+    &quot;java&quot;,
+    null, null, null
+);
+
+// Show controller methods with mappings
+String mappings = grepTool.grep(
+    &quot;@(GetMapping|PostMapping|PutMapping|DeleteMapping)&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null,
+    3,                   // show method signature
+    null, true, null, &quot;java&quot;, null, null, null
+);
+</code></pre>
+<h3 id="3-security-audit">3. Security Audit<a class="headerlink" href="#3-security-audit" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find potential security issues
+String secrets = grepTool.grep(
+    &quot;password|secret|api[_-]?key|token&quot;,
+    &quot;.&quot;,
+    &quot;**/*.{java,properties,yml,yaml}&quot;,
+    OutputMode.content,
+    1, 1, null, true,
+    true,                // case insensitive
+    null, null, null, null
+);
+
+// Find SQL injection risks
+String sqlInjection = grepTool.grep(
+    &quot;executeQuery.*\\+|createQuery.*\\+&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    2, 2, null, true, null,
+    &quot;java&quot;,
+    null, null, null
+);
+</code></pre>
+<h3 id="4-dependency-analysis">4. Dependency Analysis<a class="headerlink" href="#4-dependency-analysis" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all Spring dependencies
+String springImports = grepTool.grep(
+    &quot;^import.*springframework&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null, null,
+    &quot;java&quot;,
+    null, null, null
+);
+
+// Find deprecated API usage
+String deprecated = grepTool.grep(
+    &quot;@Deprecated&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    null, 5, null, true, null,
+    &quot;java&quot;,
+    null, null, null
+);
+</code></pre>
+<h3 id="5-code-refactoring">5. Code Refactoring<a class="headerlink" href="#5-code-refactoring" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all usages of old method name
+String usages = grepTool.grep(
+    &quot;\\boldMethodName\\b&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null
+);
+
+// Find specific pattern to refactor
+String pattern = grepTool.grep(
+    &quot;new ArrayList&lt;&gt;\\(\\)&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    1, 1, null, true, null,
+    &quot;java&quot;,
+    null, null, null
+);
+</code></pre>
+<h2 id="spring-boot-integration">Spring Boot Integration<a class="headerlink" href="#spring-boot-integration" title="Permanent link">&para;</a></h2>
+<h3 id="basic-configuration">Basic Configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class ToolsConfig {
+
+    @Bean
+    public GrepTool grepTool() {
+        return GrepTool.builder().build();
+    }
+}
+</code></pre>
+<h3 id="custom-configuration_1">Custom Configuration<a class="headerlink" href="#custom-configuration_1" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class ToolsConfig {
+
+    @Value(&quot;${grep.max-output-length:150000}&quot;)
+    private int maxOutputLength;
+
+    @Value(&quot;${grep.max-depth:50}&quot;)
+    private int maxDepth;
+
+    @Value(&quot;${grep.max-line-length:15000}&quot;)
+    private int maxLineLength;
+
+    @Bean
+    public GrepTool grepTool() {
+        return new GrepTool(maxOutputLength, maxDepth, maxLineLength);
+    }
+}
+</code></pre>
+<h3 id="chatclient-integration">ChatClient Integration<a class="headerlink" href="#chatclient-integration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class AgentConfig {
+
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+        return chatClientBuilder
+            .defaultTools(GrepTool.builder().build())
+            .defaultTools(FileSystemTools.builder().build())
+            .build();
+    }
+}
+</code></pre>
+<p><strong>Usage with AI agent:</strong></p>
+<pre><code class="language-java">ChatClient chatClient = ...; // from bean
+
+String response = chatClient.prompt()
+    .user(&quot;Find all TODO comments in the src directory&quot;)
+    .call()
+    .content();
+// AI automatically uses GrepTool to search and summarize
+</code></pre>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-choose-the-right-output-mode">1. Choose the Right Output Mode<a class="headerlink" href="#1-choose-the-right-output-mode" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Use files_with_matches for file discovery
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null);
+
+// ✅ GOOD: Use count for metrics
+grepTool.grep(&quot;TODO&quot;, &quot;./src&quot;, null, OutputMode.count,
+    null, null, null, null, null, null, null, null, null);
+
+// ✅ GOOD: Use content for code review
+grepTool.grep(&quot;deprecated&quot;, &quot;./src&quot;, null, OutputMode.content,
+    null, null, 2, true, null, null, null, null, null);
+
+// ❌ WASTEFUL: Using content mode when you only need file paths
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, OutputMode.content,
+    null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="2-use-type-filters-for-standard-languages">2. Use Type Filters for Standard Languages<a class="headerlink" href="#2-use-type-filters-for-standard-languages" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Use type filter for standard languages
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null,
+    &quot;java&quot;, null, null, null);
+
+// ❌ LESS EFFICIENT: Using glob when type filter exists
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, &quot;**/*.java&quot;, null, null, null, null, null, null,
+    null, null, null, null);
+</code></pre>
+<h3 id="3-add-context-for-better-understanding">3. Add Context for Better Understanding<a class="headerlink" href="#3-add-context-for-better-understanding" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Include context lines for AI understanding
+grepTool.grep(&quot;@Transactional&quot;, &quot;./src&quot;, null, OutputMode.content,
+    null, 3, null, true, null, &quot;java&quot;, null, null, null);
+
+// ❌ MINIMAL: No context makes it hard to understand
+grepTool.grep(&quot;@Transactional&quot;, &quot;./src&quot;, null, OutputMode.content,
+    null, null, null, true, null, &quot;java&quot;, null, null, null);
+</code></pre>
+<h3 id="4-use-specific-patterns">4. Use Specific Patterns<a class="headerlink" href="#4-use-specific-patterns" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Specific pattern with word boundaries
+grepTool.grep(&quot;\\bUserService\\b&quot;, &quot;./src&quot;, null, null, null, null, null, null, null,
+    null, null, null, null);
+
+// ❌ TOO BROAD: May match UserServiceImpl, UserServiceTest, etc.
+grepTool.grep(&quot;UserService&quot;, &quot;./src&quot;, null, null, null, null, null, null, null,
+    null, null, null, null);
+</code></pre>
+<h3 id="5-limit-results-for-large-codebases">5. Limit Results for Large Codebases<a class="headerlink" href="#5-limit-results-for-large-codebases" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Use headLimit for large result sets
+grepTool.grep(&quot;class&quot;, &quot;./src&quot;, null, OutputMode.files_with_matches,
+    null, null, null, null, null, null, 100, null, null);
+
+// ❌ WASTEFUL: No limit may return thousands of results
+grepTool.grep(&quot;class&quot;, &quot;./src&quot;, null, OutputMode.files_with_matches,
+    null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="6-escape-special-regex-characters">6. Escape Special Regex Characters<a class="headerlink" href="#6-escape-special-regex-characters" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Escape special characters
+grepTool.grep(&quot;\\$\\{.*\\}&quot;, &quot;./src&quot;, null, null, null, null, null, null, null,
+    null, null, null, null);
+
+// ❌ WRONG: Special characters not escaped
+grepTool.grep(&quot;${.*}&quot;, &quot;./src&quot;, null, null, null, null, null, null, null,
+    null, null, null, null);
+// { and } are regex special characters
+</code></pre>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The tool handles errors gracefully:</p>
+<p><strong>Empty pattern:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(&quot;&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+// Returns empty result (no matches)
+</code></pre>
+<p><strong>Invalid regex:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(&quot;[invalid&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+// Logs error and returns empty result
+</code></pre>
+<p><strong>Non-existent path:</strong></p>
+<pre><code class="language-java">String result = grepTool.grep(&quot;pattern&quot;, &quot;/nonexistent/path&quot;, null, null, null, null, null, null, null, null, null, null, null);
+// Returns empty result
+</code></pre>
+<p><strong>Output truncation:</strong>
+- If results exceed <code>maxOutputLength</code>, output is truncated with warning in logs
+- Increase <code>maxOutputLength</code> in constructor for larger results</p>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<h3 id="1-use-narrow-search-paths">1. Use Narrow Search Paths<a class="headerlink" href="#1-use-narrow-search-paths" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Search specific directory
+grepTool.grep(&quot;pattern&quot;, &quot;./src/main/java&quot;, null, null, null, null, null, null, null, null, null, null, null);
+
+// ❌ SLOW: Searching from root unnecessarily
+grepTool.grep(&quot;pattern&quot;, &quot;.&quot;, null, null, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="2-filter-early-with-typeglob">2. Filter Early with Type/Glob<a class="headerlink" href="#2-filter-early-with-typeglob" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Filter files before searching
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, &quot;java&quot;, null, null, null);
+
+// ❌ SLOW: Search all files then filter mentally
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="3-use-files_with_matches-when-possible">3. Use files_with_matches When Possible<a class="headerlink" href="#3-use-files_with_matches-when-possible" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Fast file discovery
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, OutputMode.files_with_matches, null, null, null, null, null, null, null, null, null);
+
+// ❌ SLOWER: Content mode when you only need files
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, OutputMode.content, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="4-limit-results">4. Limit Results<a class="headerlink" href="#4-limit-results" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Stop after finding enough
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, 50, null, null);
+
+// ❌ WASTEFUL: Process all matches
+grepTool.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h3 id="5-adjust-depth-for-shallow-searches">5. Adjust Depth for Shallow Searches<a class="headerlink" href="#5-adjust-depth-for-shallow-searches" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Limit depth for shallow searches
+GrepTool shallowGrep = new GrepTool(100000, 3, 10000);
+shallowGrep.grep(&quot;pattern&quot;, &quot;./src&quot;, null, null, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="no-results-found">No Results Found<a class="headerlink" href="#no-results-found" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Search returns empty results when you expect matches</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Check pattern syntax:</strong>
+   <code>java
+   // Test with simple literal pattern first
+   grepTool.grep("UserService", "./src", null, null, null, null, null, null, null, null, null, null, null);</code></p>
+</li>
+<li>
+<p><strong>Verify path exists:</strong>
+   <code>java
+   // Use absolute path to be sure
+   grepTool.grep("pattern", "/full/path/to/src", null, null, null, null, null, null, null, null, null, null, null);</code></p>
+</li>
+<li>
+<p><strong>Try case-insensitive search:</strong>
+   <code>java
+   grepTool.grep("pattern", "./src", null, null, null, null, null, null, true, null, null, null, null);</code></p>
+</li>
+<li>
+<p><strong>Remove filters temporarily:</strong>
+   <code>java
+   // Remove type/glob filters
+   grepTool.grep("pattern", "./src", null, null, null, null, null, null, null, null, null, null, null);</code></p>
+</li>
+</ol>
+<h3 id="pattern-not-matching-as-expected">Pattern Not Matching as Expected<a class="headerlink" href="#pattern-not-matching-as-expected" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Regex pattern doesn't match what you expect</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><strong>Escape special characters:</strong>
+   ```java
+   // ✅ Correct: Escaped brackets
+   grepTool.grep("List\[String\]", "./src", null, null, null, null, null, null, null, null, null, null, null);</li>
+</ol>
+<p>// ❌ Wrong: Unescaped brackets
+   grepTool.grep("List[String]", "./src", null, null, null, null, null, null, null, null, null, null, null);
+   ```</p>
+<ol>
+<li><strong>Test pattern incrementally:</strong>
+   ```java
+   // Start simple
+   grepTool.grep("User", "./src", null, null, null, null, null, null, null, null, null, null, null);</li>
+</ol>
+<p>// Add complexity
+   grepTool.grep("class.*User", "./src", null, null, null, null, null, null, null, null, null, null, null);</p>
+<p>// Full pattern
+   grepTool.grep("^public class.<em>User.</em>\{", "./src", null, null, null, null, null, null, null, null, null, null, null);
+   ```</p>
+<ol>
+<li><strong>Use multiline mode for cross-line patterns:</strong>
+   <code>java
+   grepTool.grep("class.*\\{[\\s\\S]*?method", "./src", null, null, null, null, null, null, null, null, null, null, true);</code></li>
+</ol>
+<h3 id="output-truncated">Output Truncated<a class="headerlink" href="#output-truncated" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Results are cut off</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Increase maxOutputLength:</strong>
+   <code>java
+   GrepTool largeGrep = new GrepTool(500000, 100, 10000);</code></p>
+</li>
+<li>
+<p><strong>Use headLimit to paginate:</strong>
+   ```java
+   // First 100 results
+   grepTool.grep("pattern", "./src", null, null, null, null, null, null, null, null, 100, 0, null);</p>
+</li>
+</ol>
+<p>// Next 100 results
+   grepTool.grep("pattern", "./src", null, null, null, null, null, null, null, null, 100, 100, null);
+   ```</p>
+<ol>
+<li><strong>Use count mode first:</strong>
+   <code>java
+   // See how many matches before getting content
+   String count = grepTool.grep("pattern", "./src", null, OutputMode.count, null, null, null, null, null, null, null, null, null);</code></li>
+</ol>
+<h3 id="performance-issues">Performance Issues<a class="headerlink" href="#performance-issues" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Search takes too long</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><strong>Narrow search path:</strong>
+   ```java
+   // Instead of entire project
+   grepTool.grep("pattern", ".", null, null, null, null, null, null, null, null, null, null, null);</li>
+</ol>
+<p>// Search specific directory
+   grepTool.grep("pattern", "./src/main/java/com/example", null, null, null, null, null, null, null, null, null, null, null);
+   ```</p>
+<ol>
+<li>
+<p><strong>Use type filters:</strong>
+   <code>java
+   grepTool.grep("pattern", "./src", null, null, null, null, null, null, null, "java", null, null, null);</code></p>
+</li>
+<li>
+<p><strong>Reduce depth:</strong>
+   <code>java
+   GrepTool shallowGrep = new GrepTool(100000, 10, 10000);</code></p>
+</li>
+<li>
+<p><strong>Use files_with_matches mode:</strong>
+   <code>java
+   grepTool.grep("pattern", "./src", null, OutputMode.files_with_matches, null, null, null, null, null, null, null, null, null);</code></p>
+</li>
+</ol>
+<h3 id="lines-skipped">Lines Skipped<a class="headerlink" href="#lines-skipped" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Warning about lines being skipped</p>
+<p><strong>Cause:</strong> Lines exceed <code>maxLineLength</code> (default: 10,000 characters)</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-java">// Increase maxLineLength for minified code
+GrepTool longLineGrep = new GrepTool(100000, 100, 50000);
+</code></pre>
+<h2 id="comparison-with-traditional-grep">Comparison with Traditional Grep<a class="headerlink" href="#comparison-with-traditional-grep" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>GrepTool</th>
+<th>Traditional grep</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Installation</td>
+<td>None required</td>
+<td>Requires grep/ripgrep installation</td>
+</tr>
+<tr>
+<td>Cross-platform</td>
+<td>✅ Pure Java</td>
+<td>⚠️ Different syntax on Windows</td>
+</tr>
+<tr>
+<td>Regex flavor</td>
+<td>Java regex</td>
+<td>POSIX regex</td>
+</tr>
+<tr>
+<td>File filtering</td>
+<td>Type + Glob</td>
+<td>Complex find commands</td>
+</tr>
+<tr>
+<td>Output modes</td>
+<td>3 optimized modes</td>
+<td>Manual formatting</td>
+</tr>
+<tr>
+<td>AI integration</td>
+<td>✅ Designed for agents</td>
+<td>Manual parsing needed</td>
+</tr>
+<tr>
+<td>Dependencies</td>
+<td>Zero</td>
+<td>External binaries</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Good for most use cases</td>
+<td>Faster for huge codebases (native)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use GrepTool:</strong>
+- AI agent code search
+- Cross-platform applications
+- Avoiding external dependencies
+- Integrated Spring AI workflows</p>
+<p><strong>When traditional grep might be better:</strong>
+- Massive codebases (millions of files)
+- Shell scripting outside Java
+- Need specific grep/ripgrep features</p>
+<h2 id="advanced-examples">Advanced Examples<a class="headerlink" href="#advanced-examples" title="Permanent link">&para;</a></h2>
+<h3 id="multi-pattern-search-with-post-processing">Multi-Pattern Search with Post-Processing<a class="headerlink" href="#multi-pattern-search-with-post-processing" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GrepTool grepTool = GrepTool.builder().build();
+
+// Find all service classes
+String services = grepTool.grep(
+    &quot;@Service|@Component&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, &quot;java&quot;, null, null, null
+);
+
+// Find all repositories
+String repositories = grepTool.grep(
+    &quot;@Repository&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.files_with_matches,
+    null, null, null, null, null, &quot;java&quot;, null, null, null
+);
+
+// Combine results for architectural analysis
+</code></pre>
+<h3 id="codebase-statistics">Codebase Statistics<a class="headerlink" href="#codebase-statistics" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Count total classes
+String classCount = grepTool.grep(
+    &quot;^(public |private |protected )?class \\w+&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null, null, &quot;java&quot;, null, null, null
+);
+
+// Count interfaces
+String interfaceCount = grepTool.grep(
+    &quot;^(public |private )?interface \\w+&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null, null, &quot;java&quot;, null, null, null
+);
+
+// Count test methods
+String testCount = grepTool.grep(
+    &quot;@Test&quot;,
+    &quot;./src/test&quot;,
+    null,
+    OutputMode.count,
+    null, null, null, null, null, &quot;java&quot;, null, null, null
+);
+</code></pre>
+<h3 id="security-scanning">Security Scanning<a class="headerlink" href="#security-scanning" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Comprehensive security audit
+GrepTool grepTool = GrepTool.builder().build();
+
+// 1. Find hardcoded credentials
+String credentials = grepTool.grep(
+    &quot;(password|secret|apikey|token)\\s*=\\s*[\&quot;'][^\&quot;']+[\&quot;']&quot;,
+    &quot;.&quot;,
+    &quot;**/*.{java,properties,yml,yaml}&quot;,
+    OutputMode.content,
+    1, 1, null, true, true, null, null, null, null
+);
+
+// 2. Find SQL injection risks
+String sqlRisks = grepTool.grep(
+    &quot;executeQuery.*\\+|createQuery.*\\+&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    2, 2, null, true, null, &quot;java&quot;, null, null, null
+);
+
+// 3. Find XSS vulnerabilities
+String xssRisks = grepTool.grep(
+    &quot;innerHTML|eval\\(|document\\.write&quot;,
+    &quot;./src&quot;,
+    &quot;**/*.{js,jsx,ts,tsx}&quot;,
+    OutputMode.content,
+    1, 1, null, true, null, null, null, null, null
+);
+
+// 4. Find unsafe deserialization
+String deserializationRisks = grepTool.grep(
+    &quot;readObject|XMLDecoder|Yaml\\.load&quot;,
+    &quot;./src&quot;,
+    null,
+    OutputMode.content,
+    2, 2, null, true, null, &quot;java&quot;, null, null, null
+);
+</code></pre>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../FileSystemTools/">FileSystemTools</a> - For reading files found by grep</li>
+<li><a href="../ShellTools/">ShellTools</a> - For running system grep if needed</li>
+<li><a href="../SkillsTool/">SkillsTool</a> - For creating code analysis skills</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

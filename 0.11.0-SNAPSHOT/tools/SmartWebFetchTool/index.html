@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>SmartWebFetchTool - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SmartWebFetchTool";
+        var mkdocs_page_input_path = "tools/SmartWebFetchTool.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SmartWebFetchTool</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/SmartWebFetchTool.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="smartwebfetchtool">SmartWebFetchTool<a class="headerlink" href="#smartwebfetchtool" title="Permanent link">&para;</a></h1>
+<p>AI-powered web content fetching and summarization tool with intelligent caching and safety features. Fetches web pages, converts HTML to Markdown, and uses AI to extract relevant information based on a user prompt.</p>
+<p><strong>Features:</strong>
+- HTML to Markdown conversion for clean content processing
+- 15-minute TTL cache for faster repeated access to the same URLs
+- Automatic retry with exponential backoff on network failures and 5xx errors
+- Optional domain safety checking via Claude's domain info API
+- Configurable content length limits with automatic truncation
+- Fail-open/fail-closed security modes for safety check errors
+- Proper charset detection and handling
+- Thread-safe concurrent cache access</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The <code>SmartWebFetchTool</code> retrieves content from URLs and processes it using an AI model for intelligent summarization. Unlike simple HTTP clients, it:
+1. Fetches HTML content using HTTP GET
+2. Converts HTML to clean Markdown format
+3. Uses AI to extract information relevant to your specific prompt
+4. Caches results for 15 minutes to avoid redundant requests
+5. Automatically retries on transient failures</p>
+<p>This tool implements <code>AutoCloseable</code> for proper resource cleanup.</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">// Build with required ChatClient
+SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient).build();
+
+// Fetch and summarize web content
+String result = webFetch.webFetch(
+    &quot;https://docs.spring.io/spring-ai/reference/&quot;,
+    &quot;What are the key features of Spring AI?&quot;
+);
+
+System.out.println(result);
+// Output: &quot;Spring AI provides integration with various AI models including...&quot;
+</code></pre>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="required-parameters">Required Parameters<a class="headerlink" href="#required-parameters" title="Permanent link">&para;</a></h3>
+<p><strong><code>chatClient</code></strong> - The ChatClient instance used for AI-powered summarization</p>
+<pre><code class="language-java">SmartWebFetchTool.builder(chatClient)
+    .build();
+</code></pre>
+<h3 id="optional-parameters">Optional Parameters<a class="headerlink" href="#optional-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxContentLength</code></td>
+<td>100,000</td>
+<td>Maximum characters to process; content is truncated with warning</td>
+</tr>
+<tr>
+<td><code>domainSafetyCheck</code></td>
+<td>true</td>
+<td>Enable domain safety verification before fetching</td>
+</tr>
+<tr>
+<td><code>failOpenOnSafetyCheckError</code></td>
+<td>true</td>
+<td>Allow fetch if safety check fails (true) or block (false)</td>
+</tr>
+<tr>
+<td><code>maxCacheSize</code></td>
+<td>100</td>
+<td>Maximum number of URL+prompt combinations to cache</td>
+</tr>
+<tr>
+<td><code>maxRetries</code></td>
+<td>2</td>
+<td>Maximum retry attempts for transient network failures</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example with all options:</strong></p>
+<pre><code class="language-java">SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient)
+    .maxContentLength(150_000)           // Process up to 150KB
+    .domainSafetyCheck(true)             // Check domain safety
+    .failOpenOnSafetyCheckError(true)    // Allow fetch if safety check errors
+    .maxCacheSize(200)                   // Cache up to 200 entries
+    .maxRetries(3)                       // Retry up to 3 times
+    .build();
+</code></pre>
+<h2 id="configuration-details">Configuration Details<a class="headerlink" href="#configuration-details" title="Permanent link">&para;</a></h2>
+<h3 id="max-content-length">Max Content Length<a class="headerlink" href="#max-content-length" title="Permanent link">&para;</a></h3>
+<p>Controls the maximum number of characters processed from the fetched content. Content exceeding this limit is truncated with a warning logged.</p>
+<pre><code class="language-java">SmartWebFetchTool.builder(chatClient)
+    .maxContentLength(50_000)  // For small articles
+    .build();
+
+SmartWebFetchTool.builder(chatClient)
+    .maxContentLength(200_000)  // For long documentation
+    .build();
+</code></pre>
+<p><strong>Use Cases:</strong>
+- Smaller limits (50K-100K): Blog posts, news articles
+- Medium limits (100K-150K): Technical documentation
+- Larger limits (150K-200K): Comprehensive guides, API references</p>
+<h3 id="domain-safety-check">Domain Safety Check<a class="headerlink" href="#domain-safety-check" title="Permanent link">&para;</a></h3>
+<p>Verifies domain safety using Claude's domain info API before fetching content.</p>
+<pre><code class="language-java">// Enable safety checks (default)
+SmartWebFetchTool.builder(chatClient)
+    .domainSafetyCheck(true)
+    .build();
+
+// Disable for trusted internal URLs
+SmartWebFetchTool.builder(chatClient)
+    .domainSafetyCheck(false)
+    .build();
+</code></pre>
+<p><strong>When to disable:</strong>
+- Internal company documentation
+- Localhost development servers
+- Known trusted domains in controlled environments</p>
+<h3 id="fail-open-vs-fail-closed">Fail-Open vs Fail-Closed<a class="headerlink" href="#fail-open-vs-fail-closed" title="Permanent link">&para;</a></h3>
+<p>Controls behavior when domain safety check encounters an error (not a failed check, but an error performing the check).</p>
+<pre><code class="language-java">// Fail-open: Allow fetch if safety check errors (default, more permissive)
+SmartWebFetchTool.builder(chatClient)
+    .failOpenOnSafetyCheckError(true)
+    .build();
+
+// Fail-closed: Block fetch if safety check errors (more secure)
+SmartWebFetchTool.builder(chatClient)
+    .failOpenOnSafetyCheckError(false)
+    .build();
+</code></pre>
+<p><strong>Security Trade-offs:</strong>
+- <strong>Fail-open (true)</strong>: Better availability, accepts risk if safety service is down
+- <strong>Fail-closed (false)</strong>: Better security, blocks all fetches if safety service fails</p>
+<h3 id="max-retries">Max Retries<a class="headerlink" href="#max-retries" title="Permanent link">&para;</a></h3>
+<p>Configures automatic retry attempts for network failures and 5xx server errors with exponential backoff.</p>
+<pre><code class="language-java">SmartWebFetchTool.builder(chatClient)
+    .maxRetries(0)  // No retries, fail immediately
+    .build();
+
+SmartWebFetchTool.builder(chatClient)
+    .maxRetries(2)  // Default: retry twice (3 total attempts)
+    .build();
+
+SmartWebFetchTool.builder(chatClient)
+    .maxRetries(5)  // Aggressive retries for unreliable networks
+    .build();
+</code></pre>
+<p><strong>Backoff Strategy:</strong>
+- Attempt 1: Immediate
+- Attempt 2: Wait 1 second
+- Attempt 3: Wait 2 seconds
+- Attempt 4: Wait 4 seconds
+- Attempt N: Wait 2^(N-1) seconds</p>
+<h2 id="caching-behavior">Caching Behavior<a class="headerlink" href="#caching-behavior" title="Permanent link">&para;</a></h2>
+<p>The tool implements a sophisticated caching system to improve performance and reduce redundant network requests.</p>
+<h3 id="cache-key-structure">Cache Key Structure<a class="headerlink" href="#cache-key-structure" title="Permanent link">&para;</a></h3>
+<p>Cache keys include <strong>both</strong> the URL and the prompt:</p>
+<pre><code>url::prompt::promptHashCode
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-java">// These create DIFFERENT cache entries
+webFetch.webFetch(&quot;https://example.com&quot;, &quot;What is the main topic?&quot;);
+webFetch.webFetch(&quot;https://example.com&quot;, &quot;List all features&quot;);
+
+// This reuses the FIRST cache entry (same URL + prompt)
+webFetch.webFetch(&quot;https://example.com&quot;, &quot;What is the main topic?&quot;);
+</code></pre>
+<h3 id="time-to-live-ttl">Time-To-Live (TTL)<a class="headerlink" href="#time-to-live-ttl" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>TTL</strong>: 15 minutes per cache entry</li>
+<li><strong>Cleanup</strong>: Automatic when cache size exceeds <code>maxCacheSize</code></li>
+<li><strong>Thread Safety</strong>: Concurrent access is safe</li>
+</ul>
+<h3 id="cache-management">Cache Management<a class="headerlink" href="#cache-management" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Configure cache size
+SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient)
+    .maxCacheSize(500)  // Cache up to 500 URL+prompt combinations
+    .build();
+
+// Cache is automatically cleared on close
+try (SmartWebFetchTool tool = SmartWebFetchTool.builder(chatClient).build()) {
+    // Use tool
+}
+// Cache cleared here
+</code></pre>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>The tool provides comprehensive error handling with descriptive messages.</p>
+<h3 id="common-error-scenarios">Common Error Scenarios<a class="headerlink" href="#common-error-scenarios" title="Permanent link">&para;</a></h3>
+<p><strong>Invalid URL:</strong></p>
+<pre><code class="language-java">webFetch.webFetch(&quot;not-a-url&quot;, &quot;Summarize&quot;);
+// Returns: &quot;Error: Invalid URL format. Please provide a fully-formed URL (e.g., https://example.com)&quot;
+</code></pre>
+<p><strong>Empty URL:</strong></p>
+<pre><code class="language-java">webFetch.webFetch(&quot;&quot;, &quot;Summarize&quot;);
+// Returns: &quot;Error: URL cannot be empty or null&quot;
+</code></pre>
+<p><strong>Network Error:</strong></p>
+<pre><code class="language-java">webFetch.webFetch(&quot;https://nonexistent-domain-xyz123.com&quot;, &quot;Summarize&quot;);
+// Returns: &quot;Error fetching URL: Network error while fetching URL: ...&quot;
+</code></pre>
+<p><strong>HTTP Error:</strong></p>
+<pre><code class="language-java">webFetch.webFetch(&quot;https://example.com/404-page&quot;, &quot;Summarize&quot;);
+// Returns: &quot;Error: Failed to fetch URL. HTTP status code: 404&quot;
+</code></pre>
+<p><strong>Domain Safety Failure:</strong></p>
+<pre><code class="language-java">SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient)
+    .domainSafetyCheck(true)
+    .build();
+
+webFetch.webFetch(&quot;https://unsafe-domain.com&quot;, &quot;Summarize&quot;);
+// Returns: &quot;Domain safety check failed for URL 'https://unsafe-domain.com': The domain is not safe to fetch content from.&quot;
+</code></pre>
+<h3 id="retry-behavior">Retry Behavior<a class="headerlink" href="#retry-behavior" title="Permanent link">&para;</a></h3>
+<p>The tool automatically retries on:
+- Network errors (IOException)
+- Server errors (5xx status codes)</p>
+<p><strong>It does NOT retry on:</strong>
+- 4xx client errors (bad request, not found, unauthorized, etc.)
+- Invalid URL format
+- Failed domain safety checks
+- Interrupted requests</p>
+<h2 id="resource-management">Resource Management<a class="headerlink" href="#resource-management" title="Permanent link">&para;</a></h2>
+<p>The tool implements <code>AutoCloseable</code> for proper cleanup.</p>
+<h3 id="try-with-resources-recommended">Try-with-Resources (Recommended)<a class="headerlink" href="#try-with-resources-recommended" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">try (SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient).build()) {
+    String result = webFetch.webFetch(url, prompt);
+    System.out.println(result);
+}
+// Cache automatically cleared, resources released
+</code></pre>
+<h3 id="manual-cleanup">Manual Cleanup<a class="headerlink" href="#manual-cleanup" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient).build();
+try {
+    String result = webFetch.webFetch(url, prompt);
+} finally {
+    webFetch.close();  // Clear cache
+}
+</code></pre>
+<h2 id="integration-examples">Integration Examples<a class="headerlink" href="#integration-examples" title="Permanent link">&para;</a></h2>
+<h3 id="spring-boot-configuration">Spring Boot Configuration<a class="headerlink" href="#spring-boot-configuration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class ToolsConfig {
+
+    @Bean
+    public SmartWebFetchTool smartWebFetchTool(ChatClient.Builder chatClientBuilder) {
+        ChatClient chatClient = chatClientBuilder.build();
+
+        return SmartWebFetchTool.builder(chatClient)
+            .maxContentLength(150_000)
+            .domainSafetyCheck(true)
+            .failOpenOnSafetyCheckError(true)
+            .maxCacheSize(100)
+            .maxRetries(2)
+            .build();
+    }
+}
+</code></pre>
+<h3 id="chatclient-integration">ChatClient Integration<a class="headerlink" href="#chatclient-integration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultTools(SmartWebFetchTool.builder(chatClient)
+        .domainSafetyCheck(false)  // Disable for internal docs
+        .maxRetries(3)             // More retries for reliability
+        .build())
+    .build();
+
+// AI can now use web fetch automatically
+String response = chatClient.prompt()
+    .user(&quot;Search for Spring AI documentation and tell me about vector stores&quot;)
+    .call()
+    .content();
+</code></pre>
+<h3 id="custom-prompts">Custom Prompts<a class="headerlink" href="#custom-prompts" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient).build();
+
+// Extract specific information
+String features = webFetch.webFetch(
+    &quot;https://spring.io/projects/spring-ai&quot;,
+    &quot;List all supported AI model providers&quot;
+);
+
+// Compare content
+String comparison = webFetch.webFetch(
+    &quot;https://example.com/product-a&quot;,
+    &quot;What are the pricing tiers and features for each tier?&quot;
+);
+
+// Technical analysis
+String analysis = webFetch.webFetch(
+    &quot;https://github.com/spring-projects/spring-ai&quot;,
+    &quot;What programming languages and frameworks are used in this project?&quot;
+);
+</code></pre>
+<h2 id="advanced-use-cases">Advanced Use Cases<a class="headerlink" href="#advanced-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="multiple-sources">Multiple Sources<a class="headerlink" href="#multiple-sources" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SmartWebFetchTool webFetch = SmartWebFetchTool.builder(chatClient)
+    .maxCacheSize(500)  // Large cache for multiple URLs
+    .build();
+
+String[] urls = {
+    &quot;https://docs.spring.io/spring-ai/reference/&quot;,
+    &quot;https://docs.spring.io/spring-boot/reference/&quot;,
+    &quot;https://docs.spring.io/spring-framework/reference/&quot;
+};
+
+for (String url : urls) {
+    String summary = webFetch.webFetch(url, &quot;What are the main features?&quot;);
+    System.out.println(&quot;Summary for &quot; + url + &quot;:\n&quot; + summary + &quot;\n&quot;);
+}
+</code></pre>
+<h3 id="different-prompts-same-url">Different Prompts Same URL<a class="headerlink" href="#different-prompts-same-url" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String url = &quot;https://example.com/api-docs&quot;;
+
+// Cache miss - fetches and caches
+String overview = webFetch.webFetch(url, &quot;Provide an overview&quot;);
+
+// Cache miss - different prompt, fetches again
+String endpoints = webFetch.webFetch(url, &quot;List all API endpoints&quot;);
+
+// Cache hit - same URL and prompt
+String overview2 = webFetch.webFetch(url, &quot;Provide an overview&quot;);
+</code></pre>
+<h3 id="internal-documentation">Internal Documentation<a class="headerlink" href="#internal-documentation" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Optimized for internal trusted sources
+SmartWebFetchTool internalWebFetch = SmartWebFetchTool.builder(chatClient)
+    .domainSafetyCheck(false)        // Skip safety for internal URLs
+    .maxRetries(1)                   // Fewer retries for fast network
+    .maxContentLength(200_000)       // Large docs expected
+    .build();
+
+String docs = internalWebFetch.webFetch(
+    &quot;http://internal-docs.company.local/api-spec&quot;,
+    &quot;Summarize the authentication requirements&quot;
+);
+</code></pre>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="domain-safety-api">Domain Safety API<a class="headerlink" href="#domain-safety-api" title="Permanent link">&para;</a></h3>
+<p>The tool uses Claude's domain info API (<code>https://claude.ai/api/web/domain_info</code>) to verify domain safety before fetching.</p>
+<p><strong>Safety Check Process:</strong>
+1. Extract domain from URL
+2. Query Claude's API with domain
+3. Receive <code>can_fetch</code> boolean response
+4. Block or allow based on response and configuration</p>
+<p><strong>Disable if:</strong>
+- Fetching from trusted internal domains
+- Behind corporate firewall with controlled access
+- Using allowlist of known-safe domains</p>
+<h3 id="read-only-operations">Read-Only Operations<a class="headerlink" href="#read-only-operations" title="Permanent link">&para;</a></h3>
+<p>The tool only performs HTTP GET requests and does not:
+- Modify any local files
+- Send data to fetched URLs (except HTTP headers)
+- Execute JavaScript or active content
+- Store credentials or sensitive data</p>
+<h3 id="user-agent-and-headers">User-Agent and Headers<a class="headerlink" href="#user-agent-and-headers" title="Permanent link">&para;</a></h3>
+<p>Standard browser headers are sent for compatibility:
+- User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)...
+- Accept: text/html,application/xhtml+xml,application/xml
+- Accept-Language: en-US,en;q=0.5</p>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<h3 id="optimize-cache-size">Optimize Cache Size<a class="headerlink" href="#optimize-cache-size" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Small application, limited URLs
+SmartWebFetchTool.builder(chatClient).maxCacheSize(50).build();
+
+// Large application, many URLs/prompts
+SmartWebFetchTool.builder(chatClient).maxCacheSize(500).build();
+</code></pre>
+<h3 id="content-length-limits">Content Length Limits<a class="headerlink" href="#content-length-limits" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Fast responses for short content
+SmartWebFetchTool.builder(chatClient).maxContentLength(50_000).build();
+
+// Comprehensive extraction for long content
+SmartWebFetchTool.builder(chatClient).maxContentLength(200_000).build();
+</code></pre>
+<h3 id="retry-strategy">Retry Strategy<a class="headerlink" href="#retry-strategy" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Fast-fail for time-sensitive operations
+SmartWebFetchTool.builder(chatClient).maxRetries(0).build();
+
+// Resilient for unreliable networks
+SmartWebFetchTool.builder(chatClient).maxRetries(5).build();
+</code></pre>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Read-only</strong>: Only HTTP GET requests supported</li>
+<li><strong>No authentication</strong>: Basic auth, OAuth, or API keys not supported in headers</li>
+<li><strong>No cookies</strong>: Stateless requests, no session management</li>
+<li><strong>No JavaScript</strong>: Static HTML only, no dynamic content rendering</li>
+<li><strong>No redirects to different hosts</strong>: Automatically follows same-host redirects only</li>
+<li><strong>Text content</strong>: Optimized for HTML/text, binary content not supported</li>
+<li><strong>English-focused</strong>: AI summarization works best with English content</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="domain-safety-check-failed">"Domain safety check failed"<a class="headerlink" href="#domain-safety-check-failed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Disable safety checks if fetching internal/trusted URLs</li>
+<li>Set <code>failOpenOnSafetyCheckError(true)</code> to allow fetch on check errors</li>
+</ul>
+<h3 id="content-too-long-truncating">"Content too long, truncating"<a class="headerlink" href="#content-too-long-truncating" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Increase <code>maxContentLength</code> if you need more content</li>
+<li>Or refine your prompt to extract specific information</li>
+</ul>
+<h3 id="failed-after-n-attempts">"Failed after N attempts"<a class="headerlink" href="#failed-after-n-attempts" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Check network connectivity</li>
+<li>Verify URL is accessible</li>
+<li>Increase <code>maxRetries</code> for unreliable connections</li>
+</ul>
+<h3 id="cache-not-working-as-expected">Cache not working as expected<a class="headerlink" href="#cache-not-working-as-expected" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Remember cache includes both URL AND prompt</li>
+<li>Check if 15-minute TTL has expired</li>
+<li>Verify cache hasn't exceeded <code>maxCacheSize</code> (causing eviction)</li>
+</ul>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../FileSystemTools/">FileSystemTools</a> - For file operations</li>
+<li><a href="../ShellTools/">ShellTools</a> - For shell command execution</li>
+<li><a href="../BraveWebSearchTool/">BraveWebSearchTool</a> - For web search capabilities</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

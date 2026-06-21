@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>GlobTool - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "GlobTool";
+        var mkdocs_page_input_path = "tools/GlobTool.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">GlobTool</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/GlobTool.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="globtool">GlobTool<a class="headerlink" href="#globtool" title="Permanent link">&para;</a></h1>
+<p>A pure Java implementation of glob pattern matching for finding files by name. Fast, cross-platform, and optimized for AI agents to discover files in codebases of any size.</p>
+<p><strong>Features:</strong>
+- Fast file pattern matching with glob syntax
+- Returns files sorted by modification time (most recent first)
+- Supports simple patterns (<code>*.java</code>) and complex patterns (<code>**/*.tsx</code>)
+- Automatic filtering of common directories (.git, node_modules, target, etc.)
+- Configurable depth and result limits
+- Pure Java implementation - no external dependencies
+- Thread-safe for concurrent use</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The <code>GlobTool</code> is a Spring AI tool that enables AI agents to quickly find files by name patterns. Unlike grep which searches file contents, glob searches file names and paths, making it ideal for file discovery.</p>
+<p><strong>Why use GlobTool?</strong>
+- <strong>Fast file discovery</strong>: Optimized for finding files by name patterns
+- <strong>AI-optimized</strong>: Returns results sorted by modification time (recent files first)
+- <strong>Zero dependencies</strong>: No need to install external tools
+- <strong>Smart filtering</strong>: Automatically ignores build artifacts and version control directories</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">// Build with default configuration
+GlobTool globTool = GlobTool.builder().build();
+
+// Find files by pattern
+String files = globTool.glob(
+    &quot;*.java&quot;,           // pattern
+    &quot;./src&quot;             // path (optional, defaults to current directory)
+);
+</code></pre>
+<h3 id="custom-configuration">Custom Configuration<a class="headerlink" href="#custom-configuration" title="Permanent link">&para;</a></h3>
+<p>For specific requirements, customize the builder:</p>
+<pre><code class="language-java">GlobTool customGlob = GlobTool.builder()
+    .maxDepth(50)       // Maximum directory traversal depth (default: 100)
+    .maxResults(500)    // Maximum number of results to return (default: 1000)
+    .build();
+</code></pre>
+<h2 id="configuration-parameters">Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>maxDepth</code></td>
+<td>100</td>
+<td>Maximum directory traversal depth (prevents infinite recursion)</td>
+</tr>
+<tr>
+<td><code>maxResults</code></td>
+<td>1000</td>
+<td>Maximum number of results to return (limits output size)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to adjust:</strong>
+- <strong>maxDepth</strong>: Decrease for shallow searches (e.g., 10 for root-level only)
+- <strong>maxResults</strong>: Decrease for faster response (e.g., 100 for quick discovery)</p>
+<h2 id="method-parameters">Method Parameters<a class="headerlink" href="#method-parameters" title="Permanent link">&para;</a></h2>
+<p>The <code>glob</code> method signature:</p>
+<pre><code class="language-java">String glob(
+    String pattern,  // Required: Glob pattern to match files
+    String path      // Optional: Directory to search (default: current directory)
+)
+</code></pre>
+<h2 id="glob-patterns">Glob Patterns<a class="headerlink" href="#glob-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="simple-patterns">Simple Patterns<a class="headerlink" href="#simple-patterns" title="Permanent link">&para;</a></h3>
+<p>Match files in any directory (recursively):</p>
+<pre><code class="language-java">// Find all Java files
+String javaFiles = globTool.glob(&quot;*.java&quot;, &quot;./src&quot;);
+
+// Find all TypeScript files
+String tsFiles = globTool.glob(&quot;*.ts&quot;, &quot;./src&quot;);
+
+// Find all markdown files
+String mdFiles = globTool.glob(&quot;*.md&quot;, &quot;.&quot;);
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code>./src/main/java/UserService.java
+./src/main/java/OrderService.java
+./src/test/java/UserServiceTest.java
+</code></pre>
+<h3 id="complex-patterns">Complex Patterns<a class="headerlink" href="#complex-patterns" title="Permanent link">&para;</a></h3>
+<p>Use <code>**</code> for explicit recursive matching:</p>
+<pre><code class="language-java">// Find all Java files (explicit recursion)
+String files = globTool.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+
+// Find all test files
+String tests = globTool.glob(&quot;**/*Test.java&quot;, &quot;./src&quot;);
+
+// Find all React components
+String components = globTool.glob(&quot;**/*Component.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="path-specific-patterns">Path-Specific Patterns<a class="headerlink" href="#path-specific-patterns" title="Permanent link">&para;</a></h3>
+<p>Match files in specific subdirectories:</p>
+<pre><code class="language-java">// Find Java files only in controllers directory
+String controllers = globTool.glob(&quot;**/controllers/*.java&quot;, &quot;./src&quot;);
+
+// Find config files in resources
+String configs = globTool.glob(&quot;**/resources/*.yml&quot;, &quot;./src&quot;);
+
+// Find components in specific package
+String userComponents = globTool.glob(&quot;**/user/**/*.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="wildcard-patterns">Wildcard Patterns<a class="headerlink" href="#wildcard-patterns" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Match all files (any extension)
+String allFiles = globTool.glob(&quot;*&quot;, &quot;./src&quot;);
+
+// Match files starting with &quot;Test&quot;
+String testFiles = globTool.glob(&quot;Test*.java&quot;, &quot;./src&quot;);
+
+// Match files ending with &quot;Service&quot;
+String services = globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="multiple-extensions">Multiple Extensions<a class="headerlink" href="#multiple-extensions" title="Permanent link">&para;</a></h3>
+<p>Note: Java's glob syntax doesn't support <code>{ext1,ext2}</code> syntax like bash. Use separate calls for multiple extensions:</p>
+<pre><code class="language-java">// Find TypeScript files
+String tsFiles = globTool.glob(&quot;*.ts&quot;, &quot;./src&quot;);
+
+// Find TSX files separately
+String tsxFiles = globTool.glob(&quot;*.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="1-find-all-source-files">1. Find All Source Files<a class="headerlink" href="#1-find-all-source-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GlobTool globTool = GlobTool.builder().build();
+
+// Find all Java source files
+String javaSources = globTool.glob(&quot;**/*.java&quot;, &quot;./src/main&quot;);
+
+// Find all test files
+String testFiles = globTool.glob(&quot;**/*Test.java&quot;, &quot;./src/test&quot;);
+
+// Find all configuration files
+String configs = globTool.glob(&quot;**/*.yml&quot;, &quot;./src/main/resources&quot;);
+</code></pre>
+<h3 id="2-find-components-by-name">2. Find Components by Name<a class="headerlink" href="#2-find-components-by-name" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find specific component
+String userComponent = globTool.glob(&quot;**/UserComponent.tsx&quot;, &quot;./src&quot;);
+
+// Find all components
+String allComponents = globTool.glob(&quot;**/*Component.tsx&quot;, &quot;./src&quot;);
+
+// Find all services
+String services = globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="3-find-files-by-directory">3. Find Files by Directory<a class="headerlink" href="#3-find-files-by-directory" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find files in controllers
+String controllers = globTool.glob(&quot;**/controllers/*.java&quot;, &quot;./src&quot;);
+
+// Find files in models
+String models = globTool.glob(&quot;**/models/*.ts&quot;, &quot;./src&quot;);
+
+// Find files in utils
+String utils = globTool.glob(&quot;**/utils/*&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="4-find-recently-modified-files">4. Find Recently Modified Files<a class="headerlink" href="#4-find-recently-modified-files" title="Permanent link">&para;</a></h3>
+<p>Since results are sorted by modification time (most recent first):</p>
+<pre><code class="language-java">// Find recent Java files (limited to 10)
+GlobTool recentGlob = GlobTool.builder()
+    .maxResults(10)
+    .build();
+
+String recentFiles = recentGlob.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+// Returns the 10 most recently modified Java files
+</code></pre>
+<h3 id="5-find-configuration-files">5. Find Configuration Files<a class="headerlink" href="#5-find-configuration-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find property files
+String properties = globTool.glob(&quot;**/*.properties&quot;, &quot;.&quot;);
+
+// Find YAML configs
+String yamlConfigs = globTool.glob(&quot;**/*.yml&quot;, &quot;.&quot;);
+
+// Find JSON configs
+String jsonConfigs = globTool.glob(&quot;**/*.json&quot;, &quot;.&quot;);
+</code></pre>
+<h3 id="6-find-documentation">6. Find Documentation<a class="headerlink" href="#6-find-documentation" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all markdown files
+String docs = globTool.glob(&quot;**/*.md&quot;, &quot;.&quot;);
+
+// Find README files
+String readmes = globTool.glob(&quot;**/README.md&quot;, &quot;.&quot;);
+
+// Find files in docs directory
+String docFiles = globTool.glob(&quot;docs/**/*&quot;, &quot;.&quot;);
+</code></pre>
+<h2 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h2>
+<p>The tool returns a newline-separated list of file paths, sorted by modification time (most recent first):</p>
+<pre><code>./src/main/java/controllers/UserController.java
+./src/main/java/services/UserService.java
+./src/main/java/repositories/UserRepository.java
+./src/test/java/controllers/UserControllerTest.java
+</code></pre>
+<p><strong>No matches:</strong></p>
+<pre><code>No files found matching pattern: *.xyz
+</code></pre>
+<p><strong>Error cases:</strong></p>
+<pre><code>Error: Path does not exist: /invalid/path
+Error: Path is not a directory: /path/to/file.txt
+</code></pre>
+<h2 id="filtered-directories">Filtered Directories<a class="headerlink" href="#filtered-directories" title="Permanent link">&para;</a></h2>
+<p>The tool automatically ignores common directories to improve performance:</p>
+<ul>
+<li><code>.git</code> - Git version control</li>
+<li><code>node_modules</code> - Node.js dependencies</li>
+<li><code>target</code> - Maven build output</li>
+<li><code>build</code> - Gradle build output</li>
+<li><code>.idea</code> - IntelliJ IDEA settings</li>
+<li><code>.vscode</code> - VS Code settings</li>
+<li><code>dist</code> - Distribution builds</li>
+<li><code>__pycache__</code> - Python cache</li>
+</ul>
+<p>These directories are skipped during traversal, making searches faster and avoiding irrelevant files.</p>
+<h2 id="spring-boot-integration">Spring Boot Integration<a class="headerlink" href="#spring-boot-integration" title="Permanent link">&para;</a></h2>
+<h3 id="basic-configuration">Basic Configuration<a class="headerlink" href="#basic-configuration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class ToolsConfig {
+
+    @Bean
+    public GlobTool globTool() {
+        return GlobTool.builder().build();
+    }
+}
+</code></pre>
+<h3 id="custom-configuration_1">Custom Configuration<a class="headerlink" href="#custom-configuration_1" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class ToolsConfig {
+
+    @Value(&quot;${glob.max-depth:50}&quot;)
+    private int maxDepth;
+
+    @Value(&quot;${glob.max-results:500}&quot;)
+    private int maxResults;
+
+    @Bean
+    public GlobTool globTool() {
+        return GlobTool.builder()
+            .maxDepth(maxDepth)
+            .maxResults(maxResults)
+            .build();
+    }
+}
+</code></pre>
+<p><strong>application.properties:</strong></p>
+<pre><code class="language-properties"># GlobTool configuration
+glob.max-depth=50
+glob.max-results=500
+</code></pre>
+<h3 id="chatclient-integration">ChatClient Integration<a class="headerlink" href="#chatclient-integration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class AgentConfig {
+
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+        return chatClientBuilder
+            .defaultTools(GlobTool.builder().build())
+            .defaultTools(FileSystemTools.builder().build())
+            .defaultTools(GrepTool.builder().build())
+            .build();
+    }
+}
+</code></pre>
+<p><strong>Usage with AI agent:</strong></p>
+<pre><code class="language-java">ChatClient chatClient = ...; // from bean
+
+String response = chatClient.prompt()
+    .user(&quot;Find all TypeScript components in the src directory&quot;)
+    .call()
+    .content();
+// AI automatically uses GlobTool to find files
+</code></pre>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-use-specific-patterns">1. Use Specific Patterns<a class="headerlink" href="#1-use-specific-patterns" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Specific pattern
+globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+
+// ❌ TOO BROAD: May return too many files
+globTool.glob(&quot;**/*&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="2-narrow-the-search-path">2. Narrow the Search Path<a class="headerlink" href="#2-narrow-the-search-path" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Search specific directory
+globTool.glob(&quot;*.java&quot;, &quot;./src/main/java/com/example/services&quot;);
+
+// ❌ WASTEFUL: Search entire project
+globTool.glob(&quot;*.java&quot;, &quot;.&quot;);
+</code></pre>
+<h3 id="3-use-simple-patterns-when-possible">3. Use Simple Patterns When Possible<a class="headerlink" href="#3-use-simple-patterns-when-possible" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Simple pattern is faster
+globTool.glob(&quot;*.java&quot;, &quot;./src&quot;);
+
+// ⚠️ UNNECESSARY: Explicit ** is redundant for simple extensions
+globTool.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+// Both work the same, but simple pattern is clearer
+</code></pre>
+<h3 id="4-limit-results-for-quick-discovery">4. Limit Results for Quick Discovery<a class="headerlink" href="#4-limit-results-for-quick-discovery" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Limit results for faster response
+GlobTool quickGlob = GlobTool.builder()
+    .maxResults(50)
+    .build();
+
+quickGlob.glob(&quot;*.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="5-combine-with-greptool">5. Combine with GrepTool<a class="headerlink" href="#5-combine-with-greptool" title="Permanent link">&para;</a></h3>
+<p>Use GlobTool to find files, then GrepTool to search contents:</p>
+<pre><code class="language-java">// Find all service files
+String serviceFiles = globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+
+// Then search contents
+String todoServices = grepTool.grep(&quot;TODO&quot;, &quot;./src&quot;, &quot;**/*Service.java&quot;,
+    OutputMode.files_with_matches, null, null, null, null, null, null, null, null, null);
+</code></pre>
+<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-find-all-controllers">Example 1: Find All Controllers<a class="headerlink" href="#example-1-find-all-controllers" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GlobTool globTool = GlobTool.builder().build();
+
+// Find REST controllers
+String controllers = globTool.glob(&quot;**/*Controller.java&quot;, &quot;./src&quot;);
+
+// Find Spring MVC controllers
+String mvcControllers = globTool.glob(&quot;**/controllers/*.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="example-2-find-configuration-files">Example 2: Find Configuration Files<a class="headerlink" href="#example-2-find-configuration-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all application configs
+String configs = globTool.glob(&quot;application*.yml&quot;, &quot;./src/main/resources&quot;);
+
+// Find all property files
+String properties = globTool.glob(&quot;**/*.properties&quot;, &quot;./src/main/resources&quot;);
+</code></pre>
+<h3 id="example-3-find-test-files">Example 3: Find Test Files<a class="headerlink" href="#example-3-find-test-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find all test files
+String allTests = globTool.glob(&quot;**/*Test.java&quot;, &quot;./src/test&quot;);
+
+// Find integration tests
+String integrationTests = globTool.glob(&quot;**/*IT.java&quot;, &quot;./src/test&quot;);
+
+// Find specific test
+String userTests = globTool.glob(&quot;**/UserServiceTest.java&quot;, &quot;./src/test&quot;);
+</code></pre>
+<h3 id="example-4-find-frontend-components">Example 4: Find Frontend Components<a class="headerlink" href="#example-4-find-frontend-components" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find React components
+String reactComponents = globTool.glob(&quot;**/*.tsx&quot;, &quot;./src&quot;);
+
+// Find Vue components
+String vueComponents = globTool.glob(&quot;**/*.vue&quot;, &quot;./src&quot;);
+
+// Find pages
+String pages = globTool.glob(&quot;**/pages/*.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="example-5-project-structure-analysis">Example 5: Project Structure Analysis<a class="headerlink" href="#example-5-project-structure-analysis" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GlobTool globTool = GlobTool.builder().build();
+
+// Count Java files
+String javaFiles = globTool.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+int javaCount = javaFiles.split(&quot;\n&quot;).length;
+
+// Count TypeScript files
+String tsFiles = globTool.glob(&quot;**/*.ts&quot;, &quot;./src&quot;);
+int tsCount = tsFiles.split(&quot;\n&quot;).length;
+
+// Find build files
+String buildFiles = globTool.glob(&quot;**/pom.xml&quot;, &quot;.&quot;);
+String gradleFiles = globTool.glob(&quot;**/build.gradle&quot;, &quot;.&quot;);
+</code></pre>
+<h3 id="example-6-find-recently-modified-files">Example 6: Find Recently Modified Files<a class="headerlink" href="#example-6-find-recently-modified-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find 20 most recently modified Java files
+GlobTool recentGlob = GlobTool.builder()
+    .maxResults(20)
+    .build();
+
+String recentFiles = recentGlob.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+// Results are sorted by modification time (newest first)
+</code></pre>
+<h2 id="advanced-configuration">Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="shallow-search">Shallow Search<a class="headerlink" href="#shallow-search" title="Permanent link">&para;</a></h3>
+<p>For quick searches in shallow directory structures:</p>
+<pre><code class="language-java">GlobTool shallowGlob = GlobTool.builder()
+    .maxDepth(3)        // Only search 3 levels deep
+    .maxResults(100)    // Limit to 100 files
+    .build();
+
+String files = shallowGlob.glob(&quot;*.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="large-codebase">Large Codebase<a class="headerlink" href="#large-codebase" title="Permanent link">&para;</a></h3>
+<p>For large codebases where you need more results:</p>
+<pre><code class="language-java">GlobTool largeGlob = GlobTool.builder()
+    .maxDepth(200)      // Deep traversal
+    .maxResults(5000)   // More results
+    .build();
+
+String files = largeGlob.glob(&quot;**/*.java&quot;, &quot;.&quot;);
+</code></pre>
+<h3 id="quick-discovery">Quick Discovery<a class="headerlink" href="#quick-discovery" title="Permanent link">&para;</a></h3>
+<p>For fast file discovery (find first matching files quickly):</p>
+<pre><code class="language-java">GlobTool quickGlob = GlobTool.builder()
+    .maxResults(10)     // Stop after 10 files
+    .build();
+
+String files = quickGlob.glob(&quot;*Component.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<h3 id="1-use-narrow-paths">1. Use Narrow Paths<a class="headerlink" href="#1-use-narrow-paths" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Narrow search path
+globTool.glob(&quot;*.java&quot;, &quot;./src/main/java/com/example&quot;);
+
+// ❌ SLOW: Unnecessarily broad
+globTool.glob(&quot;*.java&quot;, &quot;.&quot;);
+</code></pre>
+<h3 id="2-limit-results">2. Limit Results<a class="headerlink" href="#2-limit-results" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Limit results when you don't need all matches
+GlobTool limitedGlob = GlobTool.builder()
+    .maxResults(50)
+    .build();
+</code></pre>
+<h3 id="3-use-specific-patterns">3. Use Specific Patterns<a class="headerlink" href="#3-use-specific-patterns" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Specific pattern reduces matches
+globTool.glob(&quot;**/UserService.java&quot;, &quot;./src&quot;);
+
+// ❌ SLOWER: Too broad
+globTool.glob(&quot;**/*&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="4-reduce-depth-for-flat-structures">4. Reduce Depth for Flat Structures<a class="headerlink" href="#4-reduce-depth-for-flat-structures" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Shallow search for flat directories
+GlobTool shallowGlob = GlobTool.builder()
+    .maxDepth(2)
+    .build();
+
+shallowGlob.glob(&quot;*.md&quot;, &quot;./docs&quot;);
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="no-files-found">No Files Found<a class="headerlink" href="#no-files-found" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Search returns "No files found" when you expect matches</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><strong>Check pattern syntax:</strong>
+   ```java
+   // Simple extension pattern
+   globTool.glob("*.java", "./src");</li>
+</ol>
+<p>// Explicit recursive pattern
+   globTool.glob("*<em>/</em>.java", "./src");
+   ```</p>
+<ol>
+<li>
+<p><strong>Verify path exists:</strong>
+   <code>java
+   // Use absolute path to be sure
+   globTool.glob("*.java", "/full/path/to/src");</code></p>
+</li>
+<li>
+<p><strong>Check if files are in ignored directories:</strong></p>
+</li>
+<li>Files in <code>.git</code>, <code>node_modules</code>, <code>target</code>, etc. are automatically filtered</li>
+<li>Search in more specific directories if needed</li>
+</ol>
+<h3 id="too-many-results">Too Many Results<a class="headerlink" href="#too-many-results" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Returns more files than needed</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><strong>Use more specific pattern:</strong>
+   ```java
+   // Instead of all files
+   globTool.glob("*<em>/</em>", "./src");</li>
+</ol>
+<p>// Be specific
+   globTool.glob("*<em>/</em>Service.java", "./src");
+   ```</p>
+<ol>
+<li>
+<p><strong>Limit results:</strong>
+   <code>java
+   GlobTool limitedGlob = GlobTool.builder()
+       .maxResults(100)
+       .build();</code></p>
+</li>
+<li>
+<p><strong>Narrow search path:</strong>
+   ```java
+   // Instead of root
+   globTool.glob("*.java", ".");</p>
+</li>
+</ol>
+<p>// Search specific directory
+   globTool.glob("*.java", "./src/main/java");
+   ```</p>
+<h3 id="path-does-not-exist">Path Does Not Exist<a class="headerlink" href="#path-does-not-exist" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Error message about non-existent path</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Check path spelling:</strong>
+   <code>java
+   // Verify the path exists
+   globTool.glob("*.java", "./src");  // correct
+   globTool.glob("*.java", "./scr");  // typo!</code></p>
+</li>
+<li>
+<p><strong>Use relative path from current directory:</strong>
+   <code>java
+   // Relative to current working directory
+   globTool.glob("*.java", "./src");</code></p>
+</li>
+<li>
+<p><strong>Use absolute path:</strong>
+   <code>java
+   globTool.glob("*.java", "/absolute/path/to/src");</code></p>
+</li>
+</ol>
+<h3 id="path-is-not-a-directory">Path Is Not a Directory<a class="headerlink" href="#path-is-not-a-directory" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Provided path is a file, not a directory</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-java">// ❌ WRONG: File path
+globTool.glob(&quot;*.java&quot;, &quot;./src/Main.java&quot;);
+
+// ✅ CORRECT: Directory path
+globTool.glob(&quot;*.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="results-not-sorted-as-expected">Results Not Sorted as Expected<a class="headerlink" href="#results-not-sorted-as-expected" title="Permanent link">&para;</a></h3>
+<p><strong>Note:</strong> Results are automatically sorted by modification time (most recent first). If you need different sorting, process the results:</p>
+<pre><code class="language-java">String files = globTool.glob(&quot;*.java&quot;, &quot;./src&quot;);
+List&lt;String&gt; fileList = Arrays.asList(files.split(&quot;\n&quot;));
+Collections.sort(fileList);  // Sort alphabetically
+</code></pre>
+<h2 id="comparison-with-greptool">Comparison with GrepTool<a class="headerlink" href="#comparison-with-greptool" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>GlobTool</th>
+<th>GrepTool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search by</strong></td>
+<td>File names/paths</td>
+<td>File contents</td>
+</tr>
+<tr>
+<td><strong>Pattern type</strong></td>
+<td>Glob patterns</td>
+<td>Regex patterns</td>
+</tr>
+<tr>
+<td><strong>Use case</strong></td>
+<td>Finding files by name</td>
+<td>Searching code/text</td>
+</tr>
+<tr>
+<td><strong>Speed</strong></td>
+<td>Very fast</td>
+<td>Slower (reads files)</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td>File paths</td>
+<td>Files, counts, or content</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>File discovery</td>
+<td>Code search</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use GlobTool:</strong>
+- Finding files by name or extension
+- Locating specific components/classes
+- Quick file discovery
+- Getting list of files to process</p>
+<p><strong>When to use GrepTool:</strong>
+- Searching file contents
+- Finding code patterns
+- Text search within files
+- Code analysis</p>
+<p><strong>Use together:</strong></p>
+<pre><code class="language-java">// 1. Find files with GlobTool
+String javaFiles = globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+
+// 2. Search contents with GrepTool
+String todosInServices = grepTool.grep(&quot;TODO&quot;, &quot;./src&quot;, &quot;**/*Service.java&quot;,
+    OutputMode.content, null, null, 2, true, null, null, null, null, null);
+</code></pre>
+<h2 id="common-patterns">Common Patterns<a class="headerlink" href="#common-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="find-all-files-of-type">Find All Files of Type<a class="headerlink" href="#find-all-files-of-type" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Java files
+globTool.glob(&quot;**/*.java&quot;, &quot;./src&quot;);
+
+// TypeScript files
+globTool.glob(&quot;**/*.ts&quot;, &quot;./src&quot;);
+
+// Python files
+globTool.glob(&quot;**/*.py&quot;, &quot;./src&quot;);
+
+// Configuration files
+globTool.glob(&quot;**/*.yml&quot;, &quot;./config&quot;);
+</code></pre>
+<h3 id="find-files-by-name">Find Files by Name<a class="headerlink" href="#find-files-by-name" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Exact name
+globTool.glob(&quot;**/UserService.java&quot;, &quot;./src&quot;);
+
+// Files ending with pattern
+globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+
+// Files starting with pattern
+globTool.glob(&quot;**/Test*.java&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="find-files-in-specific-directories">Find Files in Specific Directories<a class="headerlink" href="#find-files-in-specific-directories" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Controllers
+globTool.glob(&quot;**/controllers/*.java&quot;, &quot;./src&quot;);
+
+// Services
+globTool.glob(&quot;**/services/*.java&quot;, &quot;./src&quot;);
+
+// Models
+globTool.glob(&quot;**/models/*.ts&quot;, &quot;./src&quot;);
+
+// Components
+globTool.glob(&quot;**/components/*.tsx&quot;, &quot;./src&quot;);
+</code></pre>
+<h3 id="find-build-and-config-files">Find Build and Config Files<a class="headerlink" href="#find-build-and-config-files" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Maven
+globTool.glob(&quot;**/pom.xml&quot;, &quot;.&quot;);
+
+// Gradle
+globTool.glob(&quot;**/build.gradle&quot;, &quot;.&quot;);
+
+// Package.json
+globTool.glob(&quot;**/package.json&quot;, &quot;.&quot;);
+
+// Docker
+globTool.glob(&quot;**/Dockerfile&quot;, &quot;.&quot;);
+</code></pre>
+<h2 id="integration-examples">Integration Examples<a class="headerlink" href="#integration-examples" title="Permanent link">&para;</a></h2>
+<h3 id="with-filesystemtools">With FileSystemTools<a class="headerlink" href="#with-filesystemtools" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GlobTool globTool = GlobTool.builder().build();
+FileSystemTools fileTools = FileSystemTools.builder().build();
+
+// Find all config files
+String configs = globTool.glob(&quot;**/*.yml&quot;, &quot;./config&quot;);
+
+// Read each config
+for (String configPath : configs.split(&quot;\n&quot;)) {
+    String content = fileTools.read(configPath, null, null);
+    // Process config content
+}
+</code></pre>
+<h3 id="with-greptool">With GrepTool<a class="headerlink" href="#with-greptool" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">GlobTool globTool = GlobTool.builder().build();
+GrepTool grepTool = GrepTool.builder().build();
+
+// Find all service files
+String serviceFiles = globTool.glob(&quot;**/*Service.java&quot;, &quot;./src&quot;);
+
+// Search for TODO comments only in services
+String todos = grepTool.grep(&quot;TODO&quot;, &quot;./src&quot;, &quot;**/*Service.java&quot;,
+    OutputMode.content, null, null, 2, true, null, null, null, null, null);
+</code></pre>
+<h3 id="in-ai-agent-workflow">In AI Agent Workflow<a class="headerlink" href="#in-ai-agent-workflow" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultTools(GlobTool.builder().build())
+    .defaultTools(FileSystemTools.builder().build())
+    .defaultTools(GrepTool.builder().build())
+    .build();
+
+// AI can now:
+// 1. Use GlobTool to find files
+// 2. Use FileSystemTools to read files
+// 3. Use GrepTool to search contents
+
+String response = chatClient.prompt()
+    .user(&quot;Find all controllers and check if they have proper error handling&quot;)
+    .call()
+    .content();
+</code></pre>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../GrepTool/">GrepTool</a> - For searching file contents</li>
+<li><a href="../FileSystemTools/">FileSystemTools</a> - For reading/writing files</li>
+<li><a href="../ShellTools/">ShellTools</a> - For running system commands</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

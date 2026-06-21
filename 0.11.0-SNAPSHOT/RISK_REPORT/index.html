@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Risk Report - IKOS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Risk Report";
+        var mkdocs_page_input_path = "RISK_REPORT.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Risk Report</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#executive-summary">Executive Summary</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#risk-distribution">Risk Distribution</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#top-10-risky-identities-immediate-action-required">Top 10 Risky Identities — Immediate Action Required</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-eric-carter-uid-0003-risk-score-95">1. 🔴 Eric Carter (UID-0003) — Risk Score: 95%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-stephanie-johnson-uid-0018-risk-score-90">2. 🔴 Stephanie Johnson (UID-0018) — Risk Score: 90%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-svc-pipeline-8-uid-0009-risk-score-95">3. 🔴 svc-pipeline-8 (UID-0009) — Risk Score: 95%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-megan-nelson-uid-0052-risk-score-90">4. 🔴 Megan Nelson (UID-0052) — Risk Score: 90%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-carlos-adams-uid-0019-risk-score-95">5. 🔴 Carlos Adams (UID-0019) — Risk Score: 95%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-david-lee-emp-0054-stale-exception-risk-score-92">6. 🔴 David Lee (EMP-0054) — Stale Exception — Risk Score: 92%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-svc-deploy-94-uid-0095-risk-score-95">7. 🔴 svc-deploy-94 (UID-0095) — Risk Score: 95%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8-tyler-carter-emp-0071-stale-exception-risk-score-90">8. 🔴 Tyler Carter (EMP-0071) — Stale Exception — Risk Score: 90%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-stephanie-baker-uid-0045-risk-score-85">9. 🔴 Stephanie Baker (UID-0045) — Risk Score: 85%</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#10-alex-wilson-uid-0093-risk-score-90">10. 🔴 Alex Wilson (UID-0093) — Risk Score: 90%</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compliance-summary">Compliance Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#alert-consolidation-summary">Alert Consolidation Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#recommendations">Recommendations</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Risk Report</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/RISK_REPORT.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ikos-identity-risk-intelligence-report">🛡️ IKOS Identity Risk Intelligence Report<a class="headerlink" href="#ikos-identity-risk-intelligence-report" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Acme Corporation — Quarterly Identity Access Review</strong>
+<strong>Report Date:</strong> 2026-06-20 | <strong>Classification:</strong> CONFIDENTIAL
+<strong>Prepared by:</strong> IKOS Autonomous Security Intelligence System</p>
+</blockquote>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>IKOS analyzed <strong>200 unified identities</strong> across <strong>5 platforms</strong> (Active Directory, AWS IAM, Okta, Salesforce, ServiceNow) comprising <strong>405 total accounts</strong> and <strong>1,000+ audit events</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Risks Detected</strong></td>
+<td>148</td>
+</tr>
+<tr>
+<td><strong>Critical Risks</strong></td>
+<td>81</td>
+</tr>
+<tr>
+<td><strong>High Risks</strong></td>
+<td>52</td>
+</tr>
+<tr>
+<td><strong>Offboarding Gaps</strong></td>
+<td>18 active</td>
+</tr>
+<tr>
+<td><strong>SoD Violations</strong></td>
+<td>15 active</td>
+</tr>
+<tr>
+<td><strong>Stale Service Accounts</strong></td>
+<td>7 critical</td>
+</tr>
+<tr>
+<td><strong>Alert Noise Reduction</strong></td>
+<td>82% (148 raw → 26 consolidated)</td>
+</tr>
+<tr>
+<td><strong>Identities Requiring Immediate Action</strong></td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="risk-distribution">Risk Distribution<a class="headerlink" href="#risk-distribution" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Count</th>
+<th>Percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 CRITICAL</td>
+<td>81</td>
+<td>55%</td>
+</tr>
+<tr>
+<td>🟠 HIGH</td>
+<td>52</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>🟡 MEDIUM</td>
+<td>15</td>
+<td>10%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="top-10-risky-identities-immediate-action-required">Top 10 Risky Identities — Immediate Action Required<a class="headerlink" href="#top-10-risky-identities-immediate-action-required" title="Permanent link">&para;</a></h2>
+<h3 id="1-eric-carter-uid-0003-risk-score-95">1. 🔴 Eric Carter (UID-0003) — Risk Score: 95%<a class="headerlink" href="#1-eric-carter-uid-0003-risk-score-95" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Employee ID</strong></td>
+<td>EMP-0004</td>
+</tr>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>SoD Violation, Cross-Platform Admin</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>ActiveDirectory (ADMIN), AWS IAM (ADMIN), Okta (ADMIN)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Admin on both identity provider (AD + Okta) AND cloud infrastructure (AWS) — toxic privilege combination enabling full lateral movement.</p>
+<p><strong>Evidence:</strong>
+- <code>[AD] eric.carter</code> — ACTIVE, admin, lastLogin: 2026-06-15
+- <code>[AWS] Ecarter</code> — ACTIVE, admin, lastLogin: 2026-06-08
+- <code>[Okta] eric.carter@acme.com</code> — ACTIVE, admin, lastLogin: 2026-06-14</p>
+<p><strong>Remediation:</strong>
+1. <code>AD:</code> Remove from Domain Admins; assign read-only Security Auditor role
+2. <code>AWS:</code> Detach AdministratorAccess policy; attach custom least-privilege policy
+3. <code>Okta:</code> Downgrade from Super Admin to Application Admin
+4. Implement break-glass procedure for emergency admin access
+5. Enable CloudTrail enhanced logging for all remaining admin actions</p>
+<p><strong>Compliance:</strong> NIST AC-5 (Separation of Duties), NIST AC-6 (Least Privilege), MITRE T1098</p>
+<hr />
+<h3 id="2-stephanie-johnson-uid-0018-risk-score-90">2. 🔴 Stephanie Johnson (UID-0018) — Risk Score: 90%<a class="headerlink" href="#2-stephanie-johnson-uid-0018-risk-score-90" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Employee ID</strong></td>
+<td>EMP-0019</td>
+</tr>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Offboarding Gap</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (DISABLED), AWS IAM (ACTIVE), Okta (ACTIVE)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Terminated employee. AD account disabled but AWS and Okta accounts remain ACTIVE — potential unauthorized data exfiltration path.</p>
+<p><strong>Evidence:</strong>
+- <code>[AD] stephanie.johnson</code> — <strong>DISABLED</strong>, lastLogin: 2026-03-24
+- <code>[AWS] Sjohnson</code> — ACTIVE, lastLogin: 2026-05-16 (logged in 53 DAYS after AD disabled!)
+- <code>[Okta] stephanie.johnson@acme.com</code> — ACTIVE, lastLogin: 2026-06-17</p>
+<p><strong>Remediation:</strong>
+1. <code>AWS:</code> IMMEDIATELY disable IAM user <code>Sjohnson</code>: <code>aws iam update-login-profile --user-name Sjohnson --no-password-reset-required &amp;&amp; aws iam delete-login-profile --user-name Sjohnson</code>
+2. <code>AWS:</code> Revoke all access keys: <code>aws iam list-access-keys --user-name Sjohnson | jq -r '.AccessKeyMetadata[].AccessKeyId' | xargs -I {} aws iam update-access-key --access-key-id {} --status Inactive --user-name Sjohnson</code>
+3. <code>Okta:</code> Suspend user in Okta admin console → Users → stephanie.johnson@acme.com → Suspend
+4. <code>Audit:</code> Generate CloudTrail report for Sjohnson from 2026-03-24 to present — investigate all data access post-termination
+5. <code>Process:</code> Update offboarding runbook to include AWS + Okta deprovisioning as mandatory steps</p>
+<p><strong>Compliance:</strong> NIST AC-2 (Account Management), GDPR Art.32, MITRE T1078 (Valid Accounts)</p>
+<hr />
+<h3 id="3-svc-pipeline-8-uid-0009-risk-score-95">3. 🔴 svc-pipeline-8 (UID-0009) — Risk Score: 95%<a class="headerlink" href="#3-svc-pipeline-8-uid-0009-risk-score-95" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account Type</strong></td>
+<td>SERVICE_ACCOUNT</td>
+</tr>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Stale Service Account, Dormant Admin, Orphaned</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AWS IAM (ADMIN), ServiceNow (ADMIN)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Service account with admin on 2 platforms, last used &gt;300 days ago. No identifiable owner. Credentials never rotated.</p>
+<p><strong>Evidence:</strong>
+- <code>[AWS] svc-pipeline-8</code> — ACTIVE, <strong>ADMIN</strong>, lastLogin: 2025-08-22 (303 days ago!)
+- <code>[ServiceNow] svc-pipeline-8</code> — ACTIVE, <strong>ADMIN</strong>, lastLogin: 2025-10-12</p>
+<p><strong>Remediation:</strong>
+1. <code>AWS:</code> Rotate access keys immediately: <code>aws iam create-access-key --user-name svc-pipeline-8</code> then delete old keys
+2. <code>AWS:</code> Detach AdministratorAccess; attach minimal S3/DynamoDB read policy
+3. <code>ServiceNow:</code> Downgrade from admin role to itil_user
+4. Assign owner from DevOps team within 48 hours
+5. Set automated credential rotation policy (90-day maximum)</p>
+<p><strong>Compliance:</strong> NIST IA-5 (Authenticator Management), MITRE T1550 (Use Alternate Auth Material)</p>
+<hr />
+<h3 id="4-megan-nelson-uid-0052-risk-score-90">4. 🔴 Megan Nelson (UID-0052) — Risk Score: 90%<a class="headerlink" href="#4-megan-nelson-uid-0052-risk-score-90" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Offboarding Gap</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (DISABLED), AWS IAM (ACTIVE, ADMIN), Okta (ACTIVE)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Terminated employee with admin-level AWS access still active, plus active Okta SSO.</p>
+<p><strong>Remediation:</strong>
+1. <code>AWS:</code> Disable IAM user <code>Mnelson</code> and deactivate MFA
+2. <code>AWS:</code> Revoke all active sessions: <code>aws iam delete-virtual-mfa-device</code>
+3. <code>Okta:</code> Deactivate user → Deprovision all linked applications
+4. Audit all S3/EC2 actions by Mnelson post-termination</p>
+<p><strong>Compliance:</strong> NIST AC-2, GDPR Art.5 (Data Minimisation), MITRE T1078</p>
+<hr />
+<h3 id="5-carlos-adams-uid-0019-risk-score-95">5. 🔴 Carlos Adams (UID-0019) — Risk Score: 95%<a class="headerlink" href="#5-carlos-adams-uid-0019-risk-score-95" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>SoD Violation, Cross-Platform Admin</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (ADMIN), AWS IAM (ADMIN), Okta (ADMIN)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Triple-platform admin with SoD violation.</p>
+<p><strong>Remediation:</strong>
+1. Split admin roles: AD admin OR AWS admin, not both
+2. Implement break-glass procedure with approval workflow
+3. Enable Okta Behavior Detection for anomalous access patterns</p>
+<p><strong>Compliance:</strong> NIST AC-5, NIST AC-6, CIS Control 6</p>
+<hr />
+<h3 id="6-david-lee-emp-0054-stale-exception-risk-score-92">6. 🔴 David Lee (EMP-0054) — Stale Exception — Risk Score: 92%<a class="headerlink" href="#6-david-lee-emp-0054-stale-exception-risk-score-92" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Stale Exception</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (revoked), AWS IAM (STILL ACTIVE), Okta (STILL ACTIVE)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Temporary admin granted 77 days ago for "Incident response P1" — expired but NEVER revoked on AWS and Okta.</p>
+<p><strong>Evidence:</strong>
+- Exception EXC-0053: granted 2026-04-01, expired 2026-04-04
+- Approved by: Security-Lead
+- Still active on: AWS_IAM, Okta (77 days overdue!)</p>
+<p><strong>Remediation:</strong>
+1. <code>AWS:</code> Remove AdministratorAccess policy from user
+2. <code>Okta:</code> Revoke Super Admin role assignment
+3. Rotate all credentials issued during the exception window
+4. Update exception tracker to mark as REVOKED</p>
+<p><strong>Compliance:</strong> NIST AC-2(3) (Disable Inactive Accounts), CIS Control 5</p>
+<hr />
+<h3 id="7-svc-deploy-94-uid-0095-risk-score-95">7. 🔴 svc-deploy-94 (UID-0095) — Risk Score: 95%<a class="headerlink" href="#7-svc-deploy-94-uid-0095-risk-score-95" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Stale Service Account, Dormant Admin</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AWS IAM (ADMIN), ServiceNow (ADMIN)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Deployment service account with cross-platform admin, inactive &gt;240 days.</p>
+<p><strong>Remediation:</strong>
+1. Disable both accounts pending owner verification
+2. Rotate all API keys and access tokens
+3. Review CI/CD pipeline dependencies before permanent removal</p>
+<p><strong>Compliance:</strong> NIST IA-5, MITRE T1550</p>
+<hr />
+<h3 id="8-tyler-carter-emp-0071-stale-exception-risk-score-90">8. 🔴 Tyler Carter (EMP-0071) — Stale Exception — Risk Score: 90%<a class="headerlink" href="#8-tyler-carter-emp-0071-stale-exception-risk-score-90" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Stale Exception</td>
+</tr>
+<tr>
+<td><strong>Finding</strong></td>
+<td>Emergency production fix admin, expired 43 days ago, never revoked on ANY platform</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Remediation:</strong>
+1. Revoke admin on all 3 platforms (AD, AWS, Okta) immediately
+2. Rotate credentials
+3. Flag approver (IT-Director) for exception review training</p>
+<hr />
+<h3 id="9-stephanie-baker-uid-0045-risk-score-85">9. 🔴 Stephanie Baker (UID-0045) — Risk Score: 85%<a class="headerlink" href="#9-stephanie-baker-uid-0045-risk-score-85" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Dormant Admin, SoD Violation</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (ADMIN, last login: Jan 2026), AWS (ADMIN, last login: Nov 2025)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Admin on both platforms, inactive 119-209 days. SoD violation with zero recent activity.</p>
+<p><strong>Remediation:</strong>
+1. Disable both admin accounts
+2. Rotate credentials
+3. Require re-certification before any re-enablement</p>
+<hr />
+<h3 id="10-alex-wilson-uid-0093-risk-score-90">10. 🔴 Alex Wilson (UID-0093) — Risk Score: 90%<a class="headerlink" href="#10-alex-wilson-uid-0093-risk-score-90" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Risk Types</strong></td>
+<td>Offboarding Gap</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>AD (DISABLED), AWS (ACTIVE), Okta (ACTIVE)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Finding:</strong> Offboarded employee with 2 active platform accounts.</p>
+<p><strong>Remediation:</strong>
+1. Disable AWS and Okta accounts
+2. Audit all post-termination activity
+3. Revoke all API tokens and session cookies</p>
+<hr />
+<h2 id="compliance-summary">Compliance Summary<a class="headerlink" href="#compliance-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Control</th>
+<th>Findings</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST AC-2</td>
+<td>Account Management</td>
+<td>18 offboarding gaps</td>
+<td>❌ Non-Compliant</td>
+</tr>
+<tr>
+<td>NIST AC-5</td>
+<td>Separation of Duties</td>
+<td>15 SoD violations</td>
+<td>❌ Non-Compliant</td>
+</tr>
+<tr>
+<td>NIST AC-6</td>
+<td>Least Privilege</td>
+<td>17 over-privileged</td>
+<td>⚠️ Partially Compliant</td>
+</tr>
+<tr>
+<td>NIST IA-5</td>
+<td>Authenticator Management</td>
+<td>7 stale service accounts</td>
+<td>❌ Non-Compliant</td>
+</tr>
+<tr>
+<td>MITRE T1078</td>
+<td>Valid Accounts</td>
+<td>18 identity gaps detected</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>MITRE T1098</td>
+<td>Account Manipulation</td>
+<td>15 privilege violations</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>MITRE T1550</td>
+<td>Alternate Auth Material</td>
+<td>7 token/credential abuse</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>GDPR Art.5</td>
+<td>Data Minimisation</td>
+<td>Excessive access scope</td>
+<td>⚠️ Review Required</td>
+</tr>
+<tr>
+<td>GDPR Art.32</td>
+<td>Security of Processing</td>
+<td>Identity controls gaps</td>
+<td>❌ Non-Compliant</td>
+</tr>
+<tr>
+<td>CIS Control 5</td>
+<td>Account Management</td>
+<td>Lifecycle gaps found</td>
+<td>❌ Non-Compliant</td>
+</tr>
+<tr>
+<td>CIS Control 6</td>
+<td>Access Control</td>
+<td>Privilege scope violations</td>
+<td>❌ Non-Compliant</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="alert-consolidation-summary">Alert Consolidation Summary<a class="headerlink" href="#alert-consolidation-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Before</th>
+<th>After</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Alerts</td>
+<td>148</td>
+<td>26</td>
+<td><strong>82% reduction</strong></td>
+</tr>
+<tr>
+<td>CRITICAL Alerts</td>
+<td>81</td>
+<td>14</td>
+<td>83% reduction</td>
+</tr>
+<tr>
+<td>HIGH Alerts</td>
+<td>52</td>
+<td>8</td>
+<td>85% reduction</td>
+</tr>
+<tr>
+<td>MEDIUM Alerts</td>
+<td>15</td>
+<td>3</td>
+<td>80% reduction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Method:</strong> Clustered by identity + risk type family. Related risks for the same person merged into single actionable incidents.</p>
+<hr />
+<h2 id="recommendations">Recommendations<a class="headerlink" href="#recommendations" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Immediate (24 hours):</strong> Disable all 18 offboarding gap accounts across AWS + Okta</li>
+<li><strong>Short-term (1 week):</strong> Revoke all 10 stale exception admin grants</li>
+<li><strong>Medium-term (30 days):</strong> Implement automated offboarding workflow linking HR → AD → AWS → Okta</li>
+<li><strong>Long-term (90 days):</strong> Deploy IKOS continuous monitoring for real-time identity risk detection</li>
+</ol>
+<hr />
+<p><em>Generated by IKOS v1.0 — Identity Knowledge Operating System</em>
+<em>Classification: CONFIDENTIAL — For Internal Use Only</em></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../SPRING_AI_AGENT_UTILS_INTEGRATION/" class="btn btn-neutral float-left" title="Spring AI Integration"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+      <span><a href="../SPRING_AI_AGENT_UTILS_INTEGRATION/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

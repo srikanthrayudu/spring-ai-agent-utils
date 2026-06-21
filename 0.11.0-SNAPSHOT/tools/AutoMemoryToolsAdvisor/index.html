@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>AutoAutoMemoryToolsAdvisor - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "AutoAutoMemoryToolsAdvisor";
+        var mkdocs_page_input_path = "tools/AutoMemoryToolsAdvisor.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">AutoAutoMemoryToolsAdvisor</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/AutoMemoryToolsAdvisor.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="autoautomemorytoolsadvisor">AutoAutoMemoryToolsAdvisor<a class="headerlink" href="#autoautomemorytoolsadvisor" title="Permanent link">&para;</a></h1>
+<p>A Spring AI <code>ChatClient</code> advisor that gives any agent <strong>automatic long-term memory</strong> by wiring <a href="../AutoMemoryTools/"><code>AutoMemoryTools</code></a> and its companion system prompt into the request pipeline as a single, self-contained unit.</p>
+<p><img alt="AutoAutoMemoryToolsAdvisor" src="../../images/spring-ai-auto-memory-tools-advisor.png" /></p>
+<h2 id="what-it-does">What it does<a class="headerlink" href="#what-it-does" title="Permanent link">&para;</a></h2>
+<p>On every <code>before()</code> call the advisor:</p>
+<ol>
+<li><strong>Augments the system message</strong> — appends <code>AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code> (with the configured memories root path rendered in) to whatever system message is already present.</li>
+<li><strong>Injects the six <code>AutoMemoryTools</code></strong> — registers <code>MemoryView</code>, <code>MemoryCreate</code>, <code>MemoryStrReplace</code>, <code>MemoryInsert</code>, <code>MemoryDelete</code>, and <code>MemoryRename</code> into the prompt's <code>ToolCallingChatOptions</code>. Existing callbacks with the same name are never duplicated.</li>
+<li><strong>Optionally appends a consolidation reminder</strong> — if the configurable <code>memoryConsolidationTrigger</code> predicate returns <code>true</code>, a <code>&lt;system-reminder&gt;</code> block is appended to the system message instructing the model to summarise and remove redundant memories.</li>
+</ol>
+<p>If the prompt carries no <code>ToolCallingChatOptions</code> the request is returned unchanged — both the tool injection and the system prompt augmentation are skipped.</p>
+<p><code>after()</code> is a passthrough. Memory persistence is driven entirely by the model via tool calls during the conversation; no post-processing is needed.</p>
+<h2 id="long-term-memory-vs-session-memory">Long-term memory vs. session memory<a class="headerlink" href="#long-term-memory-vs-session-memory" title="Permanent link">&para;</a></h2>
+<p><code>AutoAutoMemoryToolsAdvisor</code> is a <strong>long-term memory</strong> mechanism. It is designed to complement, not replace, Spring AI's built-in short-term conversation memory (e.g. <code>MessageChatMemoryAdvisor</code> + <code>MessageWindowChatMemory</code>). The two layers serve fundamentally different purposes and should normally be used together:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Session memory (<code>MessageChatMemoryAdvisor</code>)</th>
+<th>Long-term memory (<code>AutoAutoMemoryToolsAdvisor</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Current conversation only</td>
+<td>Persists across conversations</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>In-process (<code>ChatMemory</code>)</td>
+<td>Files on disk via <code>AutoMemoryTools</code></td>
+</tr>
+<tr>
+<td><strong>Content</strong></td>
+<td>Full message exchange — every turn</td>
+<td>Curated facts worth keeping forever</td>
+</tr>
+<tr>
+<td><strong>Managed by</strong></td>
+<td>Spring AI automatically</td>
+<td>The model itself via tool calls</td>
+</tr>
+<tr>
+<td><strong>Expires</strong></td>
+<td>When the process stops (or window fills)</td>
+<td>Never — until the model deletes a file</td>
+</tr>
+</tbody>
+</table>
+<p>A typical agent setup combines both:</p>
+<pre><code class="language-java">ChatClient chatClient = ChatClient.builder(chatModel)
+    .defaultAdvisors(
+        // Long-term memory — facts that survive across sessions
+        AutoAutoMemoryToolsAdvisor.builder()
+            .memoriesRootDirectory(&quot;/home/user/.agent/memories&quot;)
+            .build(),
+
+        // Short-term memory — full conversation history for this session
+        MessageChatMemoryAdvisor.builder(
+            MessageWindowChatMemory.builder().maxMessages(100).build())
+            .build())
+    .build();
+</code></pre>
+<p>In this setup the model has the best of both worlds: the full context of the current conversation via the session window, and persistent knowledge about the user and project that it accumulated over previous sessions via the memory files.</p>
+<p><strong>Rule of thumb:</strong>
+- Ephemeral details — what was said in this session, in-progress task state — belong in session memory.
+- Durable facts worth having next week — user preferences, project decisions, behavioural feedback — belong in long-term memory.</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">AutoAutoMemoryToolsAdvisor memoryAdvisor = AutoAutoMemoryToolsAdvisor.builder()
+    .memoriesRootDirectory(&quot;/home/user/.agent/memories&quot;)
+    .build();
+
+ChatClient chatClient = ChatClient.builder(chatModel)
+    .defaultAdvisors(memoryAdvisor)
+    .build();
+</code></pre>
+<p>That's all. On the first turn the model reads <code>MEMORY.md</code> via <code>MemoryView</code>, loads relevant memory files, and writes new memories at the end of the session — all without any extra wiring.</p>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">AutoAutoMemoryToolsAdvisor advisor = AutoAutoMemoryToolsAdvisor.builder()
+    .memoriesRootDirectory(&quot;/path/to/memories&quot;)          // required
+    .order(BaseAdvisor.HIGHEST_PRECEDENCE + 200)         // optional
+    .memorySystemPrompt(customPromptResource)            // optional
+    .memoryConsolidationTrigger((req, instant) -&gt; false) // optional
+    .build();
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Builder method</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>memoriesRootDirectory(String)</code></td>
+<td><code>String</code></td>
+<td>— (<strong>required</strong>)</td>
+<td>Root directory for all memory files. Created automatically if absent.</td>
+</tr>
+<tr>
+<td><code>order(int)</code></td>
+<td><code>int</code></td>
+<td><code>HIGHEST_PRECEDENCE + 200</code></td>
+<td>Advisor order. Runs before the default <code>ToolCallingAdvisor</code> at <code>+300</code>.</td>
+</tr>
+<tr>
+<td><code>memorySystemPrompt(Resource)</code></td>
+<td><code>Resource</code></td>
+<td><code>classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code></td>
+<td>Prompt template to inject. Must contain the <code>{MEMORIES_ROOT_DIERCTORY}</code> placeholder.</td>
+</tr>
+<tr>
+<td><code>memoryConsolidationTrigger(BiPredicate&lt;ChatClientRequest, Instant&gt;)</code></td>
+<td><code>BiPredicate</code></td>
+<td><code>(req, t) -&gt; false</code></td>
+<td>Evaluated on each request. When <code>true</code>, a consolidation reminder is appended to the system message.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>memoriesRootDirectory</code> must be a non-empty string — <code>build()</code> throws <code>IllegalArgumentException</code> if blank.</li>
+<li><code>memorySystemPrompt</code> must not be null — the builder method throws immediately if null is passed.</li>
+<li><code>memoryConsolidationTrigger</code> must not be null — the builder method throws immediately if null is passed.</li>
+</ul>
+<h2 id="memory-consolidation-trigger">Memory Consolidation Trigger<a class="headerlink" href="#memory-consolidation-trigger" title="Permanent link">&para;</a></h2>
+<p>Over time the memory store can accumulate redundant or outdated entries. The <code>memoryConsolidationTrigger</code> lets you inject a reminder at a chosen frequency to prompt the model to clean up:</p>
+<pre><code class="language-java">// Trigger consolidation roughly every 20 requests (stateless approximation)
+AutoAutoMemoryToolsAdvisor advisor = AutoAutoMemoryToolsAdvisor.builder()
+    .memoriesRootDirectory(&quot;/path/to/memories&quot;)
+    .memoryConsolidationTrigger((req, instant) -&gt;
+        Math.random() &lt; 0.05)   // ~5 % of requests
+    .build();
+</code></pre>
+<p>When the predicate returns <code>true</code>, the following block is appended to the system message:</p>
+<pre><code>&lt;system-reminder&gt;Consolidate the long-term memory by summarizing and removing redundant information.&lt;/system-reminder&gt;
+</code></pre>
+<p>The predicate receives:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>request</code></td>
+<td><code>ChatClientRequest</code></td>
+<td>The full in-flight request — inspect messages, context, or metadata to decide.</td>
+</tr>
+<tr>
+<td><code>instant</code></td>
+<td><code>Instant</code></td>
+<td>Wall-clock time of the current call — useful for time-based intervals.</td>
+</tr>
+</tbody>
+</table>
+<p>Common trigger strategies:</p>
+<pre><code class="language-java">// Time-based: every 24 hours
+Instant[] lastConsolidation = { Instant.now() };
+.memoryConsolidationTrigger((req, now) -&gt; {
+    if (Duration.between(lastConsolidation[0], now).toHours() &gt;= 24) {
+        lastConsolidation[0] = now;
+        return true;
+    }
+    return false;
+})
+
+// Turn-count-based: every N calls
+AtomicInteger counter = new AtomicInteger();
+.memoryConsolidationTrigger((req, now) -&gt;
+    counter.incrementAndGet() % 50 == 0)
+</code></pre>
+<h2 id="advisor-ordering">Advisor Ordering<a class="headerlink" href="#advisor-ordering" title="Permanent link">&para;</a></h2>
+<p>The default order <code>BaseAdvisor.HIGHEST_PRECEDENCE + 200</code> places this advisor <strong>before</strong> the <code>ToolCallingAdvisor</code> (which sits at <code>+300</code>). This ordering ensures memory tools are registered in the options before the tool-calling advisor processes them.</p>
+<p>If you use other advisors that also modify tool options (e.g. additional <code>ToolCallingAdvisor</code> instances), verify that their relative order does not prevent the memory tools from reaching the model.</p>
+<h2 id="relation-to-automemorytools">Relation to AutoMemoryTools<a class="headerlink" href="#relation-to-automemorytools" title="Permanent link">&para;</a></h2>
+<p><code>AutoMemoryToolsAdvisor</code> is a thin orchestration layer. The six memory operations, sandboxing logic, and file conventions all live in <a href="../AutoMemoryTools/"><code>AutoMemoryTools</code></a>. The advisor adds:</p>
+<ul>
+<li>Automatic system prompt injection (no need to configure the prompt separately on the <code>ChatClient</code>)</li>
+<li>Automatic tool registration (no need to call <code>.defaultTools(memoryTools)</code>)</li>
+<li>Duplicate-filtering guard so memory tools are never registered twice</li>
+<li>The optional consolidation trigger</li>
+</ul>
+<h3 id="manual-setup-vs-advisor">Manual setup vs. advisor<a class="headerlink" href="#manual-setup-vs-advisor" title="Permanent link">&para;</a></h3>
+<p>If you need full control over when and how the system prompt and tools are applied, you can wire <code>AutoMemoryTools</code> directly without the advisor:</p>
+<pre><code class="language-java">// Manual setup
+AutoMemoryTools memoryTools = AutoMemoryTools.builder()
+    .memoriesDir(&quot;/path/to/memories&quot;)
+    .build();
+
+String memoryPrompt = new PromptTemplate(memorySystemPromptResource)
+    .render(Map.of(&quot;MEMORIES_ROOT_DIERCTORY&quot;, memoriesDir));
+
+ChatClient chatClient = ChatClient.builder(chatModel)
+    .defaultSystem(baseSystemPrompt + &quot;\n\n&quot; + memoryPrompt)
+    .defaultTools(memoryTools)
+    .build();
+
+// Advisor setup — equivalent, less boilerplate
+ChatClient chatClient = ChatClient.builder(chatModel)
+    .defaultAdvisors(
+        AutoAutoMemoryToolsAdvisor.builder()
+            .memoriesRootDirectory(&quot;/path/to/memories&quot;)
+            .build())
+    .build();
+</code></pre>
+<h2 id="system-prompt">System Prompt<a class="headerlink" href="#system-prompt" title="Permanent link">&para;</a></h2>
+<p>The default companion prompt (<code>AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code>) is bundled in the jar at <code>classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code>. It instructs the model to:</p>
+<ul>
+<li>Read <code>MEMORY.md</code> at the start of sessions where prior context may be relevant</li>
+<li>Use the two-step save workflow (<code>MemoryCreate</code> → <code>MemoryInsert</code> into <code>MEMORY.md</code>)</li>
+<li>Apply the four memory types (<code>user</code>, <code>feedback</code>, <code>project</code>, <code>reference</code>)</li>
+<li>Verify recalled memories before acting on them</li>
+<li>Avoid saving ephemeral state, code patterns, git history, or fix recipes</li>
+</ul>
+<p>The template contains one placeholder: <code>{MEMORIES_ROOT_DIERCTORY}</code> (note the spelling), which is filled with the configured <code>memoriesRootDirectory</code> at <code>build()</code> time.</p>
+<p>To use a custom prompt, provide any <code>Resource</code> that contains the same placeholder:</p>
+<pre><code class="language-java">@Value(&quot;classpath:/my-custom-memory-prompt.md&quot;)
+Resource customPrompt;
+
+AutoAutoMemoryToolsAdvisor.builder()
+    .memoriesRootDirectory(&quot;/path/to/memories&quot;)
+    .memorySystemPrompt(customPrompt)
+    .build();
+</code></pre>
+<h2 id="demo-application">Demo Application<a class="headerlink" href="#demo-application" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/examples/memory/memory-tools-advisor-demo"><code>memory-tools-advisor-demo</code></a> for a complete runnable example showing <code>AutoAutoMemoryToolsAdvisor</code> combined with <code>MessageChatMemoryAdvisor</code> and a custom logging advisor.</p>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../AutoMemoryTools/">AutoMemoryTools</a> — the underlying tool implementations, file conventions, and security model</li>
+<li><a href="../FileSystemTools/">FileSystemTools</a> — general-purpose file read/write/edit (not sandboxed)</li>
+<li><a href="https://code.claude.com/docs/en/memory">Claude Code — Memory</a> — the file-based memory design this library is modelled after</li>
+<li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool">Claude API SDK — Memory Tool</a> — the official tool specification</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

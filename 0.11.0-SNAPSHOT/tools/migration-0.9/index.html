@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Migration Guide: 0.7.x to 0.9.0 - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Migration Guide: 0.7.x to 0.9.0";
+        var mkdocs_page_input_path = "tools/migration-0.9.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Migration Guide: 0.7.x to 0.9.0</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/migration-0.9.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="migration-guide-07x-to-090">Migration Guide: 0.7.x to 0.9.0<a class="headerlink" href="#migration-guide-07x-to-090" title="Permanent link">&para;</a></h1>
+<p>This release upgrades the Spring AI dependency from <code>2.0.0-M7</code> to <code>2.0.0-RC1</code> and Spring Framework from <code>7.0.1</code> to <code>7.0.7</code>. Several Spring AI APIs changed in ways that require updates to application code.</p>
+<h2 id="dependency-version">Dependency Version<a class="headerlink" href="#dependency-version" title="Permanent link">&para;</a></h2>
+<pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springaicommunity&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-ai-agent-utils&lt;/artifactId&gt;
+    &lt;version&gt;0.9.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 id="spring-ai-api-changes">Spring AI API Changes<a class="headerlink" href="#spring-ai-api-changes" title="Permanent link">&para;</a></h2>
+<h3 id="toolcalladvisor-removed"><code>ToolCallAdvisor</code> removed<a class="headerlink" href="#toolcalladvisor-removed" title="Permanent link">&para;</a></h3>
+<p><code>ToolCallAdvisor</code> is deprecated and no longer needs to be registered. Tool calling is now handled automatically by the framework when tools are present on the <code>ChatClient</code>.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">chatClientBuilder.defaultAdvisors(
+    ToolCallAdvisor.builder().build(),
+    MessageChatMemoryAdvisor.builder(...).build());
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">chatClientBuilder.defaultAdvisors(
+    MessageChatMemoryAdvisor.builder(...).build());
+</code></pre>
+<p>If you were using <code>disableInternalConversationHistory()</code> or <code>conversationHistoryEnabled(false)</code>, that behaviour is now controlled by advisor ordering — see the <a href="#memory-advisor-ordering">Memory advisor ordering</a> section below.</p>
+<h3 id="defaulttoolcallbacks-defaulttools"><code>defaultToolCallbacks()</code> → <code>defaultTools()</code><a class="headerlink" href="#defaulttoolcallbacks-defaulttools" title="Permanent link">&para;</a></h3>
+<p><code>ChatClient.Builder.defaultToolCallbacks()</code> is deprecated. Use <code>defaultTools()</code> instead. It accepts the same types: individual <code>ToolCallback</code> objects, <code>ToolCallbackProvider</code> instances, and annotated POJO classes.</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">chatClientBuilder
+    .defaultToolCallbacks(SkillsTool.builder().build())
+    .defaultToolCallbacks(mcpToolCallbackProvider);
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">chatClientBuilder
+    .defaultTools(SkillsTool.builder().build())
+    .defaultTools(mcpToolCallbackProvider);
+</code></pre>
+<h3 id="openai-starter-artifact-renamed">OpenAI starter artifact renamed<a class="headerlink" href="#openai-starter-artifact-renamed" title="Permanent link">&para;</a></h3>
+<p>The OpenAI SDK starter artifact has been renamed:</p>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring-ai-starter-model-openai-sdk</code></td>
+<td><code>spring-ai-starter-model-openai</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-xml">&lt;!-- After --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.ai&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-ai-starter-model-openai&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h3 id="openai-property-prefix-renamed">OpenAI property prefix renamed<a class="headerlink" href="#openai-property-prefix-renamed" title="Permanent link">&para;</a></h3>
+<p>All <code>spring.ai.openai-sdk.*</code> properties are renamed to <code>spring.ai.openai.*</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spring.ai.openai-sdk.api-key</code></td>
+<td><code>spring.ai.openai.api-key</code></td>
+</tr>
+<tr>
+<td><code>spring.ai.openai-sdk.chat.options.model</code></td>
+<td><code>spring.ai.openai.chat.options.model</code></td>
+</tr>
+<tr>
+<td><code>spring.ai.openai-sdk.chat.options.temperature</code></td>
+<td><code>spring.ai.openai.chat.options.temperature</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="modeloptionsutilstojsonstring-removed"><code>ModelOptionsUtils.toJsonString()</code> removed<a class="headerlink" href="#modeloptionsutilstojsonstring-removed" title="Permanent link">&para;</a></h3>
+<p>If you reference <code>ModelOptionsUtils.toJsonString()</code> in custom advisor or tool code, replace it with <code>JsonHelper</code>:</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">import org.springframework.ai.model.ModelOptionsUtils;
+
+String json = ModelOptionsUtils.toJsonString(object);
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">import org.springframework.ai.util.JsonHelper;
+
+String json = new JsonHelper().toJson(object);
+</code></pre>
+<h3 id="toolcallingchatoptionscopy-removed"><code>ToolCallingChatOptions.copy()</code> removed<a class="headerlink" href="#toolcallingchatoptionscopy-removed" title="Permanent link">&para;</a></h3>
+<p><code>copy()</code> has been removed from the <code>ToolCallingChatOptions</code> interface. Use <code>mutate().build()</code> instead:</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">ToolCallingChatOptions copy = toolOptions.copy();
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">ToolCallingChatOptions copy = toolOptions.mutate().build();
+</code></pre>
+<h3 id="defaulttoolcallingchatoptions-public-constructor-removed"><code>DefaultToolCallingChatOptions</code> public constructor removed<a class="headerlink" href="#defaulttoolcallingchatoptions-public-constructor-removed" title="Permanent link">&para;</a></h3>
+<p>The no-arg public constructor is no longer available. Use the builder:</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">new DefaultToolCallingChatOptions()
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">DefaultToolCallingChatOptions.builder().build()
+</code></pre>
+<h2 id="memory-advisor-ordering">Memory Advisor Ordering<a class="headerlink" href="#memory-advisor-ordering" title="Permanent link">&para;</a></h2>
+<p><code>MessageChatMemoryAdvisor</code> must be placed <strong>outside</strong> (before) the tool-calling loop so that memory is only read/written once per user turn rather than on every tool-call iteration. The advisor's default order (<code>Advisor.DEFAULT_CHAT_MEMORY_PRECEDENCE_ORDER = HIGHEST_PRECEDENCE + 200</code>) already satisfies this — do not override it with a higher value.</p>
+<p><strong>Incorrect</strong> (places memory inside the tool-call loop):</p>
+<pre><code class="language-java">MessageChatMemoryAdvisor.builder(memory)
+    .order(Ordered.HIGHEST_PRECEDENCE + 1000)  // wrong — higher value = inner = inside tool loop
+    .build()
+</code></pre>
+<p><strong>Correct</strong> (use the default order):</p>
+<pre><code class="language-java">MessageChatMemoryAdvisor.builder(memory).build()
+</code></pre>
+<p>The auto-configured <code>ToolCallingAdvisor</code> sits at <code>HIGHEST_PRECEDENCE + 300</code>. Memory at the default <code>HIGHEST_PRECEDENCE + 200</code> is numerically lower and therefore outermost, wrapping all tool calls in a single memory read/write cycle.</p>
+<h2 id="conversation-id-required-on-prompt-calls">Conversation ID Required on Prompt Calls<a class="headerlink" href="#conversation-id-required-on-prompt-calls" title="Permanent link">&para;</a></h2>
+<p>Spring AI 2.0.0-RC1 no longer infers a default conversation ID. You must supply <code>ChatMemory.CONVERSATION_ID</code> explicitly on each <code>.prompt()</code> call, otherwise <code>MessageChatMemoryAdvisor</code> silently uses a <code>null</code> key and memory is not persisted correctly.</p>
+<p><strong>Before (memory silently broken):</strong></p>
+<pre><code class="language-java">chatClient.prompt(userInput).call().content();
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">chatClient.prompt(userInput)
+    .advisors(a -&gt; a.param(ChatMemory.CONVERSATION_ID, &quot;session-1&quot;))
+    .call()
+    .content();
+</code></pre>
+<p>Use a stable, meaningful ID. For single-session CLI agents <code>"session-1"</code> is fine. For multi-user or multi-session applications, use a per-session identifier (e.g. a UUID generated at startup or stored in session state).</p>
+<h2 id="consolidate-multiple-defaulttools-calls">Consolidate Multiple <code>defaultTools()</code> Calls<a class="headerlink" href="#consolidate-multiple-defaulttools-calls" title="Permanent link">&para;</a></h2>
+<p>Previously, multiple <code>.defaultTools()</code> chains were processed independently and could lead to subtle ordering issues. Prefer a single <code>defaultTools(...)</code> varargs call that registers all tools together:</p>
+<p><strong>Before:</strong></p>
+<pre><code class="language-java">chatClientBuilder
+    .defaultTools(taskTools)
+    .defaultTools(SkillsTool.builder().build())
+    .defaultTools(
+        ShellTools.builder().build(),
+        FileSystemTools.builder().build());
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="language-java">chatClientBuilder
+    .defaultTools(
+        taskTools,
+        SkillsTool.builder().build(),
+        ShellTools.builder().build(),
+        FileSystemTools.builder().build());
+</code></pre>
+<h2 id="toolcallingadvisor-requires-at-least-one-registered-tool-spring-ai-6325"><code>ToolCallingAdvisor</code> Requires at Least One Registered Tool (spring-ai #6325)<a class="headerlink" href="#toolcallingadvisor-requires-at-least-one-registered-tool-spring-ai-6325" title="Permanent link">&para;</a></h2>
+<p>When using <code>AutoAutoMemoryToolsAdvisor</code> without any other tools pre-registered on the <code>ChatClient</code>, the auto-configured <code>ToolCallingAdvisor</code> may not activate because there are no tools in the default configuration to trigger it. The advisor injects memory tools at request time, but the framework checks for tools at build time.</p>
+<p><strong>Workaround</strong> — register a dummy tool on the <code>ChatClient</code> until the upstream issue is resolved:</p>
+<pre><code class="language-java">public static class DummyTools {
+    @Tool(description = &quot;No-op placeholder tool&quot;)
+    public String noop(String input) { return input; }
+}
+
+chatClientBuilder
+    .defaultTools(new DummyTools())  // workaround for spring-ai#6325
+    .defaultAdvisors(AutoAutoMemoryToolsAdvisor.builder()
+        .memoriesRootDirectory(&quot;/path/to/memories&quot;)
+        .build())
+    .build();
+</code></pre>
+<p>Track the upstream fix at <a href="https://github.com/spring-projects/spring-ai/issues/6325">spring-projects/spring-ai#6325</a>.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

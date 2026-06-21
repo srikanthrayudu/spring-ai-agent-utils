@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>AgentEnvironment - Dynamic Agent Context - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "AgentEnvironment - Dynamic Agent Context";
+        var mkdocs_page_input_path = "tools/AgentEnvironment.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">AgentEnvironment - Dynamic Agent Context</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/AgentEnvironment.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="agentenvironment-dynamic-agent-context">AgentEnvironment - Dynamic Agent Context<a class="headerlink" href="#agentenvironment-dynamic-agent-context" title="Permanent link">&para;</a></h1>
+<p>Provide AI agents with runtime environment information and git repository context through dynamic system prompt parameters. The <code>AgentEnvironment</code> utility class automatically gathers environment metadata and git status to make agents more context-aware.</p>
+<p>It is used in a combination with the agent system prompt: <a href="https://github.com/spring-ai-community/spring-ai-agent-utils/blob/main/spring-ai-agent-utils/src/main/resources/prompt/MAIN_AGENT_SYSTEM_PROMPT_V2.md">MAIN_AGENT_SYSTEM_PROMPT_V2.md</a>.</p>
+<h2 id="system-prompt-template-placeholders">System Prompt Template Placeholders<a class="headerlink" href="#system-prompt-template-placeholders" title="Permanent link">&para;</a></h2>
+<p>Use these placeholders in your system prompt markdown files:</p>
+<table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Replaced With</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{ENVIRONMENT_INFO}</code></td>
+<td>Environment information</td>
+<td><code>AgentEnvironment.info()</code></td>
+</tr>
+<tr>
+<td><code>{GIT_STATUS}</code></td>
+<td>Git repository status</td>
+<td><code>AgentEnvironment.gitStatus()</code></td>
+</tr>
+<tr>
+<td><code>{AGENT_MODEL}</code></td>
+<td>Model identifier</td>
+<td><code>agent.model</code> property</td>
+</tr>
+<tr>
+<td><code>{AGENT_MODEL_KNOWLEDGE_CUTOFF}</code></td>
+<td>Knowledge cutoff date</td>
+<td><code>agent.model.knowledge.cutoff</code> property</td>
+</tr>
+</tbody>
+</table>
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<h3 id="constants">Constants<a class="headerlink" href="#constants" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Parameter keys for system prompt placeholders
+public static final String ENVIRONMENT_INFO_KEY = &quot;ENVIRONMENT_INFO&quot;;
+public static final String GIT_STATUS_KEY = &quot;GIT_STATUS&quot;;
+public static final String AGENT_MODEL_KEY = &quot;AGENT_MODEL&quot;;
+public static final String AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY = &quot;AGENT_MODEL_KNOWLEDGE_CUTOFF&quot;;
+</code></pre>
+<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
+<h4 id="agentenvironmentinfo"><code>AgentEnvironment.info()</code><a class="headerlink" href="#agentenvironmentinfo" title="Permanent link">&para;</a></h4>
+<p>Collects current environment information.</p>
+<p><strong>Returns:</strong> String containing:
+- Working directory (absolute path)
+- Git repository detection
+- Platform name
+- OS version
+- Current date (ISO format)</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-java">String envInfo = AgentEnvironment.info();
+System.out.println(envInfo);
+// Working directory: /Users/username/projects/myapp
+// Is directory a git repo: Yes
+// Platform: mac os x
+// OS Version: Mac OS X 14.5.0
+// Today's date: 2026-01-10
+</code></pre>
+<h4 id="agentenvironmentgitstatus"><code>AgentEnvironment.gitStatus()</code><a class="headerlink" href="#agentenvironmentgitstatus" title="Permanent link">&para;</a></h4>
+<p>Collects git repository status snapshot.</p>
+<p><strong>Returns:</strong> String containing:
+- Current branch name
+- Main/master branch name (detected automatically)
+- Working tree status (modified, added, deleted files)
+- Recent 5 commits (one-line format)</p>
+<p><strong>Returns empty string if:</strong>
+- Git is not installed or not in PATH
+- Current directory is not a git repository</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-java">String gitStatus = AgentEnvironment.gitStatus();
+System.out.println(gitStatus);
+// gitStatus: This is the git status at the start of the conversation...
+// Current branch: feature-branch
+// Main branch (you will usually use this for PRs): main
+// Status:
+// M README.md
+// ...
+</code></pre>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<h3 id="1-configure-agent-properties">1. Configure Agent Properties<a class="headerlink" href="#1-configure-agent-properties" title="Permanent link">&para;</a></h3>
+<p>Add agent configuration to your <code>application.properties</code>:</p>
+<pre><code class="language-properties"># AGENT CONFIGURATION
+
+## Model info (Must match the configured model above)
+agent.model=claude-sonnet-4-5-20250929
+agent.model.knowledge.cutoff=2025-01
+
+# For GPT models
+# agent.model=gpt-5-mini-2025-08-07
+# agent.model.knowledge.cutoff=2025-08-07
+
+# For Gemini models
+# agent.model=gemini-3.1-pro-preview
+# agent.model.knowledge.cutoff=Unknown
+</code></pre>
+<h3 id="2-inject-configuration-values">2. Inject Configuration Values<a class="headerlink" href="#2-inject-configuration-values" title="Permanent link">&para;</a></h3>
+<p>Use <code>@Value</code> annotations to inject the configuration:</p>
+<pre><code class="language-java">@Value(&quot;${agent.model:Unknown}&quot;)
+String agentModel;
+
+@Value(&quot;${agent.model.knowledge.cutoff:Unknown}&quot;)
+String agentModelKnowledgeCutoff;
+</code></pre>
+<h3 id="3-configure-system-prompt-with-parameters">3. Configure System Prompt with Parameters<a class="headerlink" href="#3-configure-system-prompt-with-parameters" title="Permanent link">&para;</a></h3>
+<p>Use the <code>AgentEnvironment</code> utility to provide dynamic context to your system prompt:</p>
+<pre><code class="language-java">import org.springaicommunity.agent.utils.AgentEnvironment;
+
+ChatClient chatClient = chatClientBuilder
+    .defaultSystem(p -&gt; p.text(systemPrompt) // Load system prompt from classpath
+        .param(AgentEnvironment.ENVIRONMENT_INFO_KEY, AgentEnvironment.info())
+        .param(AgentEnvironment.GIT_STATUS_KEY, AgentEnvironment.gitStatus())
+        .param(AgentEnvironment.AGENT_MODEL_KEY, agentModel)
+        .param(AgentEnvironment.AGENT_MODEL_KNOWLEDGE_CUTOFF_KEY, agentModelKnowledgeCutoff))
+    // ... rest of configuration
+    .build();
+</code></pre>
+<h3 id="4-reference-parameters-in-system-prompt">4. Reference Parameters in System Prompt<a class="headerlink" href="#4-reference-parameters-in-system-prompt" title="Permanent link">&para;</a></h3>
+<p>Create a system prompt template that references the parameters:</p>
+<p><strong>File:</strong> <code>src/main/resources/prompt/MAIN_AGENT_SYSTEM_PROMPT_V2.md</code></p>
+<pre><code class="language-markdown">Here is useful information about the environment you are running in:
+&lt;env&gt;
+{ENVIRONMENT_INFO}
+&lt;/env&gt;
+You are powered by the model: {AGENT_MODEL}
+
+Assistant knowledge cutoff is {AGENT_MODEL_KNOWLEDGE_CUTOFF}.
+
+{GIT_STATUS}
+</code></pre>
+<h2 id="environment-information-output">Environment Information Output<a class="headerlink" href="#environment-information-output" title="Permanent link">&para;</a></h2>
+<p>The <code>AgentEnvironment.info()</code> method returns a formatted string with:</p>
+<pre><code>Working directory: /Users/username/projects/myapp
+Is directory a git repo: Yes
+Platform: mac os x
+OS Version: Mac OS X 14.5.0
+Today's date: 2026-01-10
+</code></pre>
+<h2 id="git-status-output">Git Status Output<a class="headerlink" href="#git-status-output" title="Permanent link">&para;</a></h2>
+<p>The <code>AgentEnvironment.gitStatus()</code> method returns a detailed git repository snapshot:</p>
+<pre><code>gitStatus: This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.
+Current branch: feature-branch
+
+Main branch (you will usually use this for PRs): main
+
+Status:
+M README.md
+M src/main/java/com/example/Application.java
+?? src/main/java/com/example/NewFeature.java
+
+Recent commits:
+a1b2c3d Add new feature implementation
+e4f5g6h Fix bug in authentication flow
+h7i8j9k Update documentation
+k0l1m2n Refactor service layer
+n3o4p5q Initial commit
+</code></pre>
+<h2 id="cross-platform-support">Cross-Platform Support<a class="headerlink" href="#cross-platform-support" title="Permanent link">&para;</a></h2>
+<p>The <code>AgentEnvironment</code> class handles platform differences automatically:</p>
+<ul>
+<li><strong>Windows</strong>: Uses <code>cmd.exe /c git</code> for git commands</li>
+<li><strong>macOS/Linux</strong>: Uses <code>git</code> directly</li>
+<li><strong>All platforms</strong>: Sets <code>LC_ALL=C</code> and <code>LANG=C</code> for consistent git output</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

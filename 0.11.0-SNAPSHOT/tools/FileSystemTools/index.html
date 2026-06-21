@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>FileSystemTools - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "FileSystemTools";
+        var mkdocs_page_input_path = "tools/FileSystemTools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">FileSystemTools</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/FileSystemTools.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="filesystemtools">FileSystemTools<a class="headerlink" href="#filesystemtools" title="Permanent link">&para;</a></h1>
+<p>A comprehensive file manipulation toolkit providing read, write, and edit operations for working with files in the local filesystem.</p>
+<p><strong>Features:</strong>
+- Read files with line range support and pagination
+- Write new files or overwrite existing ones
+- Precise string replacement editing
+- Line number formatting for easy reference
+- Long line truncation (2000 chars max)
+- Automatic parent directory creation
+- UTF-8 encoding support
+- Replace all or single occurrence editing
+- Optional <code>allowedDirectory</code> to restrict all file operations to one or more configured paths</p>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="alloweddirectory-alloweddirectories-restrict-file-operations-to-a-directory">allowedDirectory / allowedDirectories — Restrict File Operations to a Directory<a class="headerlink" href="#alloweddirectory-alloweddirectories-restrict-file-operations-to-a-directory" title="Permanent link">&para;</a></h3>
+<p>By default <code>FileSystemTools</code> can access any path on the filesystem. Configure one or more allowed directories to restrict all <code>read</code>, <code>write</code>, and <code>edit</code> operations to paths within them. Access to any path outside all allowed directories returns an error.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">// Single directory (Path or String)
+FileSystemTools tools = FileSystemTools.builder()
+    .allowedDirectory(Path.of(&quot;/workspace/project&quot;))
+    .build();
+
+// Multiple directories — chained
+FileSystemTools tools = FileSystemTools.builder()
+    .allowedDirectory(&quot;/workspace/project&quot;)
+    .allowedDirectory(&quot;/tmp/uploads&quot;)
+    .build();
+
+// Multiple directories — varargs
+FileSystemTools tools = FileSystemTools.builder()
+    .allowedDirectories(Path.of(&quot;/workspace/project&quot;), Path.of(&quot;/tmp/uploads&quot;))
+    .build();
+
+// No restriction (default — backward compatible)
+FileSystemTools tools = FileSystemTools.builder().build();
+</code></pre>
+<p><strong>Security guarantees:</strong></p>
+<p>Three layers block bypass attempts for each candidate directory:</p>
+<ol>
+<li><strong>Path traversal</strong> — raw <code>..</code> components are rejected before normalization, blocking <code>/allowed/../etc/passwd</code>-style attacks.</li>
+<li><strong>Normalized containment</strong> — the resolved path must start with the allowed directory (component-aware, so <code>/allowed-evil</code> does not match <code>/allowed</code>).</li>
+<li><strong>Symlink resolution</strong> — real paths of existing path components are verified, blocking symlinks that point outside the allowed directory. Dangling symlinks are always denied.</li>
+</ol>
+<p><strong>Error returned on denied access:</strong></p>
+<pre><code>Error: Access denied. Path is outside the allowed directories: /etc/passwd
+</code></pre>
+<p><strong>Notes:</strong>
+- When no directory is configured, all paths are allowed (backward compatible).
+- <code>allowedDirectory(null)</code> is a no-op — it does not add an entry.
+- Non-existent allowed directories are supported; writes into them are permitted (symlink check is skipped until the directory exists).</p>
+<h2 id="available-tools">Available Tools<a class="headerlink" href="#available-tools" title="Permanent link">&para;</a></h2>
+<h3 id="1-read-read-file-contents">1. Read - Read File Contents<a class="headerlink" href="#1-read-read-file-contents" title="Permanent link">&para;</a></h3>
+<p>Reads a file from the local filesystem with optional line range support for handling large files.</p>
+<p><strong>Parameters:</strong>
+- <code>filePath</code> (required) - The absolute path to the file to read
+- <code>offset</code> (optional) - The line number to start reading from (1-indexed)
+- <code>limit</code> (optional) - The number of lines to read (default: 2000)</p>
+<p><strong>Basic Usage:</strong></p>
+<pre><code class="language-java">FileSystemTools fileTools = FileSystemTools.builder().build();
+
+// Read entire file (up to 2000 lines)
+String content = fileTools.read(
+    &quot;/path/to/file.txt&quot;,
+    null,                    // offset (start from beginning)
+    null                    // limit (read up to 2000 lines)
+);
+
+// Read specific line range
+String content = fileTools.read(
+    &quot;/path/to/large-file.log&quot;,
+    100,                     // Start from line 100
+    50                      // Read 50 lines
+);
+
+// Read from line 500 onwards
+String content = fileTools.read(
+    &quot;/path/to/file.java&quot;,
+    500,                     // Start from line 500
+    2000                    // Read up to 2000 lines
+);
+</code></pre>
+<p><strong>Output Format:</strong></p>
+<pre><code>File: /path/to/file.txt
+Showing lines 1-10 of 150
+
+     1→First line of content
+     2→Second line of content
+     3→Third line of content
+     ...
+    10→Tenth line of content
+</code></pre>
+<p><strong>Key Features:</strong>
+- <strong>Line numbers</strong>: Results formatted with <code>cat -n</code> style line numbers (right-aligned, 6 chars, arrow separator)
+- <strong>Line truncation</strong>: Lines longer than 2000 characters are truncated with "... (line truncated)" suffix
+- <strong>Pagination</strong>: Read large files in chunks using offset and limit
+- <strong>Empty file detection</strong>: Returns "File is empty" message for empty files
+- <strong>Error handling</strong>: Clear error messages for non-existent files or directories</p>
+<p><strong>Important Notes:</strong>
+- File path must be absolute, not relative
+- Default limit is 2000 lines - recommended to read full file when possible
+- Line numbers are 1-indexed (first line is line 1)
+- Cannot read directories (use Bash tool with <code>ls</code> command)
+- Supports reading various file types (text, images, PDFs, Jupyter notebooks with appropriate handling)</p>
+<h3 id="2-write-create-or-overwrite-files">2. Write - Create or Overwrite Files<a class="headerlink" href="#2-write-create-or-overwrite-files" title="Permanent link">&para;</a></h3>
+<p>Writes content to a file, creating new files or overwriting existing ones.</p>
+<p><strong>Parameters:</strong>
+- <code>filePath</code> (required) - The absolute path to the file to write (must be absolute)
+- <code>content</code> (optional) - The content to write to the file (defaults to empty string if null)</p>
+<p><strong>Basic Usage:</strong></p>
+<pre><code class="language-java">// Create a new file
+String result = fileTools.write(
+    &quot;/path/to/new-file.txt&quot;,
+    &quot;This is the file content\nWith multiple lines&quot;
+);
+// Returns: &quot;Successfully created file: /path/to/new-file.txt (45 bytes)&quot;
+
+// Create an empty file
+String result = fileTools.write(
+    &quot;/path/to/empty-file.txt&quot;,
+    null                    // content (creates empty file)
+);
+// Returns: &quot;Successfully created file: /path/to/empty-file.txt (0 bytes)&quot;
+
+// Overwrite an existing file
+String result = fileTools.write(
+    &quot;/path/to/existing-file.txt&quot;,
+    &quot;New content replacing old content&quot;
+);
+// Returns: &quot;Successfully overwrote file: /path/to/existing-file.txt (33 bytes)&quot;
+
+// Create file with parent directories
+String result = fileTools.write(
+    &quot;/path/to/new/directory/file.txt&quot;,
+    &quot;Content&quot;
+);
+// Automatically creates /path/to/new/directory/ if it doesn't exist
+</code></pre>
+<p><strong>Important Notes:</strong>
+- <strong>MUST read first</strong>: If overwriting an existing file, you MUST use the Read tool first
+- <strong>Prefer Edit</strong>: ALWAYS prefer editing existing files instead of writing new ones
+- <strong>No emojis</strong>: Avoid writing emojis unless explicitly requested by the user
+- <strong>No proactive docs</strong>: Never create documentation files (<em>.md, README) unless explicitly requested
+- </em><em>Parent directories</em><em>: Automatically creates parent directories if they don't exist
+- </em><em>Complete replacement</em>*: Overwrites the entire file content (does not append)</p>
+<p><strong>When to Use:</strong>
+- Creating new files explicitly requested by the user
+- Generating configuration files, scripts, or source files
+- Writing output from data transformations</p>
+<p><strong>When NOT to Use:</strong>
+- Modifying existing files (use Edit instead)
+- Making small changes to code (use Edit instead)</p>
+<h3 id="3-edit-precise-string-replacement">3. Edit - Precise String Replacement<a class="headerlink" href="#3-edit-precise-string-replacement" title="Permanent link">&para;</a></h3>
+<p>Performs exact string replacements in files with safety checks to prevent unintended changes.</p>
+<p><strong>Parameters:</strong>
+- <code>filePath</code> (required) - The absolute path to the file to modify
+- <code>old_string</code> (required) - The exact text to replace
+- <code>new_string</code> (required) - The text to replace it with (must be different from old_string)
+- <code>replace_all</code> (optional) - Replace all occurrences (default: false)</p>
+<p><strong>Basic Usage:</strong></p>
+<pre><code class="language-java">// Single replacement (default)
+String result = fileTools.edit(
+    &quot;/path/to/file.java&quot;,
+    &quot;public void oldMethod() {&quot;,       // old_string
+    &quot;public void newMethod() {&quot;,       // new_string
+    null                               // replace_all (false)
+);
+
+// Replace all occurrences (useful for variable renaming)
+String result = fileTools.edit(
+    &quot;/path/to/file.java&quot;,
+    &quot;oldVariableName&quot;,                 // old_string
+    &quot;newVariableName&quot;,                 // new_string
+    true                              // replace_all
+);
+
+// Multi-line replacement
+String result = fileTools.edit(
+    &quot;/path/to/config.yml&quot;,
+    &quot;database:\n  host: localhost\n  port: 5432&quot;,
+    &quot;database:\n  host: prod-server\n  port: 3306&quot;,
+    null
+);
+</code></pre>
+<p><strong>Output Format:</strong></p>
+<pre><code>The file /path/to/file.java has been updated. Here's the result of running `cat -n` on a snippet of the edited file:
+    15→    private static final String NAME = &quot;newValue&quot;;
+    16→
+    17→    public void newMethod() {
+    18→        // method implementation
+    19→    }
+</code></pre>
+<p><strong>Safety Features:</strong></p>
+<ol>
+<li>
+<p><strong>Uniqueness Check</strong>: If <code>old_string</code> appears multiple times and <code>replace_all=false</code>, the edit fails with an error:
+   <code>Error: old_string appears 5 times in the file. Either provide a larger string
+   with more surrounding context to make it unique or use replace_all=true to
+   change all instances.</code></p>
+</li>
+<li>
+<p><strong>Existence Check</strong>: Returns error if <code>old_string</code> is not found in the file</p>
+</li>
+<li>
+<p><strong>Different Strings</strong>: Validates that <code>old_string</code> and <code>new_string</code> are different</p>
+</li>
+<li>
+<p><strong>Must Read First</strong>: Should read the file first to see exact content and indentation</p>
+</li>
+</ol>
+<p><strong>Indentation Handling:</strong></p>
+<p>When copying text from Read tool output, preserve exact indentation AFTER the line number prefix:</p>
+<pre><code>Read output:
+    42→    public void method() {
+
+Correct old_string:
+&quot;    public void method() {&quot;
+
+Incorrect old_string (includes line number):
+&quot;42→    public void method() {&quot;
+</code></pre>
+<p><strong>Best Practices:</strong></p>
+<ol>
+<li>
+<p><strong>Read before editing</strong>: Always use Read tool first to see exact content
+   <code>java
+   String content = fileTools.read("/path/to/file.java", null, null);
+   // Now edit based on what you see</code></p>
+</li>
+<li>
+<p><strong>Include context for uniqueness</strong>: If replacement string appears multiple times, include surrounding lines
+   <code>java
+   // Instead of just "foo"
+   fileTools.edit(filePath, "bar\nfoo\nbaz", "bar\nnewValue\nbaz", null);</code></p>
+</li>
+<li>
+<p><strong>Use replace_all for renaming</strong>: When renaming variables or constants throughout a file
+   <code>java
+   fileTools.edit(filePath, "OLD_CONSTANT", "NEW_CONSTANT", true);</code></p>
+</li>
+<li>
+<p><strong>Preserve indentation</strong>: Copy exact whitespace from Read output (spaces/tabs)</p>
+</li>
+<li>
+<p><strong>Multi-line edits</strong>: Use <code>\n</code> for newlines in both old_string and new_string</p>
+</li>
+</ol>
+<p><strong>Example Workflow:</strong></p>
+<pre><code class="language-java">FileSystemTools fileTools = FileSystemTools.builder().build();
+
+// 1. Read the file to see current content
+String content = fileTools.read(
+    &quot;/src/main/java/Example.java&quot;,
+    null,
+    null
+);
+
+// 2. Identify exact string to replace (preserving indentation)
+String oldCode = &quot;&quot;&quot;
+    public void calculate() {
+        return value * 2;
+    }&quot;&quot;&quot;;
+
+String newCode = &quot;&quot;&quot;
+    public void calculate() {
+        return value * 3;
+    }&quot;&quot;&quot;;
+
+// 3. Perform the edit
+String result = fileTools.edit(
+    &quot;/src/main/java/Example.java&quot;,
+    oldCode,
+    newCode,
+    null
+);
+
+// Output shows snippet with context around the edit
+</code></pre>
+<p><strong>Common Use Cases:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Configuration</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Update single method</td>
+<td><code>replace_all=false</code></td>
+<td>Modify one method implementation</td>
+</tr>
+<tr>
+<td>Rename variable</td>
+<td><code>replace_all=true</code></td>
+<td>Change <code>oldName</code> to <code>newName</code> everywhere</td>
+</tr>
+<tr>
+<td>Update configuration</td>
+<td><code>replace_all=false</code></td>
+<td>Change one config value</td>
+</tr>
+<tr>
+<td>Fix typos</td>
+<td><code>replace_all=true</code></td>
+<td>Fix misspelled word throughout file</td>
+</tr>
+<tr>
+<td>Refactor imports</td>
+<td><code>replace_all=false</code></td>
+<td>Update specific import statement</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error Messages:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>Meaning</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"File does not exist"</td>
+<td>File path is invalid</td>
+<td>Check file path is correct</td>
+</tr>
+<tr>
+<td>"old_string not found"</td>
+<td>Text doesn't exist in file</td>
+<td>Verify exact string including whitespace</td>
+</tr>
+<tr>
+<td>"appears N times"</td>
+<td>Multiple matches found</td>
+<td>Add more context or use <code>replace_all=true</code></td>
+</tr>
+<tr>
+<td>"must be different"</td>
+<td>old_string equals new_string</td>
+<td>Ensure you're actually changing the content</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

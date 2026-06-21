@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>ShellTools - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "ShellTools";
+        var mkdocs_page_input_path = "tools/ShellTools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">ShellTools</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/ShellTools.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="shelltools">ShellTools<a class="headerlink" href="#shelltools" title="Permanent link">&para;</a></h1>
+<p>A comprehensive shell execution toolkit that provides both synchronous and background command execution with full process management capabilities.</p>
+<p><strong>Features:</strong>
+- Synchronous command execution with configurable timeout
+- Background process execution for long-running commands
+- Real-time output monitoring for background processes
+- Separate stdout and stderr capture
+- Process lifecycle management (kill, status checks)
+- Regex filtering for output
+- Cross-platform support (Windows/Unix)
+- Automatic output truncation for large outputs
+- Exit code reporting</p>
+<h2 id="available-tools">Available Tools<a class="headerlink" href="#available-tools" title="Permanent link">&para;</a></h2>
+<h3 id="1-bash-execute-shell-commands">1. Bash - Execute Shell Commands<a class="headerlink" href="#1-bash-execute-shell-commands" title="Permanent link">&para;</a></h3>
+<p>The primary tool for executing shell commands either synchronously or in the background.</p>
+<p><strong>Parameters:</strong>
+- <code>command</code> (required) - The shell command to execute
+- <code>timeout</code> (optional) - Timeout in milliseconds (max 600000ms / 10 minutes, default: 120000ms / 2 minutes)
+- <code>description</code> (optional) - Clear description of what the command does (5-10 words)
+- <code>runInBackground</code> (optional) - Set to <code>true</code> to run command in background</p>
+<p><strong>Basic Usage:</strong></p>
+<pre><code class="language-java">ShellTools shellTools = new ShellTools();
+
+// Synchronous execution
+String result = shellTools.bash(
+    &quot;ls -la&quot;,           // command
+    null,               // timeout (uses default 2 minutes)
+    &quot;List all files&quot;,   // description
+    null               // runInBackground (false)
+);
+
+// With custom timeout
+String result = shellTools.bash(
+    &quot;npm install&quot;,
+    300000L,            // 5 minute timeout
+    &quot;Install dependencies&quot;,
+    null
+);
+
+// Background execution
+String result = shellTools.bash(
+    &quot;npm run dev&quot;,
+    null,
+    &quot;Start dev server&quot;,
+    true               // Run in background
+);
+// Returns: &quot;bash_id: shell_1234567890&quot;
+</code></pre>
+<p><strong>Output Format:</strong></p>
+<pre><code>bash_id: shell_1234567890
+
+[command output]
+
+STDERR:
+[error output if any]
+
+Exit code: [exit code if non-zero]
+</code></pre>
+<p><strong>Important Notes:</strong>
+- Commands timeout after 2 minutes by default (configurable up to 10 minutes)
+- Output is truncated if it exceeds 30,000 characters
+- Background commands return immediately with a <code>bash_id</code> for monitoring
+- Use Unix shell (<code>/bin/bash</code>) on Linux/Mac, CMD on Windows
+- Don't use <code>&amp;</code> when using <code>runInBackground=true</code> (handled automatically)</p>
+<h3 id="2-bashoutput-monitor-background-processes">2. BashOutput - Monitor Background Processes<a class="headerlink" href="#2-bashoutput-monitor-background-processes" title="Permanent link">&para;</a></h3>
+<p>Retrieves output from running or completed background shell processes.</p>
+<p><strong>Parameters:</strong>
+- <code>bash_id</code> (required) - The ID of the background shell (from Bash tool)
+- <code>filter</code> (optional) - Regex pattern to filter output lines</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">// Start background process
+String startResult = shellTools.bash(
+    &quot;mvn clean install&quot;,
+    null,
+    &quot;Build project&quot;,
+    true
+);
+// Extract bash_id from result (e.g., &quot;shell_1234567890&quot;)
+
+// Monitor output
+String output = shellTools.bashOutput(
+    &quot;shell_1234567890&quot;,  // bash_id
+    null                 // no filter
+);
+
+// Filter output with regex (only show ERROR lines)
+String filteredOutput = shellTools.bashOutput(
+    &quot;shell_1234567890&quot;,
+    &quot;.*ERROR.*&quot;         // regex filter
+);
+</code></pre>
+<p><strong>Output Format:</strong></p>
+<pre><code>Shell ID: shell_1234567890
+Status: Running (or Completed)
+Exit code: 0
+
+New output:
+STDOUT:
+[new stdout content since last check]
+
+STDERR:
+[new stderr content since last check]
+</code></pre>
+<p><strong>Key Features:</strong>
+- <strong>Incremental output</strong>: Only returns NEW output since last check
+- <strong>Regex filtering</strong>: Filter output lines matching a pattern (filtered lines are consumed)
+- <strong>Status tracking</strong>: Shows if process is running or completed
+- <strong>Exit code</strong>: Available when process completes</p>
+<p><strong>Important Notes:</strong>
+- Only shows output generated since the last <code>BashOutput</code> call
+- Filtered lines are marked as "read" and won't appear in subsequent calls
+- Returns "No new output since last check" if nothing new is available</p>
+<h3 id="3-killshell-terminate-background-processes">3. KillShell - Terminate Background Processes<a class="headerlink" href="#3-killshell-terminate-background-processes" title="Permanent link">&para;</a></h3>
+<p>Gracefully terminates a running background shell process.</p>
+<p><strong>Parameters:</strong>
+- <code>bash_id</code> (required) - The ID of the background shell to kill</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-java">// Kill a background process
+String result = shellTools.killShell(
+    &quot;shell_1234567890&quot;
+);
+// Returns: &quot;Successfully killed shell: shell_1234567890&quot;
+</code></pre>
+<p><strong>Termination Process:</strong>
+1. Attempts graceful shutdown with <code>destroy()</code>
+2. Waits up to 5 seconds for process to terminate
+3. Forces termination with <code>destroyForcibly()</code> if needed
+4. Removes process from active shell tracking</p>
+<p><strong>Example Workflow:</strong></p>
+<pre><code class="language-java">ShellTools shellTools = new ShellTools();
+
+// 1. Start a long-running background task
+String start = shellTools.bash(
+    &quot;python train_model.py&quot;,
+    null,
+    &quot;Train ML model&quot;,
+    true
+);
+// Returns: &quot;bash_id: shell_1234567890 ...&quot;
+
+// 2. Periodically check progress
+String output1 = shellTools.bashOutput(&quot;shell_1234567890&quot;, &quot;.*epoch.*&quot;);
+// Shows only lines containing &quot;epoch&quot;
+
+Thread.sleep(5000);
+
+String output2 = shellTools.bashOutput(&quot;shell_1234567890&quot;, null);
+// Shows all new output since last check
+
+// 3. Kill if needed
+String killResult = shellTools.killShell(&quot;shell_1234567890&quot;);
+// Returns: &quot;Successfully killed shell: shell_1234567890&quot;
+</code></pre>
+<p><strong>Cross-Platform Support:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Shell Used</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td><code>cmd.exe /c</code></td>
+<td><code>cmd.exe /c dir</code></td>
+</tr>
+<tr>
+<td>Linux/Mac</td>
+<td><code>/bin/bash -c</code></td>
+<td><code>/bin/bash -c ls -la</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuration &amp; Limits:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Maximum</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Timeout</td>
+<td>120000ms (2 min)</td>
+<td>600000ms (10 min)</td>
+<td>Command execution timeout</td>
+</tr>
+<tr>
+<td>Output Length</td>
+<td>N/A</td>
+<td>30000 chars</td>
+<td>Output truncated if exceeded</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Best Practices:</strong></p>
+<ol>
+<li>
+<p><strong>Use descriptive names</strong>: Provide clear descriptions for better logging
+   <code>java
+   shellTools.bash("git status", null, "Check git status", null);</code></p>
+</li>
+<li>
+<p><strong>Background for long tasks</strong>: Use background execution for commands that take &gt; 30 seconds
+   <code>java
+   shellTools.bash("npm run test", null, "Run test suite", true);</code></p>
+</li>
+<li>
+<p><strong>Monitor background processes</strong>: Regularly check output of background processes
+   <code>java
+   String output = shellTools.bashOutput(bashId, null);</code></p>
+</li>
+<li>
+<p><strong>Filter wisely</strong>: Use regex filters to focus on relevant output
+   <code>java
+   // Only show test failures
+   shellTools.bashOutput(bashId, ".*(FAIL|ERROR).*");</code></p>
+</li>
+<li>
+<p><strong>Clean up</strong>: Kill background processes when no longer needed
+   <code>java
+   shellTools.killShell(bashId);</code></p>
+</li>
+</ol>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

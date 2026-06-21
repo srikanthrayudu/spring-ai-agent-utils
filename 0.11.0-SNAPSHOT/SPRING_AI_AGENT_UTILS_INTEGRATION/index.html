@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Spring AI Integration - IKOS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Spring AI Integration";
+        var mkdocs_page_input_path = "SPRING_AI_AGENT_UTILS_INTEGRATION.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Spring AI Integration</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#integration-goals">Integration Goals</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#core-ikos-tool-layer-13-governance-tools">Core IKOS Tool Layer — 13 Governance Tools</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#identity-investigation">Identity Investigation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cross-platform-analysis">Cross-Platform Analysis</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#soc-operations-incident-response">SOC Operations (Incident Response)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#knowledge-management">Knowledge Management</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#advisor-layer">Advisor Layer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#soc-agent-system-prompt">SOC Agent System Prompt</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#recommended-agent-composition">Recommended Agent Composition</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#subagent-roles">Subagent Roles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#skills-soc-playbooks">Skills — SOC Playbooks</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#bridge-layer">Bridge Layer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rest-and-spring-boot-integration">REST And Spring Boot Integration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-to-avoid-in-the-submission">What To Avoid In The Submission</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Spring AI Integration</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/SPRING_AI_AGENT_UTILS_INTEGRATION.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="spring-ai-agent-utils-integration-soc-grade">Spring AI Agent Utils Integration — SOC-Grade<a class="headerlink" href="#spring-ai-agent-utils-integration-soc-grade" title="Permanent link">&para;</a></h1>
+<p>IKOS uses <code>spring-ai-agent-utils</code> as an agent execution layer. The project should not be presented as a Spring AI Agent Utils documentation site. Present it as an identity-risk product that uses agent utilities to make investigation, remediation planning, and governance memory interactive.</p>
+<h2 id="integration-goals">Integration Goals<a class="headerlink" href="#integration-goals" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>IKOS implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Let an LLM investigate identity risk</td>
+<td><code>IdentityGovernanceTools</code> exposes 13 identity-risk functions as Spring AI <code>@Tool</code> methods</td>
+</tr>
+<tr>
+<td>Execute SOC containment &amp; escalation</td>
+<td><code>ContainIdentity</code> + <code>EscalateToSOC</code> tools enable real-time incident response</td>
+</tr>
+<tr>
+<td>Inject learned risk context</td>
+<td><code>KnowledgeEvolutionAdvisor</code> (bidirectional) retrieves knowledge + tracks response patterns</td>
+</tr>
+<tr>
+<td>Turn recommendations into work</td>
+<td><code>TodoWriteTool</code> structures multi-step remediation tasks</td>
+</tr>
+<tr>
+<td>Use specialist agent roles</td>
+<td><code>TaskTool</code> supports risk analyst, compliance reviewer, and remediation planner subagents</td>
+</tr>
+<tr>
+<td>Reuse domain workflows</td>
+<td><code>SkillsTool</code> loads 5 SOC skills (risk-scan, investigate, compliance, threat-hunt, incident-response)</td>
+</tr>
+<tr>
+<td>Support hands-on investigation</td>
+<td>Shell, grep, glob, and filesystem tools let the agent inspect project output during demos</td>
+</tr>
+</tbody>
+</table>
+<h2 id="core-ikos-tool-layer-13-governance-tools">Core IKOS Tool Layer — 13 Governance Tools<a class="headerlink" href="#core-ikos-tool-layer-13-governance-tools" title="Permanent link">&para;</a></h2>
+<p>Main class:</p>
+<pre><code class="language-text">ikos/src/main/java/org/springaicommunity/agent/ikos/tools/IdentityGovernanceTools.java
+</code></pre>
+<h3 id="identity-investigation">Identity Investigation<a class="headerlink" href="#identity-investigation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AnalyzeIdentityRisks</code></td>
+<td>Finds stored risk observations for a named identity</td>
+</tr>
+<tr>
+<td><code>DetectOffboardingGap</code></td>
+<td>Records a disabled-on-one-platform, active-on-another risk</td>
+</tr>
+<tr>
+<td><code>ListIdentityRisks</code></td>
+<td>Returns active risk observations and incidents</td>
+</tr>
+<tr>
+<td><code>ListAllIkosKnowledge</code></td>
+<td>Returns the knowledge base for audit/review</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cross-platform-analysis">Cross-Platform Analysis<a class="headerlink" href="#cross-platform-analysis" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ComplianceCheck</code></td>
+<td>Maps detected risks to NIST SP 800-53, GDPR, CIS Controls, MITRE ATT&amp;CK</td>
+</tr>
+<tr>
+<td><code>ComputeBlastRadius</code></td>
+<td>Computes lateral movement blast radius for a compromised identity</td>
+</tr>
+<tr>
+<td><code>QueryIdentityGraph</code></td>
+<td>Explores cross-platform identity-to-knowledge-unit graph relationships</td>
+</tr>
+</tbody>
+</table>
+<h3 id="soc-operations-incident-response">SOC Operations (Incident Response)<a class="headerlink" href="#soc-operations-incident-response" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ContainIdentity</code></td>
+<td>Execute containment actions: DISABLE, REVOKE_SESSIONS, ISOLATE, MONITOR. Records all actions for audit trail.</td>
+</tr>
+<tr>
+<td><code>EscalateToSOC</code></td>
+<td>Packages risk profile, blast radius, compliance impact, and recommended actions into a SOC Tier-3 escalation report.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="knowledge-management">Knowledge Management<a class="headerlink" href="#knowledge-management" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RecordSecurityIncident</code></td>
+<td>Saves an incident into the IKOS knowledge store</td>
+</tr>
+<tr>
+<td><code>RecordRemediationAction</code></td>
+<td>Stores remediation outcome so future confidence can improve</td>
+</tr>
+<tr>
+<td><code>RecordAuditFinding</code></td>
+<td>Records audit findings with control references</td>
+</tr>
+<tr>
+<td><code>RecommendRemediation</code></td>
+<td>Generates evidence-backed remediation guidance</td>
+</tr>
+</tbody>
+</table>
+<h2 id="advisor-layer">Advisor Layer<a class="headerlink" href="#advisor-layer" title="Permanent link">&para;</a></h2>
+<p>Main class:</p>
+<pre><code class="language-text">ikos/src/main/java/org/springaicommunity/agent/ikos/advisors/KnowledgeEvolutionAdvisor.java
+</code></pre>
+<p>The advisor makes the agent context-aware with a <strong>bidirectional</strong> design:</p>
+<p><strong><code>before()</code> — Context Injection:</strong>
+1. Reads the current user question.
+2. Retrieves relevant knowledge units from IKOS memory.
+3. Scores them by relevance, confidence, evidence strength, and recency.
+4. Injects the selected context into the prompt as <code>&lt;ikos-security-memory&gt;</code> block.</p>
+<p><strong><code>after()</code> — Observability &amp; Feedback:</strong>
+1. Tracks response patterns (risk analysis, compliance references, remediation guidance).
+2. Increments atomic counters for observability.
+3. Exposes <code>utilizationSummary()</code> API for dashboard metrics.</p>
+<p>This is the main uniqueness story: the agent does not start from an empty prompt every time. It uses accumulated identity-governance memory and tracks how that memory influences responses.</p>
+<h2 id="soc-agent-system-prompt">SOC Agent System Prompt<a class="headerlink" href="#soc-agent-system-prompt" title="Permanent link">&para;</a></h2>
+<pre><code class="language-text">examples/ikos-agent-demo/src/main/resources/prompt/MAIN_AGENT_SYSTEM_PROMPT_V2.md
+</code></pre>
+<p>The system prompt defines the agent's SOC Analyst persona with:
+- Investigation protocol (10-step SOC playbook: Triage → Investigate → Correlate → Assess → Contain → Remediate → Document → Verify → Report → Learn)
+- All 13 governance tools documented inline
+- Subagent orchestration instructions
+- Response formatting with severity badges and compliance references</p>
+<h2 id="recommended-agent-composition">Recommended Agent Composition<a class="headerlink" href="#recommended-agent-composition" title="Permanent link">&para;</a></h2>
+<p>For the hackathon demo, keep the agent lean:</p>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultAdvisors(ikos.knowledgeEvolutionAdvisor())
+    .defaultTools(
+        ikos.governanceTools(),
+        TodoWriteTool.builder().build(),
+        SkillsTool.builder().addSkillsResources(skillPaths).build()
+    )
+    .build();
+</code></pre>
+<p>For the full SOC agent, add investigation and orchestration utilities:</p>
+<pre><code class="language-java">.defaultTools(
+    ikos.governanceTools(),          // 13 identity governance + SOC IR tools
+    ikos.engineeringMemoryTools(),   // knowledge management
+    autoMemoryTools,                 // persistent agent memory
+    skillsTool,                      // 5 SOC skills
+    taskTool, taskOutputTool,        // subagent orchestration
+    todoTool,                        // remediation task tracking
+    shellTools, grepTool,            // investigation
+    fileSystemTools,                 // file access
+    askUserTool                      // human-in-the-loop escalation
+)
+.defaultAdvisors(
+    autoMemoryAdvisor,               // auto-inject memory context
+    ikos.advisor()                   // bidirectional knowledge evolution
+)
+</code></pre>
+<p>Lead with the IKOS domain tools (especially <code>ContainIdentity</code>, <code>EscalateToSOC</code>, <code>ComputeBlastRadius</code>), then mention the utility tools as accelerators.</p>
+<h2 id="subagent-roles">Subagent Roles<a class="headerlink" href="#subagent-roles" title="Permanent link">&para;</a></h2>
+<p>IKOS includes resources for specialist roles:</p>
+<pre><code class="language-text">examples/ikos-agent-demo/src/main/resources/agents/
+  RISK_ANALYST_SUBAGENT.md
+  COMPLIANCE_REVIEWER_SUBAGENT.md
+  REMEDIATION_PLANNER_SUBAGENT.md
+</code></pre>
+<p>Recommended responsibilities:</p>
+<table>
+<thead>
+<tr>
+<th>Subagent</th>
+<th>Responsibility</th>
+<th>Key Tools</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Risk analyst</td>
+<td>Scan identities, detect risks, compute blast radius, generate MITRE ATT&amp;CK mappings</td>
+<td>AnalyzeRisks, BlastRadius, IdentityGraph, ComplianceCheck</td>
+</tr>
+<tr>
+<td>Compliance reviewer</td>
+<td>Map findings to NIST, GDPR, CIS, SOX, HIPAA, ISO 27001, and MITRE ATT&amp;CK</td>
+<td>ComplianceCheck, QueryIdentityGraph, RecordAuditFinding</td>
+</tr>
+<tr>
+<td>Remediation planner</td>
+<td>Execute containment, generate remediation roadmaps, track outcomes, escalate critical risks</td>
+<td>ContainIdentity, EscalateToSOC, RecommendRemediation, BlastRadius</td>
+</tr>
+</tbody>
+</table>
+<h2 id="skills-soc-playbooks">Skills — SOC Playbooks<a class="headerlink" href="#skills-soc-playbooks" title="Permanent link">&para;</a></h2>
+<p>IKOS packages 5 reusable SOC procedures:</p>
+<pre><code class="language-text">examples/ikos-agent-demo/src/main/resources/skills/
+  identity-risk-scan/     — Full identity scan pipeline
+  investigate-identity/   — Deep-dive into a specific person
+  compliance-report/      — Multi-framework compliance mapping
+  threat-hunt/            — Proactive threat hunting for hidden privilege abuse
+  incident-response/      — NIST SP 800-61 incident handling lifecycle
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>SOC Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>identity-risk-scan</code></td>
+<td>Daily automated risk assessment across all platforms</td>
+</tr>
+<tr>
+<td><code>investigate-identity</code></td>
+<td>Tier-2 deep-dive investigation of a suspicious identity</td>
+</tr>
+<tr>
+<td><code>compliance-report</code></td>
+<td>Audit preparation and regulatory compliance gap analysis</td>
+</tr>
+<tr>
+<td><code>threat-hunt</code></td>
+<td>Proactive hunting for hidden lateral movement paths and IoCs</td>
+</tr>
+<tr>
+<td><code>incident-response</code></td>
+<td>Structured IR workflow: triage → contain → investigate → remediate → verify</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bridge-layer">Bridge Layer<a class="headerlink" href="#bridge-layer" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IkosMemoryBridge</code></td>
+<td>Syncs IKOS knowledge store ↔ AutoMemoryTools persistent memory</td>
+</tr>
+<tr>
+<td><code>IkosEnvironmentProvider</code></td>
+<td>Enriches system prompt with IKOS platform context (13 tools, live stats)</td>
+</tr>
+<tr>
+<td><code>IkosSubagentDefinition</code></td>
+<td>Defines IKOS-specific subagent metadata (kind, tools, role)</td>
+</tr>
+<tr>
+<td><code>IkosSubagentResolver</code></td>
+<td>Resolves markdown+YAML subagent definitions from classpath</td>
+</tr>
+<tr>
+<td><code>IkosSubagentExecutor</code></td>
+<td>Executes subagent tasks using cloned ChatClient with IKOS tools</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rest-and-spring-boot-integration">REST And Spring Boot Integration<a class="headerlink" href="#rest-and-spring-boot-integration" title="Permanent link">&para;</a></h2>
+<p>Main classes:</p>
+<pre><code class="language-text">ikos/src/main/java/org/springaicommunity/agent/ikos/autoconfigure/IkosAutoConfiguration.java
+ikos/src/main/java/org/springaicommunity/agent/ikos/web/IkosRestController.java
+ikos/src/main/java/org/springaicommunity/agent/ikos/config/IkosProperties.java
+</code></pre>
+<p>The module can be added to a Spring Boot app and auto-configured with:</p>
+<pre><code class="language-yaml">ikos:
+  storage-path: /var/ikos
+  policies:
+    dormant-admin-threshold-days: 90
+    cross-platform-admin-min-platforms: 3
+    stale-service-account-days: 180
+  api:
+    enabled: true
+    base-path: /api/ikos
+</code></pre>
+<p>Useful REST endpoints:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET /api/ikos/health</code></td>
+<td>Component and storage health</td>
+</tr>
+<tr>
+<td><code>GET /api/ikos/risks</code></td>
+<td>Risk observations and incidents</td>
+</tr>
+<tr>
+<td><code>GET /api/ikos/knowledge</code></td>
+<td>Knowledge base review</td>
+</tr>
+<tr>
+<td><code>POST /api/ikos/incidents</code></td>
+<td>Record a security incident</td>
+</tr>
+<tr>
+<td><code>POST /api/ikos/scan</code></td>
+<td>Trigger a simulated scan</td>
+</tr>
+<tr>
+<td><code>GET /api/ikos/audit</code></td>
+<td>View API and tool audit trail</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-to-avoid-in-the-submission">What To Avoid In The Submission<a class="headerlink" href="#what-to-avoid-in-the-submission" title="Permanent link">&para;</a></h2>
+<p>Avoid putting long Spring AI Agent Utils reference material in the main README or homepage. It makes the project look like a library demo instead of a cybersecurity product.</p>
+<p>Use this structure instead:</p>
+<ol>
+<li>Main README: IKOS problem, solution, uniqueness, run commands.</li>
+<li>Architecture: data flow, engines, AI/ML approach.</li>
+<li>Integration doc: only the Spring AI Agent Utils pieces IKOS actually uses.</li>
+<li>Original library docs: keep them under <code>spring-ai-agent-utils/</code> as implementation reference only.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../DATA_DICTIONARY/" class="btn btn-neutral float-left" title="Data Dictionary"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../RISK_REPORT/" class="btn btn-neutral float-right" title="Risk Report">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+      <span><a href="../DATA_DICTIONARY/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../RISK_REPORT/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

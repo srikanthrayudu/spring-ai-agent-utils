@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Data Dictionary - IKOS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Data Dictionary";
+        var mkdocs_page_input_path = "DATA_DICTIONARY.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Data Dictionary</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#dataset-overview">📊 Dataset Overview</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#anomaly-distribution">Anomaly Distribution</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#core-data-models">📋 Core Data Models</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-identityaccount-platform-account-record">1. IdentityAccount — Platform Account Record</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#account-id-conventions-by-platform">Account ID Conventions by Platform</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#sample-record-json">Sample Record (JSON)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-unifiedidentity-cross-platform-identity-profile">2. UnifiedIdentity — Cross-Platform Identity Profile</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#computed-properties">Computed Properties</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-auditevent-platform-audit-log-entry">3. AuditEvent — Platform Audit Log Entry</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#event-types">Event Types</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#ip-address-ranges">IP Address Ranges</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-offboardingrecord-employee-termination-record">4. OffboardingRecord — Employee Termination Record</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-temporaryaccessexception-time-bound-admin-grant">5. TemporaryAccessException — Time-Bound Admin Grant</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-grouphierarchy-nested-group-membership-tree">6. GroupHierarchy — Nested Group Membership Tree</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#enterprise-hierarchy-pre-built">Enterprise Hierarchy (Pre-built)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#7-riskindicator-detected-risk-finding">7. RiskIndicator — Detected Risk Finding</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#risk-types-8-detection-rules">Risk Types (8 Detection Rules)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#8-knowledgeunit-knowledge-evolution-record">8. KnowledgeUnit — Knowledge Evolution Record</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#knowledge-states-evolution-pipeline">Knowledge States (Evolution Pipeline)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#knowledge-types">Knowledge Types</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#9-confidence-4-factor-confidence-model">9. Confidence — 4-Factor Confidence Model</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cross-platform-identity-resolution">🔗 Cross-Platform Identity Resolution</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#example-resolution">Example Resolution</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compliance-control-mapping">📐 Compliance Control Mapping</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Data Dictionary</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/DATA_DICTIONARY.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ikos-data-dictionary">📖 IKOS Data Dictionary<a class="headerlink" href="#ikos-data-dictionary" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Complete schema reference for all simulated identity telemetry data</p>
+</blockquote>
+<hr />
+<h2 id="dataset-overview">📊 Dataset Overview<a class="headerlink" href="#dataset-overview" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unique Identities</strong></td>
+<td>200</td>
+<td>Individual people/service accounts</td>
+</tr>
+<tr>
+<td><strong>Total Accounts</strong></td>
+<td>405</td>
+<td>Platform-specific accounts across 5 platforms</td>
+</tr>
+<tr>
+<td><strong>Platforms</strong></td>
+<td>5</td>
+<td>ActiveDirectory, AWS_IAM, Okta, Salesforce, ServiceNow</td>
+</tr>
+<tr>
+<td><strong>Audit Events</strong></td>
+<td>1,000</td>
+<td>Login, privilege change, resource access events</td>
+</tr>
+<tr>
+<td><strong>Offboarding Records</strong></td>
+<td>51</td>
+<td>Termination records with platform disable status</td>
+</tr>
+<tr>
+<td><strong>Temporary Exceptions</strong></td>
+<td>20</td>
+<td>Time-bound admin grants with revocation tracking</td>
+</tr>
+<tr>
+<td><strong>Group Hierarchy</strong></td>
+<td>25 groups</td>
+<td>Nested group→role→permission inheritance chains</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anomaly-distribution">Anomaly Distribution<a class="headerlink" href="#anomaly-distribution" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Count</th>
+<th>Percentage</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal Users</td>
+<td>102</td>
+<td>51%</td>
+<td>Standard employees with baseline access</td>
+</tr>
+<tr>
+<td>Offboarding Gaps</td>
+<td>21</td>
+<td>11%</td>
+<td>Disabled on one platform, active on another</td>
+</tr>
+<tr>
+<td>Over-Privileged</td>
+<td>17</td>
+<td>9%</td>
+<td>Admin across 3+ platforms simultaneously</td>
+</tr>
+<tr>
+<td>Dormant Admins</td>
+<td>12</td>
+<td>6%</td>
+<td>Admin accounts inactive &gt;90 days</td>
+</tr>
+<tr>
+<td>Token/Svc Abuse</td>
+<td>10</td>
+<td>5%</td>
+<td>Stale service accounts with admin privileges</td>
+</tr>
+<tr>
+<td>Stale Exceptions</td>
+<td>10</td>
+<td>5%</td>
+<td>Temporary admin grants never revoked</td>
+</tr>
+<tr>
+<td>Legitimate High-Priv</td>
+<td>28</td>
+<td>14%</td>
+<td>Justified admin access (false positive traps)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="core-data-models">📋 Core Data Models<a class="headerlink" href="#core-data-models" title="Permanent link">&para;</a></h2>
+<h3 id="1-identityaccount-platform-account-record">1. <code>IdentityAccount</code> — Platform Account Record<a class="headerlink" href="#1-identityaccount-platform-account-record" title="Permanent link">&para;</a></h3>
+<p>Represents a single account on a specific identity platform. Multiple records are correlated into a <code>UnifiedIdentity</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>accountId</code></td>
+<td>String</td>
+<td>✅</td>
+<td>Platform-specific identifier</td>
+<td><code>john.smith</code>, <code>Jsmith</code>, <code>john.smith@acme.com</code></td>
+</tr>
+<tr>
+<td><code>platform</code></td>
+<td>String</td>
+<td>✅</td>
+<td>Identity platform name</td>
+<td><code>ActiveDirectory</code>, <code>AWS_IAM</code>, <code>Okta</code>, <code>Salesforce</code>, <code>ServiceNow</code></td>
+</tr>
+<tr>
+<td><code>displayName</code></td>
+<td>String</td>
+<td>✅</td>
+<td>Human-readable display name</td>
+<td><code>John Smith</code></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>String</td>
+<td>⬜</td>
+<td>Email address</td>
+<td><code>john.smith@acme.com</code></td>
+</tr>
+<tr>
+<td><code>employeeId</code></td>
+<td>String</td>
+<td>⬜</td>
+<td>Cross-platform employee ID</td>
+<td><code>EMP-0042</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>Enum</td>
+<td>✅</td>
+<td>Account lifecycle state</td>
+<td><code>ACTIVE</code>, <code>DISABLED</code>, <code>LOCKED</code>, <code>SUSPENDED</code>, <code>PENDING_DELETION</code></td>
+</tr>
+<tr>
+<td><code>roles</code></td>
+<td>List\&lt;String&gt;</td>
+<td>✅</td>
+<td>Assigned roles on this platform</td>
+<td><code>["Domain Admins", "Schema Admins"]</code></td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>List\&lt;String&gt;</td>
+<td>✅</td>
+<td>Group memberships</td>
+<td><code>["IT-Team", "Security-Team"]</code></td>
+</tr>
+<tr>
+<td><code>isAdmin</code></td>
+<td>Boolean</td>
+<td>✅</td>
+<td>Has admin-level privileges</td>
+<td><code>true</code> / <code>false</code></td>
+</tr>
+<tr>
+<td><code>lastLogin</code></td>
+<td>DateTime</td>
+<td>⬜</td>
+<td>Last authentication timestamp</td>
+<td><code>2026-06-15T18:42:01</code></td>
+</tr>
+<tr>
+<td><code>createdAt</code></td>
+<td>DateTime</td>
+<td>⬜</td>
+<td>Account creation timestamp</td>
+<td><code>2023-03-14T09:00:00</code></td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>Map\&lt;String,String&gt;</td>
+<td>⬜</td>
+<td>Platform-specific attributes</td>
+<td><code>{"department": "Security", "manager": "CISO"}</code></td>
+</tr>
+<tr>
+<td><code>accountType</code></td>
+<td>Enum</td>
+<td>✅</td>
+<td>Identity classification</td>
+<td><code>EMPLOYEE</code>, <code>CONTRACTOR</code>, <code>SERVICE_ACCOUNT</code>, <code>API_TOKEN</code></td>
+</tr>
+<tr>
+<td><code>credentialAgeDays</code></td>
+<td>Integer</td>
+<td>⬜</td>
+<td>Days since credential rotation</td>
+<td><code>180</code> (or <code>-1</code> if unknown)</td>
+</tr>
+<tr>
+<td><code>lastCredentialRotation</code></td>
+<td>DateTime</td>
+<td>⬜</td>
+<td>Last key/password rotation</td>
+<td><code>2026-01-15T00:00:00</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="account-id-conventions-by-platform">Account ID Conventions by Platform<a class="headerlink" href="#account-id-conventions-by-platform" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>ID Format</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ActiveDirectory</td>
+<td><code>firstname.lastname</code></td>
+<td><code>john.smith</code></td>
+</tr>
+<tr>
+<td>AWS_IAM</td>
+<td><code>FlastName</code> (first initial + last name)</td>
+<td><code>Jsmith</code></td>
+</tr>
+<tr>
+<td>Okta</td>
+<td><code>email</code></td>
+<td><code>john.smith@acme.com</code></td>
+</tr>
+<tr>
+<td>Salesforce</td>
+<td><code>email</code></td>
+<td><code>john.smith@acme.com</code></td>
+</tr>
+<tr>
+<td>ServiceNow</td>
+<td><code>accountId</code> (service accounts)</td>
+<td><code>svc-etl-prod-8</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="sample-record-json">Sample Record (JSON)<a class="headerlink" href="#sample-record-json" title="Permanent link">&para;</a></h4>
+<pre><code class="language-json">{
+  &quot;accountId&quot;: &quot;john.smith&quot;,
+  &quot;platform&quot;: &quot;ActiveDirectory&quot;,
+  &quot;displayName&quot;: &quot;John Smith&quot;,
+  &quot;email&quot;: &quot;john.smith@acme.com&quot;,
+  &quot;employeeId&quot;: &quot;EMP-0042&quot;,
+  &quot;status&quot;: &quot;ACTIVE&quot;,
+  &quot;roles&quot;: [&quot;Domain Admins&quot;, &quot;Enterprise Admins&quot;],
+  &quot;groups&quot;: [&quot;Security-Team&quot;],
+  &quot;isAdmin&quot;: true,
+  &quot;lastLogin&quot;: &quot;2026-06-15T18:42:01&quot;,
+  &quot;createdAt&quot;: &quot;2022-03-14T09:00:00&quot;,
+  &quot;metadata&quot;: {&quot;department&quot;: &quot;Security&quot;, &quot;manager&quot;: &quot;CISO&quot;},
+  &quot;accountType&quot;: &quot;EMPLOYEE&quot;,
+  &quot;credentialAgeDays&quot;: -1,
+  &quot;lastCredentialRotation&quot;: null
+}
+</code></pre>
+<hr />
+<h3 id="2-unifiedidentity-cross-platform-identity-profile">2. <code>UnifiedIdentity</code> — Cross-Platform Identity Profile<a class="headerlink" href="#2-unifiedidentity-cross-platform-identity-profile" title="Permanent link">&para;</a></h3>
+<p>The output of the Identity Correlation Engine. Maps one person to all their platform accounts.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unifiedId</code></td>
+<td>String</td>
+<td>Stable unique identifier</td>
+<td><code>UID-0042</code></td>
+</tr>
+<tr>
+<td><code>displayName</code></td>
+<td>String</td>
+<td>Canonical display name</td>
+<td><code>John Smith</code></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>String</td>
+<td>Primary email</td>
+<td><code>john.smith@acme.com</code></td>
+</tr>
+<tr>
+<td><code>employeeId</code></td>
+<td>String</td>
+<td>Employee identifier</td>
+<td><code>EMP-0042</code></td>
+</tr>
+<tr>
+<td><code>department</code></td>
+<td>String</td>
+<td>Organizational department</td>
+<td><code>Security</code></td>
+</tr>
+<tr>
+<td><code>accounts</code></td>
+<td>List\&lt;IdentityAccount&gt;</td>
+<td>All linked platform accounts</td>
+<td><em>3 accounts across AD, AWS, Okta</em></td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>Map\&lt;String,String&gt;</td>
+<td>Additional attributes</td>
+<td><code>{"title": "Senior Engineer"}</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="computed-properties">Computed Properties<a class="headerlink" href="#computed-properties" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Logic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>platforms()</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Distinct platforms from all accounts</td>
+</tr>
+<tr>
+<td><code>adminPlatformCount()</code></td>
+<td>long</td>
+<td>Number of platforms with admin access</td>
+</tr>
+<tr>
+<td><code>activePlatforms()</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Platforms where status = ACTIVE</td>
+</tr>
+<tr>
+<td><code>disabledPlatforms()</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Platforms where status = DISABLED</td>
+</tr>
+<tr>
+<td><code>isCrossPlatformAdmin()</code></td>
+<td>boolean</td>
+<td>Admin on ≥3 platforms</td>
+</tr>
+<tr>
+<td><code>hasOffboardingGap()</code></td>
+<td>boolean</td>
+<td>Disabled on any platform + active on any other</td>
+</tr>
+<tr>
+<td><code>computeRiskScore()</code></td>
+<td>double [0.0–1.0]</td>
+<td>Weighted risk: offboarding(0.35) + admin(0.30) + dormant(0.25) + spread(0.10)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="3-auditevent-platform-audit-log-entry">3. <code>AuditEvent</code> — Platform Audit Log Entry<a class="headerlink" href="#3-auditevent-platform-audit-log-entry" title="Permanent link">&para;</a></h3>
+<p>Represents a single event from an identity platform's audit log.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>eventId</code></td>
+<td>String</td>
+<td>Unique event identifier</td>
+<td><code>EVT-00001</code></td>
+</tr>
+<tr>
+<td><code>accountId</code></td>
+<td>String</td>
+<td>Account that generated the event</td>
+<td><code>john.smith</code></td>
+</tr>
+<tr>
+<td><code>platform</code></td>
+<td>String</td>
+<td>Source platform</td>
+<td><code>ActiveDirectory</code></td>
+</tr>
+<tr>
+<td><code>eventType</code></td>
+<td>Enum</td>
+<td>Event classification</td>
+<td>See enum below</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>String</td>
+<td>Human-readable description</td>
+<td><code>"Successful login to ActiveDirectory"</code></td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>DateTime</td>
+<td>When the event occurred</td>
+<td><code>2026-06-15T14:23:00</code></td>
+</tr>
+<tr>
+<td><code>sourceIp</code></td>
+<td>String</td>
+<td>Originating IP address</td>
+<td><code>10.0.1.42</code> or <code>203.0.113.55</code></td>
+</tr>
+<tr>
+<td><code>targetResource</code></td>
+<td>String</td>
+<td>Resource accessed/modified</td>
+<td><code>prod-db</code>, <code>staging-s3</code>, <code>okta-sso</code></td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>boolean</td>
+<td>Whether the action succeeded</td>
+<td><code>true</code> / <code>false</code></td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>Map\&lt;String,String&gt;</td>
+<td>Event-specific attributes</td>
+<td><code>{}</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="event-types">Event Types<a class="headerlink" href="#event-types" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>EventType</th>
+<th>Description</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOGIN_SUCCESS</code></td>
+<td>Successful authentication</td>
+<td>~40%</td>
+</tr>
+<tr>
+<td><code>LOGIN_FAILURE</code></td>
+<td>Failed login attempt</td>
+<td>~10%</td>
+</tr>
+<tr>
+<td><code>PRIVILEGE_GRANT</code></td>
+<td>Role or permission granted</td>
+<td>~8%</td>
+</tr>
+<tr>
+<td><code>ROLE_CHANGE</code></td>
+<td>Role assignment modified</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td><code>RESOURCE_ACCESS</code></td>
+<td>Resource read/write</td>
+<td>~10%</td>
+</tr>
+<tr>
+<td><code>API_CALL</code></td>
+<td>API endpoint invocation</td>
+<td>~7%</td>
+</tr>
+<tr>
+<td><code>TOKEN_USAGE</code></td>
+<td>API token authentication</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td><code>GROUP_ADD</code></td>
+<td>Added to security group</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td><code>PASSWORD_CHANGE</code></td>
+<td>Password/credential updated</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td><code>MFA_BYPASS</code></td>
+<td>MFA bypassed or failed</td>
+<td>~5%</td>
+</tr>
+</tbody>
+</table>
+<h4 id="ip-address-ranges">IP Address Ranges<a class="headerlink" href="#ip-address-ranges" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Range</th>
+<th>Classification</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>10.0.x.x</code></td>
+<td>Corporate internal</td>
+<td>Normal office access</td>
+</tr>
+<tr>
+<td><code>172.16.x.x</code></td>
+<td>Corporate internal</td>
+<td>VPN access</td>
+</tr>
+<tr>
+<td><code>203.0.113.x</code></td>
+<td>External</td>
+<td>Suspicious — test/documentation range</td>
+</tr>
+<tr>
+<td><code>198.51.100.x</code></td>
+<td>External</td>
+<td>Suspicious — test/documentation range</td>
+</tr>
+<tr>
+<td><code>185.220.101.x</code></td>
+<td>External</td>
+<td>Known Tor exit node range</td>
+</tr>
+<tr>
+<td><code>91.219.237.x</code></td>
+<td>External</td>
+<td>Known malicious actor range</td>
+</tr>
+<tr>
+<td><code>45.33.32.x</code></td>
+<td>External</td>
+<td>Scanner/recon range</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="4-offboardingrecord-employee-termination-record">4. <code>OffboardingRecord</code> — Employee Termination Record<a class="headerlink" href="#4-offboardingrecord-employee-termination-record" title="Permanent link">&para;</a></h3>
+<p>Tracks employee termination and per-platform account disable status.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>employeeId</code></td>
+<td>String</td>
+<td>Employee identifier</td>
+<td><code>EMP-0042</code></td>
+</tr>
+<tr>
+<td><code>displayName</code></td>
+<td>String</td>
+<td>Employee name</td>
+<td><code>John Smith</code></td>
+</tr>
+<tr>
+<td><code>terminationDate</code></td>
+<td>LocalDate</td>
+<td>Date of termination</td>
+<td><code>2026-03-15</code></td>
+</tr>
+<tr>
+<td><code>platformDisableStatus</code></td>
+<td>Map\&lt;String, Boolean&gt;</td>
+<td>Per-platform: true=disabled, false=still active</td>
+<td><code>{"AD": true, "AWS": false}</code></td>
+</tr>
+<tr>
+<td><code>terminationType</code></td>
+<td>Enum</td>
+<td>Termination classification</td>
+<td><code>VOLUNTARY</code>, <code>INVOLUNTARY</code>, <code>CONTRACT_END</code>, <code>RETIREMENT</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Insight:</strong> When <code>platformDisableStatus</code> has mixed values (some true, some false), this represents an <strong>offboarding gap</strong> — the highest-severity identity risk.</p>
+<hr />
+<h3 id="5-temporaryaccessexception-time-bound-admin-grant">5. <code>TemporaryAccessException</code> — Time-Bound Admin Grant<a class="headerlink" href="#5-temporaryaccessexception-time-bound-admin-grant" title="Permanent link">&para;</a></h3>
+<p>Tracks temporary elevated access with revocation status.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exceptionId</code></td>
+<td>String</td>
+<td>Exception identifier</td>
+<td><code>EXC-0005</code></td>
+</tr>
+<tr>
+<td><code>employeeId</code></td>
+<td>String</td>
+<td>Employee identifier</td>
+<td><code>EMP-0006</code></td>
+</tr>
+<tr>
+<td><code>displayName</code></td>
+<td>String</td>
+<td>Grantee name</td>
+<td><code>Andrew Wilson</code></td>
+</tr>
+<tr>
+<td><code>grantedPlatforms</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Platforms with elevated access</td>
+<td><code>["AD", "AWS", "Okta"]</code></td>
+</tr>
+<tr>
+<td><code>grantedRoles</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Elevated roles granted</td>
+<td><code>["Domain Admins", "AdministratorAccess", "SuperAdmin"]</code></td>
+</tr>
+<tr>
+<td><code>grantedAt</code></td>
+<td>DateTime</td>
+<td>When access was granted</td>
+<td><code>2026-05-19T18:42:01</code></td>
+</tr>
+<tr>
+<td><code>expiresAt</code></td>
+<td>DateTime</td>
+<td>When access should expire</td>
+<td><code>2026-05-22T18:42:01</code></td>
+</tr>
+<tr>
+<td><code>reason</code></td>
+<td>String</td>
+<td>Justification</td>
+<td><code>"Incident response P1"</code></td>
+</tr>
+<tr>
+<td><code>revokedPlatforms</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Platforms where access was revoked</td>
+<td><code>["AD"]</code> ← only 1 of 3!</td>
+</tr>
+<tr>
+<td><code>approver</code></td>
+<td>String</td>
+<td>Who approved the exception</td>
+<td><code>"CISO"</code>, <code>"VP-Engineering"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key Insight:</strong> When <code>grantedPlatforms.size() &gt; revokedPlatforms.size()</code> and <code>expiresAt &lt; now()</code>, this is a <strong>stale exception</strong> — admin privileges granted temporarily but never revoked.</p>
+<hr />
+<h3 id="6-grouphierarchy-nested-group-membership-tree">6. <code>GroupHierarchy</code> — Nested Group Membership Tree<a class="headerlink" href="#6-grouphierarchy-nested-group-membership-tree" title="Permanent link">&para;</a></h3>
+<p>Models the nested group→parent→permission inheritance that creates hidden effective privileges.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>groupName</code></td>
+<td>String</td>
+<td>Group identifier</td>
+<td><code>IT-Team</code></td>
+</tr>
+<tr>
+<td><code>platform</code></td>
+<td>String</td>
+<td>Platform this group belongs to</td>
+<td><code>ActiveDirectory</code></td>
+</tr>
+<tr>
+<td><code>parentGroups</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Groups this group is nested under</td>
+<td><code>{"AD-Admins"}</code></td>
+</tr>
+<tr>
+<td><code>grantedPermissions</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Direct permissions from this group</td>
+<td><code>{"read:servers"}</code></td>
+</tr>
+<tr>
+<td><code>isAdminGroup</code></td>
+<td>boolean</td>
+<td>Whether this grants admin-level access</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="enterprise-hierarchy-pre-built">Enterprise Hierarchy (Pre-built)<a class="headerlink" href="#enterprise-hierarchy-pre-built" title="Permanent link">&para;</a></h4>
+<pre><code>ActiveDirectory:
+  Domain Users (base) → VPN-Users → Remote Desktop Users
+  IT-Team → AD-Admins → Domain Admins (ADMIN)
+  Security-Team → AD-Admins → Domain Admins (ADMIN)
+  Contractors → IT-Team → AD-Admins → Domain Admins (HIDDEN ADMIN!)
+
+AWS_IAM:
+  ReadOnly → PowerUserAccess
+  DevOps → CloudAdmins (ADMIN)
+  ContractorDevs → DevOps → CloudAdmins (HIDDEN ADMIN!)
+  DataEngineers → S3FullAccess → CloudAdmins (HIDDEN ADMIN!)
+
+Okta:
+  Everyone → AppAdmin → GlobalAdmin (ADMIN)
+  HelpDeskAdmin → SuperAdmin (ADMIN)
+</code></pre>
+<p><strong>Key Insight:</strong> A user assigned to <code>Contractors</code> in AD inherits admin through <code>Contractors → IT-Team → AD-Admins → Domain Admins</code>. This is Case 2 from the problem statement.</p>
+<hr />
+<h3 id="7-riskindicator-detected-risk-finding">7. <code>RiskIndicator</code> — Detected Risk Finding<a class="headerlink" href="#7-riskindicator-detected-risk-finding" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>riskId</code></td>
+<td>String</td>
+<td>Unique risk identifier (e.g., <code>RISK-0042</code>)</td>
+</tr>
+<tr>
+<td><code>riskType</code></td>
+<td>RiskType</td>
+<td>Classification of risk</td>
+</tr>
+<tr>
+<td><code>severity</code></td>
+<td>RiskSeverity</td>
+<td><code>CRITICAL</code>, <code>HIGH</code>, <code>MEDIUM</code>, <code>LOW</code></td>
+</tr>
+<tr>
+<td><code>identityId</code></td>
+<td>String</td>
+<td>Affected unified identity</td>
+</tr>
+<tr>
+<td><code>platforms</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Platforms involved</td>
+</tr>
+<tr>
+<td><code>statement</code></td>
+<td>String</td>
+<td>Human-readable risk description</td>
+</tr>
+<tr>
+<td><code>evidence</code></td>
+<td>List\&lt;Evidence&gt;</td>
+<td>Supporting evidence chain</td>
+</tr>
+<tr>
+<td><code>remediation</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Recommended actions</td>
+</tr>
+<tr>
+<td><code>policyReferences</code></td>
+<td>List\&lt;PolicyReference&gt;</td>
+<td>Mapped compliance controls</td>
+</tr>
+<tr>
+<td><code>riskScore</code></td>
+<td>double</td>
+<td>Computed risk score [0.0–1.0]</td>
+</tr>
+<tr>
+<td><code>confidence</code></td>
+<td>double</td>
+<td>Detection confidence [0.0–1.0]</td>
+</tr>
+</tbody>
+</table>
+<h4 id="risk-types-8-detection-rules">Risk Types (8 Detection Rules)<a class="headerlink" href="#risk-types-8-detection-rules" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>RiskType</th>
+<th>Severity</th>
+<th>MITRE ATT&amp;CK</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OFFBOARDING_GAP</code></td>
+<td>CRITICAL</td>
+<td>T1078: Valid Accounts</td>
+<td>Disabled on platform A, active on B</td>
+</tr>
+<tr>
+<td><code>CROSS_PLATFORM_ADMIN</code></td>
+<td>HIGH</td>
+<td>T1098: Account Manipulation</td>
+<td>Admin on 3+ platforms</td>
+</tr>
+<tr>
+<td><code>DORMANT_ADMIN</code></td>
+<td>HIGH</td>
+<td>T1078: Valid Accounts</td>
+<td>Admin inactive &gt;90 days</td>
+</tr>
+<tr>
+<td><code>ORPHANED_ACCOUNT</code></td>
+<td>MEDIUM</td>
+<td>T1078: Valid Accounts</td>
+<td>Active account with no owner</td>
+</tr>
+<tr>
+<td><code>PRIVILEGE_CREEP</code></td>
+<td>MEDIUM</td>
+<td>T1098: Account Manipulation</td>
+<td>30+ permissions with sensitive ones</td>
+</tr>
+<tr>
+<td><code>CONTRACTOR_EXCESSIVE_ACCESS</code></td>
+<td>HIGH</td>
+<td>T1078: Valid Accounts</td>
+<td>Non-employee with admin privileges</td>
+</tr>
+<tr>
+<td><code>STALE_SERVICE_ACCOUNT</code></td>
+<td>CRITICAL</td>
+<td>T1550: Use Alternate Auth</td>
+<td>Service account admin unused &gt;180 days</td>
+</tr>
+<tr>
+<td><code>SOD_VIOLATION</code></td>
+<td>CRITICAL</td>
+<td>T1098: Account Manipulation</td>
+<td>Admin on both IdP AND cloud</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="8-knowledgeunit-knowledge-evolution-record">8. <code>KnowledgeUnit</code> — Knowledge Evolution Record<a class="headerlink" href="#8-knowledgeunit-knowledge-evolution-record" title="Permanent link">&para;</a></h3>
+<p>The core entity of the knowledge evolution pipeline.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>String</td>
+<td>Unique knowledge unit ID</td>
+</tr>
+<tr>
+<td><code>statement</code></td>
+<td>String</td>
+<td>Knowledge statement</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>KnowledgeType</td>
+<td>Category classification</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>KnowledgeState</td>
+<td>Evolution stage</td>
+</tr>
+<tr>
+<td><code>context</code></td>
+<td>String</td>
+<td>Contextual information</td>
+</tr>
+<tr>
+<td><code>confidence</code></td>
+<td>double</td>
+<td>Confidence score [0.0–1.0]</td>
+</tr>
+<tr>
+<td><code>evidence</code></td>
+<td>List\&lt;String&gt;</td>
+<td>Supporting evidence</td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>Set\&lt;String&gt;</td>
+<td>Classification tags</td>
+</tr>
+<tr>
+<td><code>lastReviewed</code></td>
+<td>DateTime</td>
+<td>Last review timestamp</td>
+</tr>
+<tr>
+<td><code>reviewedBy</code></td>
+<td>String</td>
+<td>Reviewer identity</td>
+</tr>
+</tbody>
+</table>
+<h4 id="knowledge-states-evolution-pipeline">Knowledge States (Evolution Pipeline)<a class="headerlink" href="#knowledge-states-evolution-pipeline" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Confidence</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OBSERVATION</code></td>
+<td>0.3</td>
+<td>Initial detection — raw finding</td>
+</tr>
+<tr>
+<td><code>PATTERN_CANDIDATE</code></td>
+<td>0.5</td>
+<td>Auto-discovered recurring pattern</td>
+</tr>
+<tr>
+<td><code>VALIDATED_PATTERN</code></td>
+<td>0.7</td>
+<td>Governance-reviewed and confirmed</td>
+</tr>
+<tr>
+<td><code>KNOWLEDGE</code></td>
+<td>0.9</td>
+<td>Promoted to organizational security knowledge</td>
+</tr>
+</tbody>
+</table>
+<h4 id="knowledge-types">Knowledge Types<a class="headerlink" href="#knowledge-types" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RISK_OBSERVATION</code></td>
+<td>Detected security risk</td>
+</tr>
+<tr>
+<td><code>SECURITY_INCIDENT</code></td>
+<td>Recorded security event</td>
+</tr>
+<tr>
+<td><code>REMEDIATION_ACTION</code></td>
+<td>Action taken to fix risk</td>
+</tr>
+<tr>
+<td><code>AUDIT_FINDING</code></td>
+<td>Compliance check result</td>
+</tr>
+<tr>
+<td><code>LOCAL_PATTERN</code></td>
+<td>Auto-discovered pattern</td>
+</tr>
+<tr>
+<td><code>SECURITY_KNOWLEDGE</code></td>
+<td>Promoted organizational wisdom</td>
+</tr>
+<tr>
+<td><code>RECOMMENDATION</code></td>
+<td>AI-generated remediation plan</td>
+</tr>
+<tr>
+<td><code>PROMOTION_CANDIDATE</code></td>
+<td>Pending governance review</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="9-confidence-4-factor-confidence-model">9. <code>Confidence</code> — 4-Factor Confidence Model<a class="headerlink" href="#9-confidence-4-factor-confidence-model" title="Permanent link">&para;</a></h3>
+<pre><code>Confidence = Evidence × Consistency × Validation × Outcome
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Range</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>evidence</code></td>
+<td>0.3–1.0</td>
+<td>Number of supporting evidence items</td>
+</tr>
+<tr>
+<td><code>consistency</code></td>
+<td>0.0–1.0</td>
+<td>Absence of contradictions</td>
+</tr>
+<tr>
+<td><code>validation</code></td>
+<td>0.5–1.0</td>
+<td>Review quality: human(1.0), auto(0.7), none(0.5)</td>
+</tr>
+<tr>
+<td><code>outcome</code></td>
+<td>0.0–1.0</td>
+<td>Success rate of applied remediations</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cross-platform-identity-resolution">🔗 Cross-Platform Identity Resolution<a class="headerlink" href="#cross-platform-identity-resolution" title="Permanent link">&para;</a></h2>
+<p>The Identity Correlation Engine resolves accounts across platforms using:</p>
+<ol>
+<li><strong>Employee ID match</strong> — exact match on <code>employeeId</code> field</li>
+<li><strong>Email match</strong> — exact match on <code>email</code> field</li>
+<li><strong>Display name match</strong> — fuzzy matching on <code>displayName</code></li>
+</ol>
+<h3 id="example-resolution">Example Resolution<a class="headerlink" href="#example-resolution" title="Permanent link">&para;</a></h3>
+<pre><code>john.smith (ActiveDirectory)  ← employeeId: EMP-0042
+Jsmith (AWS_IAM)              ← employeeId: EMP-0042
+john.smith@acme.com (Okta)    ← employeeId: EMP-0042
+    → UnifiedIdentity: UID-0042 (John Smith) — 3 platforms
+</code></pre>
+<hr />
+<h2 id="compliance-control-mapping">📐 Compliance Control Mapping<a class="headerlink" href="#compliance-control-mapping" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Standard</th>
+<th>Control</th>
+<th>IKOS Detection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIST AC-2</td>
+<td>Account Management</td>
+<td>Offboarding gaps, orphaned accounts</td>
+</tr>
+<tr>
+<td>NIST AC-5</td>
+<td>Separation of Duties</td>
+<td>SoD violations (IdP + cloud admin)</td>
+</tr>
+<tr>
+<td>NIST AC-6</td>
+<td>Least Privilege</td>
+<td>Cross-platform admin, privilege creep</td>
+</tr>
+<tr>
+<td>NIST IA-4</td>
+<td>Identifier Management</td>
+<td>Cross-platform identity correlation</td>
+</tr>
+<tr>
+<td>NIST IA-5</td>
+<td>Authenticator Management</td>
+<td>Credential rotation violations</td>
+</tr>
+<tr>
+<td>MITRE T1078</td>
+<td>Valid Accounts</td>
+<td>Offboarding gaps, dormant admins</td>
+</tr>
+<tr>
+<td>MITRE T1098</td>
+<td>Account Manipulation</td>
+<td>Privilege escalation, SoD violations</td>
+</tr>
+<tr>
+<td>MITRE T1550</td>
+<td>Use Alternate Auth Material</td>
+<td>Stale service accounts, token misuse</td>
+</tr>
+<tr>
+<td>GDPR Art.5</td>
+<td>Data Minimisation</td>
+<td>Excessive access scope</td>
+</tr>
+<tr>
+<td>GDPR Art.32</td>
+<td>Security of Processing</td>
+<td>Identity controls across systems</td>
+</tr>
+<tr>
+<td>CIS Control 5</td>
+<td>Account Management</td>
+<td>Full lifecycle coverage</td>
+</tr>
+<tr>
+<td>CIS Control 6</td>
+<td>Access Control</td>
+<td>Privilege scope enforcement</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Generated by IKOS — Identity Knowledge Operating System</em>
+<em>Data simulation seed: 42 (deterministic for reproducibility)</em></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ARCHITECTURE/" class="btn btn-neutral float-left" title="Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../SPRING_AI_AGENT_UTILS_INTEGRATION/" class="btn btn-neutral float-right" title="Spring AI Integration">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+      <span><a href="../ARCHITECTURE/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../SPRING_AI_AGENT_UTILS_INTEGRATION/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>BraveWebSearchTool - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "BraveWebSearchTool";
+        var mkdocs_page_input_path = "tools/BraveWebSearchTool.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">BraveWebSearchTool</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/BraveWebSearchTool.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="bravewebsearchtool">BraveWebSearchTool<a class="headerlink" href="#bravewebsearchtool" title="Permanent link">&para;</a></h1>
+<p>Web search capabilities using the Brave Search API. Provides up-to-date information from the web with optional domain filtering.</p>
+<p><strong>Features:</strong>
+- Search the web using Brave's privacy-focused search API
+- Configurable result count (default: 10)
+- Domain filtering (include/exclude specific domains)
+- Supports both web and video search results
+- Client-side domain filtering with subdomain matching
+- Structured JSON response format
+- Error handling with graceful fallbacks</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The <code>BraveWebSearchTool</code> enables AI agents to search the web for current information beyond their knowledge cutoff. It uses the <a href="https://brave.com/search/api/">Brave Search API</a> to retrieve search results and returns them in a structured format suitable for AI processing.</p>
+<p><strong>Key Characteristics:</strong>
+- Returns search results as JSON with title, URL, and description
+- Supports domain-based filtering (client-side)
+- Includes both web pages and videos in results
+- Privacy-focused (Brave Search doesn't track users)</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(&quot;your-api-key&quot;)
+    .build();
+
+String results = searchTool.webSearch(&quot;Spring AI framework&quot;, null, null);
+System.out.println(results);
+</code></pre>
+<p><strong>Response Format:</strong></p>
+<pre><code class="language-json">[
+  {
+    &quot;title&quot;: &quot;Spring AI - Spring&quot;,
+    &quot;url&quot;: &quot;https://spring.io/projects/spring-ai&quot;,
+    &quot;description&quot;: &quot;Spring AI provides abstractions for developing AI applications...&quot;
+  },
+  {
+    &quot;title&quot;: &quot;Spring AI Reference Documentation&quot;,
+    &quot;url&quot;: &quot;https://docs.spring.io/spring-ai/reference/&quot;,
+    &quot;description&quot;: &quot;Comprehensive guide to Spring AI features...&quot;
+  }
+]
+</code></pre>
+<h2 id="getting-an-api-key">Getting an API Key<a class="headerlink" href="#getting-an-api-key" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Visit <a href="https://brave.com/search/api/">Brave Search API</a></li>
+<li>Sign up for an account</li>
+<li>Subscribe to a plan (Free tier available with rate limits)</li>
+<li>Copy your API subscription token</li>
+<li>Store it securely (environment variable recommended)</li>
+</ol>
+<p><strong>Pricing (as of 2025):</strong>
+- Free: 2,000 queries/month
+- Paid plans: Higher limits and additional features</p>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="required-parameter">Required Parameter<a class="headerlink" href="#required-parameter" title="Permanent link">&para;</a></h3>
+<p><strong><code>apiKey</code></strong> - Your Brave Search API subscription token</p>
+<pre><code class="language-java">BraveWebSearchTool.builder(&quot;your-api-key-here&quot;)
+    .build();
+</code></pre>
+<h3 id="optional-parameters">Optional Parameters<a class="headerlink" href="#optional-parameters" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>resultCount</code></td>
+<td>10</td>
+<td>Number of search results to return (max typically 20)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example with custom result count:</strong></p>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(&quot;your-api-key&quot;)
+    .resultCount(15)  // Return up to 15 results
+    .build();
+</code></pre>
+<h2 id="domain-filtering">Domain Filtering<a class="headerlink" href="#domain-filtering" title="Permanent link">&para;</a></h2>
+<h3 id="client-side-filtering">Client-Side Filtering<a class="headerlink" href="#client-side-filtering" title="Permanent link">&para;</a></h3>
+<p>The tool supports filtering results by domain. <strong>Important:</strong> Domain filtering is applied <strong>client-side</strong> after fetching results, meaning filtered results still count against your API quota.</p>
+<h4 id="include-specific-domains">Include Specific Domains<a class="headerlink" href="#include-specific-domains" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(&quot;your-api-key&quot;).build();
+
+// Only include results from spring.io
+String results = searchTool.webSearch(
+    &quot;Spring Boot tutorial&quot;,
+    List.of(&quot;spring.io&quot;),  // allowedDomains
+    null                   // blockedDomains
+);
+</code></pre>
+<h4 id="exclude-specific-domains">Exclude Specific Domains<a class="headerlink" href="#exclude-specific-domains" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">// Exclude results from example.com and spam.com
+String results = searchTool.webSearch(
+    &quot;Java programming&quot;,
+    null,                              // allowedDomains
+    List.of(&quot;example.com&quot;, &quot;spam.com&quot;) // blockedDomains
+);
+</code></pre>
+<h4 id="combine-allowed-and-blocked">Combine Allowed and Blocked<a class="headerlink" href="#combine-allowed-and-blocked" title="Permanent link">&para;</a></h4>
+<pre><code class="language-java">// Only spring.io and baeldung.com, but exclude outdated-site.com
+String results = searchTool.webSearch(
+    &quot;Spring Framework 2025&quot;,
+    List.of(&quot;spring.io&quot;, &quot;baeldung.com&quot;),  // allowedDomains
+    List.of(&quot;outdated-site.com&quot;)           // blockedDomains
+);
+</code></pre>
+<h3 id="subdomain-matching">Subdomain Matching<a class="headerlink" href="#subdomain-matching" title="Permanent link">&para;</a></h3>
+<p>Domain filters automatically match subdomains:</p>
+<pre><code class="language-java">// Filter: &quot;spring.io&quot; matches:
+// - spring.io
+// - docs.spring.io
+// - start.spring.io
+// - blog.spring.io
+</code></pre>
+<h3 id="search-operators-recommended">Search Operators (Recommended)<a class="headerlink" href="#search-operators-recommended" title="Permanent link">&para;</a></h3>
+<p><strong>For better API quota efficiency</strong>, use Brave's search operators directly in your query instead of client-side filtering:</p>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(&quot;your-api-key&quot;).build();
+
+// Search only on spring.io (more efficient)
+String results = searchTool.webSearch(&quot;Spring AI site:spring.io&quot;, null, null);
+
+// Exclude a domain
+String results2 = searchTool.webSearch(&quot;Java tutorial -site:example.com&quot;, null, null);
+
+// Multiple site operators
+String results3 = searchTool.webSearch(
+    &quot;Spring Framework (site:spring.io OR site:baeldung.com)&quot;,
+    null,
+    null
+);
+</code></pre>
+<p><strong>Why search operators are better:</strong>
+- Results are filtered server-side by Brave
+- Doesn't waste API quota on filtered-out results
+- Faster response (no client-side processing)
+- More accurate (Brave's native filtering)</p>
+<h2 id="spring-boot-integration">Spring Boot Integration<a class="headerlink" href="#spring-boot-integration" title="Permanent link">&para;</a></h2>
+<h3 id="configuration-with-environment-variable">Configuration with Environment Variable<a class="headerlink" href="#configuration-with-environment-variable" title="Permanent link">&para;</a></h3>
+<p><strong>application.properties:</strong></p>
+<pre><code class="language-properties">brave.api.key=${BRAVE_API_KEY}
+</code></pre>
+<p><strong>Environment variable:</strong></p>
+<pre><code class="language-bash">export BRAVE_API_KEY=&quot;your-api-key-here&quot;
+</code></pre>
+<h3 id="bean-configuration">Bean Configuration<a class="headerlink" href="#bean-configuration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class SearchConfig {
+
+    @Bean
+    public BraveWebSearchTool braveWebSearchTool(
+            @Value(&quot;${brave.api.key}&quot;) String apiKey) {
+        return BraveWebSearchTool.builder(apiKey)
+            .resultCount(10)
+            .build();
+    }
+}
+</code></pre>
+<h3 id="chatclient-integration">ChatClient Integration<a class="headerlink" href="#chatclient-integration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class AgentConfig {
+
+    @Bean
+    public ChatClient chatClient(
+            ChatClient.Builder chatClientBuilder,
+            @Value(&quot;${brave.api.key}&quot;) String braveApiKey) {
+
+        return chatClientBuilder
+            .defaultTools(BraveWebSearchTool.builder(braveApiKey)
+                .resultCount(15)
+                .build())
+            .build();
+    }
+}
+</code></pre>
+<h2 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-basic-web-search">Example 1: Basic Web Search<a class="headerlink" href="#example-1-basic-web-search" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(&quot;api-key&quot;).build();
+
+String results = searchTool.webSearch(&quot;latest Spring AI features 2025&quot;, null, null);
+// Returns JSON array of search results
+</code></pre>
+<h3 id="example-2-current-events">Example 2: Current Events<a class="headerlink" href="#example-2-current-events" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// AI automatically uses current year in query
+String results = searchTool.webSearch(
+    &quot;Spring Framework news 2025&quot;,
+    null,
+    null
+);
+</code></pre>
+<h3 id="example-3-domain-specific-research">Example 3: Domain-Specific Research<a class="headerlink" href="#example-3-domain-specific-research" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Research from official documentation only
+String officialDocs = searchTool.webSearch(
+    &quot;Spring AI vector stores&quot;,
+    List.of(&quot;spring.io&quot;, &quot;docs.spring.io&quot;),
+    null
+);
+
+// Exclude tutorial sites, focus on official sources
+String research = searchTool.webSearch(
+    &quot;Spring Boot 4.0 migration guide&quot;,
+    List.of(&quot;spring.io&quot;),
+    List.of(&quot;tutorialspoint.com&quot;, &quot;w3schools.com&quot;)
+);
+</code></pre>
+<h3 id="example-4-competitive-research">Example 4: Competitive Research<a class="headerlink" href="#example-4-competitive-research" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Compare frameworks, exclude specific domains
+String comparison = searchTool.webSearch(
+    &quot;Spring vs Quarkus performance benchmarks&quot;,
+    null,
+    List.of(&quot;biased-site.com&quot;)
+);
+</code></pre>
+<h3 id="example-5-technology-stack-research">Example 5: Technology Stack Research<a class="headerlink" href="#example-5-technology-stack-research" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Find tutorials from trusted sources
+String tutorials = searchTool.webSearch(
+    &quot;Spring AI LangChain4j integration tutorial&quot;,
+    List.of(&quot;spring.io&quot;, &quot;github.com&quot;, &quot;medium.com&quot;, &quot;dev.to&quot;),
+    null
+);
+</code></pre>
+<h2 id="ai-agent-integration">AI Agent Integration<a class="headerlink" href="#ai-agent-integration" title="Permanent link">&para;</a></h2>
+<p>When integrated with ChatClient, AI agents can automatically search the web and cite sources:</p>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultTools(BraveWebSearchTool.builder(apiKey).build())
+    .build();
+
+String response = chatClient.prompt()
+    .user(&quot;What are the latest Spring AI features announced in 2025?&quot;)
+    .call()
+    .content();
+
+// AI response will include search results and sources:
+// &quot;Based on recent announcements, Spring AI 2.0 includes...&quot;
+//
+// Sources:
+// - [Spring AI 2.0 Release Notes](https://spring.io/blog/2025/...)
+// - [Spring AI Documentation](https://docs.spring.io/spring-ai/...)
+</code></pre>
+<h2 id="response-format">Response Format<a class="headerlink" href="#response-format" title="Permanent link">&para;</a></h2>
+<p>The tool returns a JSON array of search results:</p>
+<pre><code class="language-json">[
+  {
+    &quot;title&quot;: &quot;Page Title&quot;,
+    &quot;url&quot;: &quot;https://example.com/page&quot;,
+    &quot;description&quot;: &quot;Brief description or snippet from the page&quot;
+  }
+]
+</code></pre>
+<p><strong>Fields:</strong>
+- <code>title</code> (string): The title of the web page or video
+- <code>url</code> (string): The full URL
+- <code>description</code> (string): Snippet or summary (may be empty for some results)</p>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<h3 id="empty-query">Empty Query<a class="headerlink" href="#empty-query" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String results = searchTool.webSearch(&quot;&quot;, null, null);
+// Returns: &quot;[]&quot; (empty JSON array)
+</code></pre>
+<h3 id="api-errors">API Errors<a class="headerlink" href="#api-errors" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Invalid API key, network error, or API down
+String results = searchTool.webSearch(&quot;query&quot;, null, null);
+// Returns: &quot;[]&quot; (empty JSON array)
+// Error logged but doesn't throw exception
+</code></pre>
+<h3 id="nullinvalid-api-key">Null/Invalid API Key<a class="headerlink" href="#nullinvalid-api-key" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Throws IllegalArgumentException at build time
+BraveWebSearchTool searchTool = BraveWebSearchTool.builder(null).build();
+// Exception: &quot;API key must not be null or empty&quot;
+</code></pre>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-use-search-operators-for-filtering">1. Use Search Operators for Filtering<a class="headerlink" href="#1-use-search-operators-for-filtering" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Server-side filtering (efficient)
+searchTool.webSearch(&quot;Spring AI site:spring.io&quot;, null, null);
+
+// ❌ LESS EFFICIENT: Client-side filtering (wastes quota)
+searchTool.webSearch(&quot;Spring AI&quot;, List.of(&quot;spring.io&quot;), null);
+</code></pre>
+<h3 id="2-include-year-in-queries">2. Include Year in Queries<a class="headerlink" href="#2-include-year-in-queries" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Specifies current year for recent info
+searchTool.webSearch(&quot;React best practices 2025&quot;, null, null);
+
+// ❌ LESS PRECISE: May return outdated results
+searchTool.webSearch(&quot;React best practices&quot;, null, null);
+</code></pre>
+<h3 id="3-store-api-key-securely">3. Store API Key Securely<a class="headerlink" href="#3-store-api-key-securely" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Environment variable
+String apiKey = System.getenv(&quot;BRAVE_API_KEY&quot;);
+
+// ✅ GOOD: Spring property
+@Value(&quot;${brave.api.key}&quot;) String apiKey;
+
+// ❌ BAD: Hardcoded
+String apiKey = &quot;abc123...&quot;; // Never do this!
+</code></pre>
+<h3 id="4-optimize-result-count">4. Optimize Result Count<a class="headerlink" href="#4-optimize-result-count" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Just enough results
+BraveWebSearchTool.builder(apiKey).resultCount(10).build();
+
+// ❌ WASTEFUL: Too many results (costs more quota)
+BraveWebSearchTool.builder(apiKey).resultCount(50).build();
+</code></pre>
+<h3 id="5-handle-empty-results">5. Handle Empty Results<a class="headerlink" href="#5-handle-empty-results" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String jsonResults = searchTool.webSearch(&quot;query&quot;, null, null);
+
+if (jsonResults.equals(&quot;[]&quot;)) {
+    // No results found or error occurred
+    logger.warn(&quot;Search returned no results&quot;);
+}
+</code></pre>
+<h2 id="advanced-usage">Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h2>
+<h3 id="custom-result-processing">Custom Result Processing<a class="headerlink" href="#custom-result-processing" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(apiKey).build();
+
+String jsonResults = searchTool.webSearch(&quot;Spring AI&quot;, null, null);
+
+// Parse JSON and process
+ObjectMapper mapper = new ObjectMapper();
+List&lt;SearchResult&gt; results = mapper.readValue(
+    jsonResults,
+    new TypeReference&lt;List&lt;SearchResult&gt;&gt;() {}
+);
+
+for (SearchResult result : results) {
+    System.out.println(result.title() + &quot;: &quot; + result.url());
+}
+</code></pre>
+<h3 id="combining-with-smartwebfetchtool">Combining with SmartWebFetchTool<a class="headerlink" href="#combining-with-smartwebfetchtool" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(apiKey).build();
+SmartWebFetchTool fetchTool = SmartWebFetchTool.builder(chatClient).build();
+
+// 1. Search for relevant pages
+String searchResults = searchTool.webSearch(
+    &quot;Spring AI vector databases tutorial&quot;,
+    List.of(&quot;spring.io&quot;, &quot;baeldung.com&quot;),
+    null
+);
+
+// 2. Parse results
+List&lt;SearchResult&gt; results = parseResults(searchResults);
+
+// 3. Fetch and summarize top result
+if (!results.isEmpty()) {
+    String url = results.get(0).url();
+    String summary = fetchTool.webFetch(url, &quot;Summarize the tutorial&quot;);
+    System.out.println(summary);
+}
+</code></pre>
+<h3 id="multi-source-research">Multi-Source Research<a class="headerlink" href="#multi-source-research" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">BraveWebSearchTool searchTool = BraveWebSearchTool.builder(apiKey)
+    .resultCount(20)
+    .build();
+
+String[] queries = {
+    &quot;Spring AI embeddings site:spring.io&quot;,
+    &quot;Spring AI vector store comparison&quot;,
+    &quot;Spring AI RAG implementation guide&quot;
+};
+
+for (String query : queries) {
+    String results = searchTool.webSearch(query, null, null);
+    // Process each result set
+    analyzeResults(results);
+}
+</code></pre>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<h3 id="api-quota">API Quota<a class="headerlink" href="#api-quota" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Free tier: 2,000 queries/month</li>
+<li>Each query counts even if results are filtered client-side</li>
+<li>Use search operators for efficient filtering</li>
+</ul>
+<h3 id="geographic-availability">Geographic Availability<a class="headerlink" href="#geographic-availability" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Web search is optimized for US-based queries</li>
+<li>Results may vary by geographic location</li>
+<li>Some features may be region-specific</li>
+</ul>
+<h3 id="client-side-filtering_1">Client-Side Filtering<a class="headerlink" href="#client-side-filtering_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Domain filtering happens after API call</li>
+<li>Filtered results still count against quota</li>
+<li>Use <code>site:</code> operator for server-side filtering</li>
+</ul>
+<h3 id="result-count-limits">Result Count Limits<a class="headerlink" href="#result-count-limits" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Maximum typically ~20 results per query</li>
+<li>Higher counts may not return proportionally more results</li>
+<li>Brave API limits may apply</li>
+</ul>
+<h3 id="no-authentication-support">No Authentication Support<a class="headerlink" href="#no-authentication-support" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Results are from public web only</li>
+<li>Cannot access authenticated/paywalled content</li>
+<li>No support for API keys in search results</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="empty-response-from-brave-search-api">"Empty response from Brave Search API"<a class="headerlink" href="#empty-response-from-brave-search-api" title="Permanent link">&para;</a></h3>
+<p><strong>Causes:</strong>
+- Invalid API key
+- Network connectivity issues
+- API service down
+- Rate limit exceeded</p>
+<p><strong>Solutions:</strong></p>
+<pre><code class="language-java">// Verify API key is correct
+String apiKey = System.getenv(&quot;BRAVE_API_KEY&quot;);
+logger.info(&quot;Using API key: {}...&quot;, apiKey.substring(0, 8));
+
+// Check API status at brave.com
+</code></pre>
+<h3 id="results-count-against-quota">Results Count Against Quota<a class="headerlink" href="#results-count-against-quota" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Domain filtering still uses quota</p>
+<p><strong>Solution:</strong> Use search operators instead</p>
+<pre><code class="language-java">// Instead of this:
+searchTool.webSearch(&quot;query&quot;, List.of(&quot;example.com&quot;), null);
+
+// Do this:
+searchTool.webSearch(&quot;query site:example.com&quot;, null, null);
+</code></pre>
+<h3 id="no-results-returned">No Results Returned<a class="headerlink" href="#no-results-returned" title="Permanent link">&para;</a></h3>
+<p><strong>Causes:</strong>
+- Query too specific
+- All results filtered by domain rules
+- Brave has no indexed results</p>
+<p><strong>Solutions:</strong></p>
+<pre><code class="language-java">// Broaden the query
+searchTool.webSearch(&quot;Spring Framework&quot;, null, null);
+
+// Relax domain filters
+searchTool.webSearch(&quot;query&quot;, null, null);
+
+// Check if results exist on Brave Search directly
+</code></pre>
+<h3 id="rate-limit-exceeded">Rate Limit Exceeded<a class="headerlink" href="#rate-limit-exceeded" title="Permanent link">&para;</a></h3>
+<p><strong>Solution:</strong> Implement rate limiting</p>
+<pre><code class="language-java">@Component
+public class RateLimitedSearchTool {
+    private final BraveWebSearchTool searchTool;
+    private final RateLimiter rateLimiter;
+
+    public RateLimitedSearchTool(BraveWebSearchTool searchTool) {
+        this.searchTool = searchTool;
+        // 2000 queries per month = ~1.5 per minute average
+        this.rateLimiter = RateLimiter.create(1.0);
+    }
+
+    public String search(String query) {
+        rateLimiter.acquire();
+        return searchTool.webSearch(query, null, null);
+    }
+}
+</code></pre>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="api-key-protection">API Key Protection<a class="headerlink" href="#api-key-protection" title="Permanent link">&para;</a></h3>
+<p><strong>Never commit API keys to version control:</strong></p>
+<pre><code class="language-bash"># .gitignore
+.env
+application-local.properties
+</code></pre>
+<p><strong>Use environment variables:</strong></p>
+<pre><code class="language-bash">export BRAVE_API_KEY=&quot;your-key&quot;
+</code></pre>
+<p><strong>Or Spring profiles:</strong></p>
+<pre><code class="language-properties"># application-local.properties (not committed)
+brave.api.key=your-actual-key
+</code></pre>
+<h3 id="input-validation">Input Validation<a class="headerlink" href="#input-validation" title="Permanent link">&para;</a></h3>
+<p>The tool automatically handles:
+- Empty queries (returns empty array)
+- Null domain lists (no filtering applied)
+- Invalid URLs in results (filtered out)</p>
+<h3 id="query-sanitization">Query Sanitization<a class="headerlink" href="#query-sanitization" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Tool automatically handles special characters
+String results = searchTool.webSearch(
+    &quot;user input with special chars: &amp; ? #&quot;,
+    null,
+    null
+);
+// URL encoding handled automatically
+</code></pre>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<h3 id="minimize-api-calls">Minimize API Calls<a class="headerlink" href="#minimize-api-calls" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// ✅ GOOD: Single search with site operator
+searchTool.webSearch(&quot;Spring AI site:spring.io OR site:baeldung.com&quot;, null, null);
+
+// ❌ WASTEFUL: Multiple searches
+searchTool.webSearch(&quot;Spring AI site:spring.io&quot;, null, null);
+searchTool.webSearch(&quot;Spring AI site:baeldung.com&quot;, null, null);
+</code></pre>
+<h3 id="cache-results">Cache Results<a class="headerlink" href="#cache-results" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Component
+public class CachedSearchTool {
+    private final BraveWebSearchTool searchTool;
+    private final Cache&lt;String, String&gt; cache;
+
+    public CachedSearchTool(BraveWebSearchTool searchTool) {
+        this.searchTool = searchTool;
+        this.cache = CacheBuilder.newBuilder()
+            .maximumSize(100)
+            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .build();
+    }
+
+    public String search(String query) {
+        return cache.get(query, () -&gt; searchTool.webSearch(query, null, null));
+    }
+}
+</code></pre>
+<h3 id="optimize-result-count">Optimize Result Count<a class="headerlink" href="#optimize-result-count" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// Start with fewer results
+BraveWebSearchTool searchTool = BraveWebSearchTool.builder(apiKey)
+    .resultCount(5)  // Only fetch what you need
+    .build();
+</code></pre>
+<h2 id="source-citation-requirements">Source Citation Requirements<a class="headerlink" href="#source-citation-requirements" title="Permanent link">&para;</a></h2>
+<p><strong>CRITICAL:</strong> When using search results in AI responses, always cite sources:</p>
+<pre><code class="language-java">// AI must include sources section
+String response = &quot;&quot;&quot;
+    Based on the search results, Spring AI 2.0 introduces vector store support...
+
+    Sources:
+    - [Spring AI Release Notes](https://spring.io/blog/2025/01/spring-ai-2.0)
+    - [Vector Store Documentation](https://docs.spring.io/spring-ai/reference/vectors)
+    &quot;&quot;&quot;;
+</code></pre>
+<p><strong>Required format:</strong>
+- "Sources:" section at the end of response
+- Each source as markdown link: <code>[Title](URL)</code>
+- Include all relevant sources used</p>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../SmartWebFetchTool/">SmartWebFetchTool</a> - Fetch and summarize specific URLs</li>
+<li><a href="../FileSystemTools/">FileSystemTools</a> - File operations for storing search results</li>
+<li><a href="https://brave.com/search/api/">Brave Search API Documentation</a> - Official API reference</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

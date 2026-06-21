@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Architecture - IKOS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Architecture";
+        var mkdocs_page_input_path = "ARCHITECTURE.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-system-overview">1. System Overview</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#design-principles">Design Principles</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-high-level-architecture">2. High-Level Architecture</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-component-details">3. Component Details</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31-data-ingestion-layer">3.1 Data Ingestion Layer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#32-identity-correlation-engine">3.2 Identity Correlation Engine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#33-risk-detection-engine-8-rules">3.3 Risk Detection Engine (8 Rules)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#34-behavioral-analyzer-6-rules">3.4 Behavioral Analyzer (6 Rules)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#35-alert-consolidation">3.5 Alert Consolidation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#36-group-hierarchy-effective-privilege-resolution">3.6 Group Hierarchy (Effective Privilege Resolution)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-knowledge-evolution-pipeline">4. Knowledge Evolution Pipeline</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-confidence-model">4.1 Confidence Model</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42-context-scoring-5-factor">4.2 Context Scoring (5-Factor)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#43-pattern-discovery">4.3 Pattern Discovery</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-spring-ai-integration">5. Spring AI Integration</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-tool-calling-8-tool-methods">5.1 Tool-Calling (8 @Tool Methods)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-autonomous-agent-loop">5.2 Autonomous Agent Loop</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#53-advisors">5.3 Advisors</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#54-subagents">5.4 Subagents</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-mitre-attck-detection-matrix">6. MITRE ATT&amp;CK Detection Matrix</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-technology-stack">7. Technology Stack</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/ARCHITECTURE.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ikos-architecture-documentation">🏗️ IKOS Architecture Documentation<a class="headerlink" href="#ikos-architecture-documentation" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Identity Knowledge Operating System — System Architecture &amp; AI/ML Approach</strong></p>
+</blockquote>
+<h2 id="1-system-overview">1. System Overview<a class="headerlink" href="#1-system-overview" title="Permanent link">&para;</a></h2>
+<p>IKOS is a cybersecurity knowledge operating system that correlates identities from 5+ platforms into unified profiles, detects 8 categories of identity risk, and continuously evolves knowledge through a confidence-weighted learning pipeline.</p>
+<h3 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Cross-Platform First</strong> — Every component reasons across platform boundaries</li>
+<li><strong>Knowledge Over Alerts</strong> — Convert raw signals into organizational memory</li>
+<li><strong>Explainable Decisions</strong> — Every finding traceable to evidence and policy</li>
+<li><strong>Continuous Learning</strong> — Every interaction improves future detection</li>
+<li><strong>Enterprise Integration</strong> — Spring Boot/AI native for Java ecosystem adoption</li>
+</ol>
+<hr />
+<h2 id="2-high-level-architecture">2. High-Level Architecture<a class="headerlink" href="#2-high-level-architecture" title="Permanent link">&para;</a></h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│                        IKOS Architecture                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  DATA INGESTION ──→ IDENTITY CORRELATION ──→ RISK DETECTION         │
+│  (5 platforms)      (405→200 profiles)      (8 rules + behavioral)  │
+│                                                                     │
+│  ALERT CONSOLIDATION ──→ KNOWLEDGE EVOLUTION ──→ SPRING AI LAYER    │
+│  (148→26 = 82% reduction) (4-stage pipeline)   (8 @Tool methods)   │
+│                                                                     │
+│  OUTPUT: Dashboard (10 tabs) + Risk Report + CSV Export             │
+└─────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="3-component-details">3. Component Details<a class="headerlink" href="#3-component-details" title="Permanent link">&para;</a></h2>
+<h3 id="31-data-ingestion-layer">3.1 Data Ingestion Layer<a class="headerlink" href="#31-data-ingestion-layer" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>SimulatedDataGenerator</code> — Deterministic seed (42) for reproducible demo data</li>
+<li>Generates 300+ accounts across AD, AWS IAM, Okta, Salesforce, ServiceNow</li>
+<li>Anomaly distribution: ~12% offboarding gaps, ~10% over-privileged, ~7% dormant admin, ~4% token abuse, ~15% false positive traps</li>
+</ul>
+<h3 id="32-identity-correlation-engine">3.2 Identity Correlation Engine<a class="headerlink" href="#32-identity-correlation-engine" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Algorithm:</strong> Employee ID match (1.0 confidence) → Email match (0.95) → Display name fuzzy match (0.8)</li>
+<li><strong>Result:</strong> 405 accounts → 200 UnifiedIdentity profiles</li>
+</ul>
+<h3 id="33-risk-detection-engine-8-rules">3.3 Risk Detection Engine (8 Rules)<a class="headerlink" href="#33-risk-detection-engine-8-rules" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Rule</th>
+<th>Severity</th>
+<th>Logic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Offboarding Gap</td>
+<td>CRITICAL</td>
+<td>DISABLED on platform A + ACTIVE on B</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Cross-Platform Admin</td>
+<td>HIGH</td>
+<td>Admin on ≥3 platforms</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Dormant Admin</td>
+<td>HIGH</td>
+<td>Admin + lastLogin &gt; 90 days</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Orphaned Account</td>
+<td>MEDIUM</td>
+<td>Active account, no owner</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Privilege Creep</td>
+<td>MEDIUM</td>
+<td>≥30 permissions including sensitive</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Contractor Excessive</td>
+<td>HIGH</td>
+<td>Non-employee with admin</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Stale Service Account</td>
+<td>CRITICAL</td>
+<td>Service account admin, unused &gt; 180 days</td>
+</tr>
+<tr>
+<td>8</td>
+<td>SoD Violation</td>
+<td>CRITICAL</td>
+<td>Admin on IdP AND cloud infrastructure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-behavioral-analyzer-6-rules">3.4 Behavioral Analyzer (6 Rules)<a class="headerlink" href="#34-behavioral-analyzer-6-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Privilege Spike: &gt;3 privilege changes in 7 days (+0.30)</li>
+<li>Off-Hours Activity: &gt;30% events outside 7AM-8PM (+0.20)</li>
+<li>Cross-Platform Cascade: ≥3 platforms in short window (+0.25)</li>
+<li>Excessive Failures: Failed &gt; 2× successful logins (+0.25)</li>
+<li>Token Misuse: API token from external IP (+0.30)</li>
+<li>MFA Bypass: Any MFA bypass event (+0.35)</li>
+</ul>
+<h3 id="35-alert-consolidation">3.5 Alert Consolidation<a class="headerlink" href="#35-alert-consolidation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Groups risks by identity + risk type family</li>
+<li>148 raw alerts → 26 consolidated incidents = <strong>82% noise reduction</strong></li>
+</ul>
+<h3 id="36-group-hierarchy-effective-privilege-resolution">3.6 Group Hierarchy (Effective Privilege Resolution)<a class="headerlink" href="#36-group-hierarchy-effective-privilege-resolution" title="Permanent link">&para;</a></h3>
+<ul>
+<li>BFS traversal of nested group memberships</li>
+<li>Detects hidden admin through inheritance chains (e.g., Contractors → IT-Team → AD-Admins → Domain Admins)</li>
+</ul>
+<hr />
+<h2 id="4-knowledge-evolution-pipeline">4. Knowledge Evolution Pipeline<a class="headerlink" href="#4-knowledge-evolution-pipeline" title="Permanent link">&para;</a></h2>
+<pre><code>OBSERVATION (0.3) → PATTERN_CANDIDATE (0.5) → VALIDATED_PATTERN (0.7) → KNOWLEDGE (0.9)
+     ↑                                                                         ↓
+     └─────────────────── Outcome Learning Feedback Loop ──────────────────────┘
+</code></pre>
+<h3 id="41-confidence-model">4.1 Confidence Model<a class="headerlink" href="#41-confidence-model" title="Permanent link">&para;</a></h3>
+<pre><code>FinalConfidence = Evidence × Consistency × Validation × Outcome
+</code></pre>
+<ul>
+<li><strong>Evidence:</strong> min(1.0, 0.3 + evidenceCount × 0.15)</li>
+<li><strong>Consistency:</strong> 1.0 - contradictionCount × 0.2</li>
+<li><strong>Validation:</strong> Human(1.0), Auto(0.7), None(0.5)</li>
+<li><strong>Outcome:</strong> successfulRemediations / totalRemediations</li>
+</ul>
+<h3 id="42-context-scoring-5-factor">4.2 Context Scoring (5-Factor)<a class="headerlink" href="#42-context-scoring-5-factor" title="Permanent link">&para;</a></h3>
+<pre><code>ContextScore = Relevance × Confidence × Similarity × EvidenceStrength × Recency
+</code></pre>
+<p>Recency uses exponential decay: e^(-0.01 × days), ~70-day half-life.</p>
+<h3 id="43-pattern-discovery">4.3 Pattern Discovery<a class="headerlink" href="#43-pattern-discovery" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Collects OBSERVATION-state units, extracts keywords</li>
+<li>Groups by shared keywords (≥3 occurrences)</li>
+<li>Auto-promotes to PATTERN_CANDIDATE</li>
+</ul>
+<hr />
+<h2 id="5-spring-ai-integration">5. Spring AI Integration<a class="headerlink" href="#5-spring-ai-integration" title="Permanent link">&para;</a></h2>
+<h3 id="51-tool-calling-8-tool-methods">5.1 Tool-Calling (8 @Tool Methods)<a class="headerlink" href="#51-tool-calling-8-tool-methods" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Tool(&quot;AnalyzeIdentityRisks&quot;)     // Risk analysis for one identity
+@Tool(&quot;DetectOffboardingGap&quot;)      // Cross-platform status check
+@Tool(&quot;RecordSecurityIncident&quot;)    // Log security events
+@Tool(&quot;RecordRemediationAction&quot;)   // Log remediation steps
+@Tool(&quot;RecordAuditFinding&quot;)        // Log audit findings
+@Tool(&quot;RecommendRemediation&quot;)      // Generate fix steps with policy refs
+@Tool(&quot;ListIdentityRisks&quot;)        // All active risks
+@Tool(&quot;ListAllIkosKnowledge&quot;)     // Full knowledge store
+</code></pre>
+<h3 id="52-autonomous-agent-loop">5.2 Autonomous Agent Loop<a class="headerlink" href="#52-autonomous-agent-loop" title="Permanent link">&para;</a></h3>
+<p>5-iteration autonomous loop: ListRisks → Analyze → Recommend → CreateTasks → RecordRemediation. Zero human prompts required.</p>
+<h3 id="53-advisors">5.3 Advisors<a class="headerlink" href="#53-advisors" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>KnowledgeEvolutionAdvisor:</strong> Before=inject context, After=extract observations</li>
+<li><strong>AutoMemoryToolsAdvisor:</strong> Persistent MEMORY.md file management</li>
+</ul>
+<h3 id="54-subagents">5.4 Subagents<a class="headerlink" href="#54-subagents" title="Permanent link">&para;</a></h3>
+<ul>
+<li>RISK_ANALYST — Deep-dive identity risk analysis</li>
+<li>COMPLIANCE_REVIEWER — Map to NIST/GDPR controls</li>
+<li>REMEDIATION_PLANNER — Platform-specific fix steps</li>
+</ul>
+<hr />
+<h2 id="6-mitre-attck-detection-matrix">6. MITRE ATT&amp;CK Detection Matrix<a class="headerlink" href="#6-mitre-attck-detection-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>ID</th>
+<th>IKOS Detection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valid Accounts</td>
+<td>T1078</td>
+<td>Offboarding gaps, dormant admins, orphaned accounts</td>
+</tr>
+<tr>
+<td>Account Manipulation</td>
+<td>T1098</td>
+<td>Cross-platform admin, privilege creep, SoD violations</td>
+</tr>
+<tr>
+<td>Use Alternate Auth Material</td>
+<td>T1550</td>
+<td>Stale service accounts, token misuse</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-technology-stack">7. Technology Stack<a class="headerlink" href="#7-technology-stack" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime</td>
+<td>Java 25</td>
+<td>Core platform</td>
+</tr>
+<tr>
+<td>Framework</td>
+<td>Spring Boot 3.x/4.x</td>
+<td>Application framework</td>
+</tr>
+<tr>
+<td>AI/ML</td>
+<td>Spring AI 2.0.0</td>
+<td>LLM tool-calling, advisors</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td>Google Gemini 2.5 Flash</td>
+<td>Autonomous agent loop</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>Jackson 3 + File System</td>
+<td>Knowledge serialization</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>HTML/CSS/JS + Chart.js 4.4.3</td>
+<td>Interactive visualization</td>
+</tr>
+<tr>
+<td>Graph</td>
+<td>vis.js Network</td>
+<td>Identity relationship graph</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>Maven 3.9+</td>
+<td>Multi-module build</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>Docker (multi-stage)</td>
+<td>Deployment</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>IKOS Architecture Document v1.0</em></p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ENTERPRISE_EXPECTATIONS/" class="btn btn-neutral float-left" title="Enterprise Expectations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../DATA_DICTIONARY/" class="btn btn-neutral float-right" title="Data Dictionary">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+      <span><a href="../ENTERPRISE_EXPECTATIONS/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../DATA_DICTIONARY/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

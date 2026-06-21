@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>AutoMemoryTools - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "AutoMemoryTools";
+        var mkdocs_page_input_path = "tools/AutoMemoryTools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">AutoMemoryTools</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/AutoMemoryTools.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="automemorytools">AutoMemoryTools<a class="headerlink" href="#automemorytools" title="Permanent link">&para;</a></h1>
+<p>A persistent, file-based <strong>long-term memory</strong> toolkit for AI agents. Complements the built-in session/conversation history by giving agents a durable store that survives across conversations — user preferences, project context, behavioral feedback, and external references — organized in a dedicated memories directory.</p>
+<p><img alt="AutoAutoMemoryTools" src="../../images/spring-ai-auto-memory-flow.png" /></p>
+<h2 id="long-term-memory-vs-conversation-history">Long-term memory vs. conversation history<a class="headerlink" href="#long-term-memory-vs-conversation-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Conversation history</th>
+<th>AutoMemoryTools (long-term memory)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Current session only</td>
+<td>Persists across sessions</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td>In-process (RAM / <code>ChatMemory</code>)</td>
+<td>Files on disk</td>
+</tr>
+<tr>
+<td><strong>Content</strong></td>
+<td>Full message exchange — every turn</td>
+<td>Curated facts worth keeping forever</td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td>Bounded by context window</td>
+<td>Grows over time; agent loads selectively</td>
+</tr>
+<tr>
+<td><strong>Managed by</strong></td>
+<td>Spring AI <code>ChatMemory</code> / advisors</td>
+<td>Agent via tool calls</td>
+</tr>
+</tbody>
+</table>
+<p>Use conversation history for the short-term working context of the current task. Use <code>AutoMemoryTools</code> for facts that should still be available in the next conversation, next week, or next month — things the agent would otherwise have to re-learn from scratch every time.</p>
+<p><strong>Features:</strong>
+- Six targeted tools covering the full memory lifecycle (view, create, edit, insert, delete, rename)
+- All operations scoped to a sandboxed memories root — path traversal and absolute path injection blocked
+- Automatic creation of the memories directory and parent subdirectories
+- YAML frontmatter conventions for typed memories (<code>user</code>, <code>feedback</code>, <code>project</code>, <code>reference</code>)
+- <code>MEMORY.md</code> index pattern — a single always-loaded file pointing to all memory entries
+- UTF-8 throughout; trailing-newline preservation on insert
+- Companion system prompt included as a classpath resource</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">AutoMemoryTools memoryTools = AutoMemoryTools.builder()
+    .memoriesDir(&quot;/path/to/memory&quot;)
+    .build();
+
+ChatClient chatClient = chatClientBuilder
+    .defaultSystem(systemPrompt)            // include AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md
+    .defaultTools(memoryTools)
+    .defaultAdvisors(ToolCallAdvisor.builder().build())
+    .build();
+</code></pre>
+<p>Load the companion system prompt from the classpath (available inside the <code>spring-ai-agent-utils</code> jar):</p>
+<pre><code class="language-java">@Value(&quot;classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md&quot;)
+Resource memorySystemPrompt;
+
+// Inject the memories root path into the prompt template
+chatClientBuilder.defaultSystem(p -&gt; p
+    .text(toString(memorySystemPrompt))
+    .param(&quot;MEMORIES_ROOT_DIERCTORY&quot;, memoryDir));
+</code></pre>
+<h2 id="memory-file-convention">Memory File Convention<a class="headerlink" href="#memory-file-convention" title="Permanent link">&para;</a></h2>
+<p>Each memory is a Markdown file with a YAML frontmatter header:</p>
+<pre><code class="language-markdown">---
+name: short name
+description: one-line description — used to judge relevance in future conversations
+type: user | feedback | project | reference
+---
+
+Memory content here.
+
+**Why:** reason this was recorded
+**How to apply:** when this guidance kicks in
+</code></pre>
+<h3 id="memory-types">Memory Types<a class="headerlink" href="#memory-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>When to save</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user</code></td>
+<td>User's role, goals, expertise, preferences</td>
+<td>When you learn details about the user's background</td>
+</tr>
+<tr>
+<td><code>feedback</code></td>
+<td>How to approach work — corrections AND validated approaches</td>
+<td>When the user corrects you or confirms a non-obvious choice</td>
+</tr>
+<tr>
+<td><code>project</code></td>
+<td>Ongoing work, decisions, deadlines not in code/git</td>
+<td>When you learn who is doing what, why, or by when</td>
+</tr>
+<tr>
+<td><code>reference</code></td>
+<td>Pointers to external systems (Linear, dashboards, Slack)</td>
+<td>When you learn about external resources and their purpose</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memorymd-index">MEMORY.md Index<a class="headerlink" href="#memorymd-index" title="Permanent link">&para;</a></h3>
+<p><code>MEMORY.md</code> is the always-loaded index. Every memory file must have a corresponding one-line entry:</p>
+<pre><code class="language-markdown">- [Title](filename.md) — one-line hook describing what's stored (≤150 chars)
+</code></pre>
+<p>The agent reads <code>MEMORY.md</code> at the start of a session to decide which memory files to load. Keep entries concise — lines after 200 are truncated.</p>
+<h3 id="two-step-save-workflow">Two-Step Save Workflow<a class="headerlink" href="#two-step-save-workflow" title="Permanent link">&para;</a></h3>
+<p>Saving a memory always requires two tool calls:</p>
+<ol>
+<li><strong><code>MemoryCreate</code></strong> — write the new memory file with frontmatter</li>
+<li><strong><code>MemoryInsert</code></strong> or <strong><code>MemoryStrReplace</code></strong> — add/update the pointer line in <code>MEMORY.md</code></li>
+</ol>
+<h2 id="available-tools">Available Tools<a class="headerlink" href="#available-tools" title="Permanent link">&para;</a></h2>
+<h3 id="1-memoryview-read-a-file-or-list-a-directory">1. MemoryView — Read a File or List a Directory<a class="headerlink" href="#1-memoryview-read-a-file-or-list-a-directory" title="Permanent link">&para;</a></h3>
+<p>Returns file contents with line numbers, or a two-level directory listing with file sizes.</p>
+<p><strong>Parameters:</strong>
+- <code>path</code> (required) — relative path from the memories root; empty string or <code>"/"</code> for the root
+- <code>viewRange</code> (optional) — <code>"start,end"</code> to page through a large file (e.g. <code>"1,50"</code>)</p>
+<pre><code class="language-java">// View the index
+String index = memoryTools.memoryView(&quot;MEMORY.md&quot;, null);
+
+// View a specific memory file
+String content = memoryTools.memoryView(&quot;user_profile.md&quot;, null);
+
+// Page through a large file
+String page = memoryTools.memoryView(&quot;feedback_testing.md&quot;, &quot;1,30&quot;);
+
+// List the root directory (shows all memory files)
+String listing = memoryTools.memoryView(&quot;&quot;, null);
+</code></pre>
+<p><strong>Output — file:</strong></p>
+<pre><code>File: user_profile.md
+Lines 1-8 of 8
+
+     1  ---
+     2  name: user profile
+     3  description: Christian Tzolov — Spring AI lead at Broadcom
+     4  type: user
+     5  ---
+     6  
+     7  Leads the Spring AI project at Broadcom.
+     8  Prefers concise, direct responses.
+</code></pre>
+<p><strong>Output — directory:</strong></p>
+<pre><code>Contents of /:
+
+  MEMORY.md (185 bytes)
+  feedback_testing.md (312 bytes)
+  user_profile.md (201 bytes)
+  project/
+    artemis_launch.md (148 bytes)
+</code></pre>
+<hr />
+<h3 id="2-memorycreate-create-a-new-memory-file">2. MemoryCreate — Create a New Memory File<a class="headerlink" href="#2-memorycreate-create-a-new-memory-file" title="Permanent link">&para;</a></h3>
+<p>Creates a new file with the given content. Errors if the file already exists.</p>
+<p><strong>Parameters:</strong>
+- <code>path</code> (required) — relative path for the new file (e.g. <code>"user_profile.md"</code>, <code>"project/sprint.md"</code>)
+- <code>fileText</code> (required) — full file content including the YAML frontmatter block</p>
+<pre><code class="language-java">String result = memoryTools.memoryCreate(&quot;user_profile.md&quot;, &quot;&quot;&quot;
+    ---
+    name: user profile
+    description: Christian Tzolov — Spring AI lead at Broadcom
+    type: user
+    ---
+
+    Leads the Spring AI project at Broadcom.
+    Prefers concise, direct responses without trailing summaries.
+    &quot;&quot;&quot;);
+// Returns: &quot;Successfully created file: user_profile.md (201 bytes)&quot;
+</code></pre>
+<p>After creating the file, add a pointer to <code>MEMORY.md</code> using <code>MemoryInsert</code>:</p>
+<pre><code class="language-java">memoryTools.memoryInsert(&quot;MEMORY.md&quot;, currentLineCount,
+    &quot;- [User Profile](user_profile.md) — Christian Tzolov, Spring AI lead at Broadcom&quot;);
+</code></pre>
+<p><strong>What NOT to save (belongs in conversation history, not long-term memory):</strong>
+- Ephemeral task details, in-progress steps, or current conversation context — these live in the session and disappear naturally
+- Code patterns, conventions, or architecture (derivable from the codebase at any time)
+- Git history or who changed what (<code>git log</code> is authoritative)
+- Debugging recipes (the fix is in the code; the commit message has context)</p>
+<hr />
+<h3 id="3-memorystrreplace-replace-exact-text-in-a-file">3. MemoryStrReplace — Replace Exact Text in a File<a class="headerlink" href="#3-memorystrreplace-replace-exact-text-in-a-file" title="Permanent link">&para;</a></h3>
+<p>Replaces an exact, unique string in an existing memory file. Rejects the edit if the target string appears more than once.</p>
+<p><strong>Parameters:</strong>
+- <code>path</code> (required) — relative path to the file to edit
+- <code>oldStr</code> (required) — exact text to replace (must appear exactly once)
+- <code>newStr</code> (required) — replacement text; use <code>""</code> to delete the matched text</p>
+<pre><code class="language-java">// Update stale content in a memory file
+memoryTools.memoryStrReplace(&quot;user_profile.md&quot;,
+    &quot;Leads the Spring AI project at Broadcom.&quot;,
+    &quot;Leads the Spring AI project at Broadcom. Also working on agent tooling.&quot;);
+
+// Update a description in the frontmatter
+memoryTools.memoryStrReplace(&quot;user_profile.md&quot;,
+    &quot;description: Christian Tzolov — Spring AI lead at Broadcom&quot;,
+    &quot;description: Christian Tzolov — Spring AI lead, agent tooling focus&quot;);
+
+// Update the MEMORY.md pointer when a description changes
+memoryTools.memoryStrReplace(&quot;MEMORY.md&quot;,
+    &quot;- [User Profile](user_profile.md) — Christian Tzolov, Spring AI lead at Broadcom&quot;,
+    &quot;- [User Profile](user_profile.md) — Christian Tzolov, Spring AI lead, agent tooling focus&quot;);
+
+// Delete a line (empty newStr)
+memoryTools.memoryStrReplace(&quot;feedback.md&quot;, &quot;\nOutdated note to remove.&quot;, &quot;&quot;);
+</code></pre>
+<p>When <code>newStr</code> is empty (deletion), the tool confirms the removal without returning a snippet. Otherwise it returns a numbered snippet around the edited location.</p>
+<hr />
+<h3 id="4-memoryinsert-insert-text-at-a-line-number">4. MemoryInsert — Insert Text at a Line Number<a class="headerlink" href="#4-memoryinsert-insert-text-at-a-line-number" title="Permanent link">&para;</a></h3>
+<p>Inserts text after a given 1-indexed line number (<code>0</code> inserts before the first line). Primary use is appending new pointer entries to <code>MEMORY.md</code> after Step 1 of the two-step save.</p>
+<p><strong>Parameters:</strong>
+- <code>path</code> (required) — relative path to the file to modify
+- <code>insertLine</code> (required) — line number after which to insert (<code>0</code> = before line 1; total line count = append)
+- <code>insertText</code> (required) — text to insert</p>
+<pre><code class="language-java">// Append a new entry to MEMORY.md (most common use)
+// First, find the current line count via MemoryView
+memoryTools.memoryInsert(&quot;MEMORY.md&quot;, currentLineCount,
+    &quot;- [Feedback Testing](feedback_testing.md) — always use real DB in integration tests&quot;);
+
+// Insert a new section into an existing memory file
+memoryTools.memoryInsert(&quot;project_auth.md&quot;, 6,
+    &quot;\n**Update 2026-04-05:** legal approved the revised token storage approach.&quot;);
+</code></pre>
+<p>The original trailing newline of the file is preserved after the insert.</p>
+<hr />
+<h3 id="5-memorydelete-delete-a-file-or-directory">5. MemoryDelete — Delete a File or Directory<a class="headerlink" href="#5-memorydelete-delete-a-file-or-directory" title="Permanent link">&para;</a></h3>
+<p>Deletes a file or recursively deletes a directory. The memories root itself cannot be deleted.</p>
+<p><strong>Parameters:</strong>
+- <code>path</code> (required) — relative path to the file or directory to delete</p>
+<pre><code class="language-java">// Delete a stale memory file
+memoryTools.memoryDelete(&quot;project_old_sprint.md&quot;);
+// Returns: &quot;Successfully deleted file: project_old_sprint.md&quot;
+
+// Delete a subdirectory and all its contents
+memoryTools.memoryDelete(&quot;archived/&quot;);
+// Returns: &quot;Successfully deleted directory: archived/&quot;
+</code></pre>
+<blockquote>
+<p><strong>Important:</strong> After deleting a memory file, always remove its entry from <code>MEMORY.md</code> using <code>MemoryStrReplace</code> to keep the index accurate.</p>
+</blockquote>
+<hr />
+<h3 id="6-memoryrename-rename-or-move-a-filedirectory">6. MemoryRename — Rename or Move a File/Directory<a class="headerlink" href="#6-memoryrename-rename-or-move-a-filedirectory" title="Permanent link">&para;</a></h3>
+<p>Moves a file or directory to a new path within the memories root. Creates destination parent directories automatically.</p>
+<p><strong>Parameters:</strong>
+- <code>oldPath</code> (required) — current relative path
+- <code>newPath</code> (required) — new relative path (must not already exist)</p>
+<pre><code class="language-java">// Rename a file
+memoryTools.memoryRename(&quot;feedback.md&quot;, &quot;feedback_testing.md&quot;);
+// Returns: &quot;Successfully renamed 'feedback.md' to 'feedback_testing.md'&quot;
+
+// Move into a subdirectory
+memoryTools.memoryRename(&quot;old_project.md&quot;, &quot;archived/old_project.md&quot;);
+</code></pre>
+<blockquote>
+<p><strong>Important:</strong> After renaming, update the corresponding link in <code>MEMORY.md</code> using <code>MemoryStrReplace</code>.</p>
+</blockquote>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<pre><code class="language-java">AutoMemoryTools tools = AutoMemoryTools.builder()
+    .memoriesDir(&quot;/path/to/memory&quot;)   // Path or String; default: /memories
+    .build();
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Builder method</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>memoriesDir(Path)</code></td>
+<td><code>Path</code></td>
+<td><code>/memories</code></td>
+<td>Root directory for all memory files</td>
+</tr>
+<tr>
+<td><code>memoriesDir(String)</code></td>
+<td><code>String</code></td>
+<td><code>/memories</code></td>
+<td>Same, accepts a string path</td>
+</tr>
+</tbody>
+</table>
+<p>The directory is created automatically on <code>build()</code> if it does not exist. The path is normalized in the constructor, so <code>../relative/paths</code> resolve correctly before the traversal guard is applied.</p>
+<h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
+<p>All paths passed to the tools are resolved relative to <code>memoriesDir</code>:</p>
+<ul>
+<li><strong>Absolute paths</strong> — rejected immediately (<code>Error: Absolute paths are not allowed</code>)</li>
+<li><strong>Path traversal</strong> — <code>../../etc/passwd</code> is caught after normalization (<code>Error: Path traversal attempt detected</code>)</li>
+</ul>
+<p>The check uses <code>Path.isAbsolute()</code> before resolving, then verifies that the normalized result still starts with the normalized <code>memoriesDir</code>.</p>
+<h2 id="system-prompt">System Prompt<a class="headerlink" href="#system-prompt" title="Permanent link">&para;</a></h2>
+<p>The companion system prompt <code>AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code> is bundled in the jar at <code>classpath:/prompt/AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code>. Include it alongside your main system prompt to instruct the agent on:</p>
+<ul>
+<li>The distinction between long-term memory (AutoMemoryTools) and the current session's conversation history — only facts worth keeping across conversations belong in memory files</li>
+<li>When and how to read, save, update, and delete memories</li>
+<li>The two-step save workflow</li>
+<li>The four memory types and their purposes</li>
+<li>What not to save (ephemeral state, code patterns, git history, fix recipes)</li>
+<li>Staleness checking before acting on recalled memories</li>
+</ul>
+<p>The prompt contains one template placeholder: <code>{MEMORIES_ROOT_DIERCTORY}</code> (note the intentional spelling), which should be filled with the configured memories directory path so the agent can reference it in responses.</p>
+<pre><code class="language-java">chatClientBuilder.defaultSystem(p -&gt; p
+    .text(mainPrompt + &quot;\n\n&quot; + memoryToolsPrompt)
+    .param(&quot;MEMORIES_ROOT_DIERCTORY&quot;, memoryDir));
+</code></pre>
+<h2 id="demo-application">Demo Application<a class="headerlink" href="#demo-application" title="Permanent link">&para;</a></h2>
+<p>See <a href="https://github.com/spring-ai-community/spring-ai-agent-utils/tree/main/examples/memory/memory-tools-demo">memory-tools-demo</a> for a complete working example. It demonstrates:</p>
+<ul>
+<li>Combining <code>MAIN_AGENT_SYSTEM_PROMPT_V2.md</code> and <code>AUTO_MEMORY_TOOLS_SYSTEM_PROMPT.md</code></li>
+<li>Configuring <code>AutoMemoryTools</code> with a path from <code>application.properties</code></li>
+<li>Using <code>ToolCallAdvisor</code> for recursive tool calling</li>
+<li>A console chat loop that builds up memory across turns</li>
+</ul>
+<h2 id="inspiration">Inspiration<a class="headerlink" href="#inspiration" title="Permanent link">&para;</a></h2>
+<p><code>AutoMemoryTools</code> is a Spring AI implementation of the memory patterns pioneered by Anthropic:</p>
+<ul>
+<li>
+<p><strong><a href="https://code.claude.com/docs/en/memory">Claude Code — Memory</a></strong> — describes how Claude Code uses a file-based memory system (<code>MEMORY.md</code> index, typed memory files, two-step save workflow) to persist knowledge across coding sessions. The file conventions, memory types (<code>user</code>, <code>feedback</code>, <code>project</code>, <code>reference</code>), and <code>MEMORY.md</code> index pattern in this library are directly inspired by that design.</p>
+</li>
+<li>
+<p><strong><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool">Claude API SDK — Memory Tool</a></strong> — the official Anthropic memory tool specification that defines the six memory operations (<code>view</code>, <code>create</code>, <code>str_replace</code>, <code>insert</code>, <code>delete</code>, <code>rename</code>) and the sandboxed <code>/memories</code> directory model. Each <code>AutoMemoryTools</code> method maps one-to-one to an operation in that spec.</p>
+</li>
+</ul>
+<p><code>AutoMemoryTools</code> brings both designs to any Spring AI application regardless of the underlying model provider.</p>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://code.claude.com/docs/en/memory#auto-memory">Claude Code — Auto-Memory</a> — the file-based memory system this library is modelled after</li>
+<li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool">Claude API SDK — Memory Tool</a> — the official tool specification</li>
+<li><a href="../FileSystemTools/">FileSystemTools</a> — general-purpose file read/write/edit (not scoped to a sandbox)</li>
+<li><a href="../TodoWriteTool/">TodoWriteTool</a> — task tracking within a single conversation</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

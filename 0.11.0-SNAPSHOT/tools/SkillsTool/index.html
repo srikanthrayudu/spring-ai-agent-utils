@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>SkillsTool - Agent Skills System - IKOS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SkillsTool - Agent Skills System";
+        var mkdocs_page_input_path = "tools/SkillsTool.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ENTERPRISE_EXPECTATIONS/">Enterprise Expectations</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SkillsTool - Agent Skills System</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/tools/SkillsTool.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="skillstool-agent-skills-system">SkillsTool - Agent Skills System<a class="headerlink" href="#skillstool-agent-skills-system" title="Permanent link">&para;</a></h1>
+<p>Extend AI agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter. Based on <a href="https://code.claude.com/docs/en/skills#agent-skills">Claude Code's Agent Skills</a>, skills enable AI agents to perform specialized tasks through semantic matching.</p>
+<p><strong>Features:</strong>
+- Define skills as Markdown files with YAML frontmatter
+- Automatic skill invocation through semantic matching
+- Support for reference files and helper scripts
+- Progressive disclosure of detailed information
+- Project-wide or user-wide skill scopes
+- Customizable tool descriptions and templates
+- Load skills from filesystem directories, classpath JARs, or remote JAR dependencies</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Skills are markdown files that teach the AI agent how to perform specific tasks. Unlike traditional tools that execute code, skills provide <strong>knowledge and instructions</strong> to the AI, enabling it to handle specialized domains effectively.</p>
+<p><strong>How Skills Work:</strong>
+1. <strong>Discovery</strong>: At startup, SkillsTool loads skill names and descriptions
+2. <strong>Semantic Matching</strong>: When a user request matches a skill's description, the AI invokes it
+3. <strong>Execution</strong>: The full skill content is loaded and the AI follows its instructions</p>
+<p>Extend agent capabilities with reusable, composable knowledge modules defined in Markdown with YAML front-matter:</p>
+<pre><code class="language-yaml">---
+name: ai-tutor
+description: Use when user asks to explain technical concepts
+---
+
+# AI Tutor
+[Detailed skill documentation...]
+</code></pre>
+<p>Skills can include executable scripts and reference materials, loaded dynamically from filesystem directories, classpath locations, or packaged JAR dependencies.</p>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<h3 id="create-a-skill">Create a Skill<a class="headerlink" href="#create-a-skill" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>examples/.claude/skills/my-skill/SKILL.md</code></p>
+<pre><code class="language-markdown">---
+name: my-skill
+description: What this skill does and when to use it. Include specific
+  capabilities and trigger keywords users would naturally say.
+---
+
+# My Skill
+
+## Instructions
+Provide clear, step-by-step guidance for the AI agent.
+
+## Examples
+Show concrete examples of using this skill.
+</code></pre>
+<h3 id="register-skillstool">Register SkillsTool<a class="headerlink" href="#register-skillstool" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultToolCallbacks(SkillsTool.builder()
+        .addSkillsDirectory(&quot;examples/.claude/skills&quot;)
+        .build())
+    .build();
+
+// AI automatically invokes skills based on semantic matching
+String response = chatClient.prompt()
+    .user(&quot;Help me with PDF processing&quot;)
+    .call()
+    .content();
+// If a &quot;pdf&quot; skill exists with matching description, it's automatically invoked
+</code></pre>
+<h2 id="skill-file-structure">Skill File Structure<a class="headerlink" href="#skill-file-structure" title="Permanent link">&para;</a></h2>
+<p>Every skill requires a <code>SKILL.md</code> file. Supporting files are optional:</p>
+<pre><code>examples/.claude/skills/
+└── my-skill/
+    ├── SKILL.md          # Required: Skill definition
+    ├── reference.md      # Optional: Detailed documentation
+    ├── examples.md       # Optional: Usage examples
+    ├── scripts/          # Optional: Helper scripts
+    │   └── process.py
+    └── pyproject.toml    # Optional: Python dependencies
+</code></pre>
+<h3 id="skillmd-format">SKILL.md Format<a class="headerlink" href="#skillmd-format" title="Permanent link">&para;</a></h3>
+<pre><code class="language-markdown">---
+name: my-skill
+description: Comprehensive description including what the skill does,
+  when to use it, and trigger keywords users might mention.
+allowed-tools: Read, Grep, Bash
+model: claude-sonnet-4-5-20250929
+---
+
+# Skill Title
+
+## Overview
+Brief introduction to what this skill does.
+
+## Instructions
+Step-by-step guidance for the AI agent.
+
+## Examples
+Concrete examples demonstrating skill usage.
+
+## Additional Resources
+- For complete details, see [reference.md](reference.md)
+- For usage examples, see [examples.md](examples.md)
+</code></pre>
+<h2 id="frontmatter-fields">Frontmatter Fields<a class="headerlink" href="#frontmatter-fields" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>Yes</td>
+<td>Skill identifier: lowercase letters, numbers, hyphens only (max 64 chars)</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>Yes</td>
+<td>What it does + when to use it (max 1024 chars). Used for semantic matching</td>
+</tr>
+<tr>
+<td><code>allowed-tools</code></td>
+<td>No</td>
+<td>Comma-separated tools the agent can use without asking permission</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>No</td>
+<td>Specific model to use when this skill is active</td>
+</tr>
+</tbody>
+</table>
+<h3 id="name-field">Name Field<a class="headerlink" href="#name-field" title="Permanent link">&para;</a></h3>
+<pre><code class="language-yaml"># ✅ GOOD
+name: pdf-processor
+name: data-analysis
+name: api-documentation
+
+# ❌ BAD
+name: PDF Processor      # No spaces or capitals
+name: data_analysis      # Use hyphens, not underscores
+name: my-super-long-skill-name-that-exceeds-the-limit  # Too long
+</code></pre>
+<h3 id="description-field">Description Field<a class="headerlink" href="#description-field" title="Permanent link">&para;</a></h3>
+<p>The description is <strong>critical</strong> for semantic matching. Include:
+- What the skill does
+- When to use it
+- Trigger keywords users might say
+- Specific capabilities</p>
+<pre><code class="language-yaml"># ✅ GOOD
+description: Extract text and tables from PDF files, fill forms, merge documents.
+  Use when working with PDF files or when the user mentions PDFs, forms,
+  or document extraction.
+
+# ❌ BAD
+description: Helps with documents  # Too vague
+description: PDF tool              # Lacks context and triggers
+</code></pre>
+<h3 id="allowed-tools-field">Allowed-Tools Field<a class="headerlink" href="#allowed-tools-field" title="Permanent link">&para;</a></h3>
+<p>Comma-separated list of tools the AI can use when this skill is active:</p>
+<pre><code class="language-yaml">allowed-tools: Read, Grep, Bash, Write
+</code></pre>
+<p><strong>Without this field:</strong> AI must ask user permission before using tools
+<strong>With this field:</strong> AI can use listed tools automatically</p>
+<h3 id="model-field">Model Field<a class="headerlink" href="#model-field" title="Permanent link">&para;</a></h3>
+<p>Override the default model for this specific skill:</p>
+<pre><code class="language-yaml">model: claude-sonnet-4-5-20250929
+model: claude-opus-4-5-20251101
+</code></pre>
+<h2 id="skill-locations">Skill Locations<a class="headerlink" href="#skill-locations" title="Permanent link">&para;</a></h2>
+<p>Skills can come from multiple sources — filesystem directories, classpath resources, or packaged JAR dependencies.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Example</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Personal directory</strong></td>
+<td><code>~/.claude/skills/</code></td>
+<td>User, across all projects</td>
+</tr>
+<tr>
+<td><strong>Project directory</strong></td>
+<td><code>.claude/skills/</code></td>
+<td>Team in this repository</td>
+</tr>
+<tr>
+<td><strong>Classpath / JAR</strong></td>
+<td><code>ClassPathResource("META-INF/skills/my-skills")</code></td>
+<td>Packaged with a library or dependency</td>
+</tr>
+<tr>
+<td><strong>Remote JAR</strong></td>
+<td><code>UrlResource("jar:https://…/skills.jar!/skills")</code></td>
+<td>Distributed skill packages</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tip:</strong> Use project skills (<code>.claude/skills/</code>) for team collaboration by committing them to version control.</p>
+<h3 id="loading-from-directories">Loading from Directories<a class="headerlink" href="#loading-from-directories" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SkillsTool skillsTool = SkillsTool.builder()
+    .addSkillsDirectory(&quot;.claude/skills&quot;)           // Project skills
+    .addSkillsDirectory(System.getenv(&quot;HOME&quot;) + &quot;/.claude/skills&quot;)  // Personal skills
+    .build();
+</code></pre>
+<p>Alternative using <code>addSkillsDirectories</code>:</p>
+<pre><code class="language-java">SkillsTool skillsTool = SkillsTool.builder()
+    .addSkillsDirectories(List.of(
+        &quot;.claude/skills&quot;,
+        System.getenv(&quot;HOME&quot;) + &quot;/.claude/skills&quot;
+    ))
+    .build();
+</code></pre>
+<h3 id="loading-from-spring-resources">Loading from Spring Resources<a class="headerlink" href="#loading-from-spring-resources" title="Permanent link">&para;</a></h3>
+<p>For better integration with Spring Boot, you can load skills from Spring <code>Resource</code> objects.
+This works for filesystem paths, classpath locations, and JAR entries.</p>
+<pre><code class="language-java">import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+
+@Configuration
+public class SkillsConfig {
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    @Bean
+    public SkillsTool skillsTool() {
+        Resource skillsResource = resourceLoader.getResource(&quot;classpath:.claude/skills&quot;);
+
+        return SkillsTool.builder()
+            .addSkillsResource(skillsResource)
+            .build();
+    }
+}
+</code></pre>
+<p>Loading multiple resources:</p>
+<pre><code class="language-java">@Bean
+public SkillsTool skillsTool() {
+    List&lt;Resource&gt; skillResources = List.of(
+        resourceLoader.getResource(&quot;classpath:.claude/skills&quot;),
+        resourceLoader.getResource(&quot;file:${user.home}/.claude/skills&quot;)
+    );
+
+    return SkillsTool.builder()
+        .addSkillsResources(skillResources)
+        .build();
+}
+</code></pre>
+<h3 id="loading-from-classpath-jars-skillsjars">Loading from Classpath JARs (SkillsJars)<a class="headerlink" href="#loading-from-classpath-jars-skillsjars" title="Permanent link">&para;</a></h3>
+<p>Skills can be packaged inside JAR files and distributed as Maven/Gradle dependencies — referred to as <strong>SkillsJars</strong>. This allows teams to share reusable skill libraries across projects.</p>
+<p>A SkillsJar is a regular JAR that stores <code>SKILL.md</code> files under a well-known path:</p>
+<pre><code>META-INF/
+└── skills/
+    └── my-org/
+        └── my-skills/
+            └── pdf/
+                └── SKILL.md
+</code></pre>
+<p>Add the JAR as a dependency, then point <code>SkillsTool</code> at the classpath prefix:</p>
+<pre><code class="language-java">// pom.xml
+&lt;dependency&gt;
+    &lt;groupId&gt;com.skillsjars&lt;/groupId&gt;
+    &lt;artifactId&gt;anthropics__skills__pdf&lt;/artifactId&gt;
+    &lt;version&gt;2026_02_06-1ed29a0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+<pre><code class="language-java">SkillsTool skillsTool = SkillsTool.builder()
+    .addSkillsResource(new ClassPathResource(&quot;META-INF/resources/skills/anthropics/skills&quot;))
+    .build();
+</code></pre>
+<p>You can mix sources freely — filesystem directories, classpath JARs, and explicit JAR URLs:</p>
+<pre><code class="language-java">SkillsTool skillsTool = SkillsTool.builder()
+    .addSkillsDirectory(&quot;.claude/skills&quot;)                                         // Local filesystem
+    .addSkillsResource(new ClassPathResource(&quot;META-INF/skills/my-org/my-skills&quot;)) // From a dependency JAR
+    .addSkillsResource(new UrlResource(&quot;jar:file:/opt/skills.jar!/skills&quot;))       // Explicit JAR URL
+    .build();
+</code></pre>
+<h4 id="how-jar-loading-works">How JAR Loading Works<a class="headerlink" href="#how-jar-loading-works" title="Permanent link">&para;</a></h4>
+<p><code>Skills.loadResource()</code> resolves JAR-based resources using three strategies, in order:</p>
+<ol>
+<li><strong>Spring <code>PathMatchingResourcePatternResolver</code></strong> — scans <code>classpath*:…/**/SKILL.md</code>. Works for well-formed JARs with explicit directory entries.</li>
+<li><strong><code>JarURLConnection</code> direct scan</strong> — used when the resource URL uses the <code>jar:</code> protocol (e.g., a <code>UrlResource</code>).</li>
+<li><strong>Manual classpath JAR scan</strong> — fallback for <code>ClassPathResource</code> references pointing to directories inside JARs that lack explicit directory entries (a known limitation of Spring's resolver).</li>
+</ol>
+<p>All three strategies produce the same result: a list of <code>Skill</code> objects ready for use.</p>
+<h2 id="builder-configuration">Builder Configuration<a class="headerlink" href="#builder-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="basic-builder">Basic Builder<a class="headerlink" href="#basic-builder" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SkillsTool.builder()
+    .addSkillsDirectory(&quot;.claude/skills&quot;)
+    .build();
+</code></pre>
+<h3 id="custom-tool-description-template">Custom Tool Description Template<a class="headerlink" href="#custom-tool-description-template" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">String customTemplate = &quot;&quot;&quot;
+    Execute a custom skill...
+
+    &lt;available_skills&gt;
+    %s
+    &lt;/available_skills&gt;
+    &quot;&quot;&quot;;
+
+SkillsTool.builder()
+    .addSkillsDirectory(&quot;.claude/skills&quot;)
+    .toolDescriptionTemplate(customTemplate)
+    .build();
+</code></pre>
+<h3 id="multiple-skill-directories">Multiple Skill Directories<a class="headerlink" href="#multiple-skill-directories" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">SkillsTool.builder()
+    .addSkillsDirectory(&quot;.claude/skills&quot;)
+    .addSkillsDirectory(&quot;~/.claude/skills&quot;)
+    .addSkillsDirectory(&quot;/shared/team-skills&quot;)
+    .build();
+</code></pre>
+<h3 id="with-spring-resources">With Spring Resources<a class="headerlink" href="#with-spring-resources" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">import org.springframework.core.io.Resource;
+
+@Bean
+public SkillsTool skillsTool(ResourceLoader resourceLoader) {
+    Resource projectSkills = resourceLoader.getResource(&quot;classpath:.claude/skills&quot;);
+    Resource userSkills = resourceLoader.getResource(&quot;file:${user.home}/.claude/skills&quot;);
+
+    return SkillsTool.builder()
+        .addSkillsResource(projectSkills)
+        .addSkillsResource(userSkills)
+        .build();
+}
+</code></pre>
+<h3 id="with-jar-classpath-dependencies">With JAR / Classpath Dependencies<a class="headerlink" href="#with-jar-classpath-dependencies" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.UrlResource;
+
+@Bean
+public SkillsTool skillsTool() {
+    return SkillsTool.builder()
+        .addSkillsDirectory(&quot;.claude/skills&quot;)                                         // Local filesystem
+        .addSkillsResource(new ClassPathResource(&quot;META-INF/skills/my-org/my-skills&quot;)) // From a dependency JAR
+        .addSkillsResource(new UrlResource(&quot;jar:file:/opt/skills.jar!/skills&quot;))       // Explicit JAR URL
+        .build();
+}
+</code></pre>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-write-effective-descriptions">1. Write Effective Descriptions<a class="headerlink" href="#1-write-effective-descriptions" title="Permanent link">&para;</a></h3>
+<p><strong>Include specific capabilities:</strong></p>
+<pre><code class="language-yaml"># ✅ GOOD
+description: Process Excel files: read sheets, analyze data, create charts,
+  generate reports. Use when working with .xlsx, .xls files, spreadsheets,
+  or when user mentions Excel, data analysis, or pivot tables.
+</code></pre>
+<p><strong>Include trigger keywords:</strong></p>
+<pre><code class="language-yaml"># ✅ GOOD
+description: Analyze SQL databases, write optimized queries, explain execution
+  plans. Use when user mentions: databases, SQL, MySQL, PostgreSQL, queries,
+  tables, indexes, or performance tuning.
+</code></pre>
+<p><strong>Too vague (avoid):</strong></p>
+<pre><code class="language-yaml"># ❌ BAD
+description: Database helper
+description: Works with files
+</code></pre>
+<h3 id="2-keep-skills-focused">2. Keep Skills Focused<a class="headerlink" href="#2-keep-skills-focused" title="Permanent link">&para;</a></h3>
+<p><strong>SKILL.md should be:</strong>
+- Under 500 lines
+- Focused on one domain/task
+- Quick to read and understand</p>
+<p><strong>Use supporting files for details:</strong></p>
+<pre><code class="language-markdown">## Quick Start
+[Essential 50-100 line instructions here]
+
+## Additional Resources
+- For complete API reference, see [reference.md](reference.md)
+- For 20+ examples, see [examples.md](examples.md)
+- For advanced techniques, see [advanced.md](advanced.md)
+</code></pre>
+<h3 id="3-progressive-disclosure">3. Progressive Disclosure<a class="headerlink" href="#3-progressive-disclosure" title="Permanent link">&para;</a></h3>
+<p>Structure skills to provide information when needed:</p>
+<pre><code class="language-markdown"># PDF Processing Skill
+
+## Basic Operations
+Quick instructions for common PDF tasks...
+
+## Advanced Features
+For complex operations like form filling, see [advanced.md](advanced.md)
+
+## API Reference
+For complete API documentation, see [reference.md](reference.md)
+</code></pre>
+<p>The AI loads supporting files <strong>only when needed</strong>, preserving context.</p>
+<h3 id="4-provide-clear-examples">4. Provide Clear Examples<a class="headerlink" href="#4-provide-clear-examples" title="Permanent link">&para;</a></h3>
+<pre><code class="language-markdown">## Examples
+
+### Extract Text from PDF
+\```bash
+python scripts/extract_text.py input.pdf output.txt
+\```
+
+### Merge Multiple PDFs
+\```bash
+python scripts/merge.py file1.pdf file2.pdf output.pdf
+\```
+
+### Fill PDF Form
+\```python
+from pdf_processor import fill_form
+
+fill_form('template.pdf', {
+    'name': 'John Doe',
+    'date': '2025-01-04'
+}, 'filled.pdf')
+\```
+</code></pre>
+<h3 id="5-tool-access-for-skills">5. Tool Access for Skills<a class="headerlink" href="#5-tool-access-for-skills" title="Permanent link">&para;</a></h3>
+<p>Skills often need to read files or run scripts. Register necessary tools:</p>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultToolCallbacks(SkillsTool.builder()
+        .addSkillsDirectory(&quot;examples/.claude/skills&quot;)
+        .build())
+
+    // Required for skills to load reference files
+    .defaultTools(FileSystemTools.builder().build())
+
+    // Required for skills to execute scripts
+    .defaultTools(new ShellTools())
+
+    .build();
+</code></pre>
+<p><strong>Without FileSystemTools:</strong> Skills can't read <code>reference.md</code>, <code>examples.md</code>
+<strong>Without ShellTools:</strong> Skills can't execute scripts in <code>scripts/</code> directory</p>
+<h2 id="how-skills-are-invoked">How Skills Are Invoked<a class="headerlink" href="#how-skills-are-invoked" title="Permanent link">&para;</a></h2>
+<h3 id="three-step-process">Three-Step Process<a class="headerlink" href="#three-step-process" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Discovery</strong> (at startup):</li>
+<li>SkillsTool scans <code>.claude/skills/</code> directories</li>
+<li>Loads <code>name</code> and <code>description</code> from each <code>SKILL.md</code></li>
+<li>
+<p>Creates lightweight skill registry</p>
+</li>
+<li>
+<p><strong>Activation</strong> (on user request):</p>
+</li>
+<li>User: "Help me extract data from this PDF"</li>
+<li>AI matches request to skill descriptions</li>
+<li>
+<p>AI invokes skill: <code>Skill(command="pdf-processor")</code></p>
+</li>
+<li>
+<p><strong>Execution</strong>:</p>
+</li>
+<li>SkillsTool loads full <code>SKILL.md</code> content</li>
+<li>Returns content + base directory to AI</li>
+<li>AI follows skill instructions</li>
+</ol>
+<h3 id="invocation-example">Invocation Example<a class="headerlink" href="#invocation-example" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">// User request
+&quot;I need to process a PDF file and extract tables&quot;
+
+// AI recognizes &quot;pdf&quot; skill matches
+// AI calls: Skill(command=&quot;pdf&quot;)
+
+// SkillsTool returns:
+&quot;Base directory for this skill: /project/.claude/skills/pdf
+
+# PDF Processing Skill
+[full SKILL.md content here...]
+&quot;
+
+// AI follows instructions from skill
+</code></pre>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<h3 id="example-skill-api-documentation-generator">Example Skill: API Documentation Generator<a class="headerlink" href="#example-skill-api-documentation-generator" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>.claude/skills/api-docs/SKILL.md</code></p>
+<pre><code class="language-markdown">---
+name: api-docs
+description: Generate API documentation from source code. Analyze REST endpoints,
+  GraphQL schemas, or OpenAPI specs. Use when user mentions: API docs, documentation
+  generation, endpoint documentation, REST API, GraphQL, OpenAPI, Swagger.
+allowed-tools: Read, Grep, Bash, Write
+model: claude-sonnet-4-5-20250929
+---
+
+# API Documentation Generator
+
+## Overview
+This skill helps generate comprehensive API documentation from source code,
+focusing on REST endpoints, request/response formats, and usage examples.
+
+## Instructions
+
+### Step 1: Analyze Source Code
+1. Use Grep to find controller/route files
+2. Read files to understand endpoint structure
+3. Identify request/response types
+
+### Step 2: Extract Information
+For each endpoint, document:
+- HTTP method and path
+- Request parameters (query, path, body)
+- Response format
+- Error codes
+- Authentication requirements
+
+### Step 3: Generate Documentation
+Create markdown documentation with:
+- Endpoint overview table
+- Detailed endpoint descriptions
+- Code examples in multiple languages
+- Response schemas
+
+## Example
+
+### Finding Spring Boot Endpoints
+\```bash
+grep -r &quot;@GetMapping\\|@PostMapping\\|@PutMapping\\|@DeleteMapping&quot; src/
+\```
+
+### Documenting an Endpoint
+\```markdown
+## GET /api/users/{id}
+
+Retrieve user by ID.
+
+**Parameters:**
+- `id` (path, required): User ID
+
+**Response:** `200 OK`
+\```json
+{
+  &quot;id&quot;: 1,
+  &quot;name&quot;: &quot;John Doe&quot;,
+  &quot;email&quot;: &quot;john@example.com&quot;
+}
+\```
+
+**Errors:**
+- `404`: User not found
+\```
+
+## Additional Resources
+- For OpenAPI integration, see [openapi.md](openapi.md)
+- For GraphQL schemas, see [graphql.md](graphql.md)
+</code></pre>
+<h3 id="registration">Registration<a class="headerlink" href="#registration" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class SkillsConfig {
+
+    @Bean
+    public ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+        return chatClientBuilder
+            .defaultToolCallbacks(SkillsTool.builder()
+                .addSkillsDirectory(&quot;examples/.claude/skills&quot;)
+                .build())
+            .defaultTools(FileSystemTools.builder().build())
+            .defaultTools(new ShellTools())
+            .defaultTools(GrepTool.builder().build())
+            .build();
+    }
+}
+</code></pre>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">ChatClient chatClient = ...; // from bean
+
+String response = chatClient.prompt()
+    .user(&quot;Generate API documentation for my Spring Boot application&quot;)
+    .call()
+    .content();
+
+// AI automatically:
+// 1. Recognizes &quot;API documentation&quot; matches api-docs skill
+// 2. Invokes the skill
+// 3. Follows skill instructions to generate docs
+</code></pre>
+<h2 id="advanced-usage">Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h2>
+<h3 id="custom-skill-with-scripts">Custom Skill with Scripts<a class="headerlink" href="#custom-skill-with-scripts" title="Permanent link">&para;</a></h3>
+<p><strong>Directory structure:</strong></p>
+<pre><code>.claude/skills/data-analysis/
+├── SKILL.md
+├── scripts/
+│   ├── analyze.py
+│   ├── visualize.py
+│   └── report.py
+└── pyproject.toml
+</code></pre>
+<p><strong>SKILL.md:</strong></p>
+<pre><code class="language-markdown">---
+name: data-analysis
+description: Analyze CSV/Excel data, create visualizations, generate statistical
+  reports. Use when user mentions: data analysis, CSV, Excel, statistics,
+  charts, graphs, visualization.
+allowed-tools: Read, Bash, Write
+---
+
+# Data Analysis Skill
+
+## Setup
+First, install dependencies:
+\```bash
+cd .claude/skills/data-analysis
+pip install -r requirements.txt
+\```
+
+## Usage
+
+### Analyze CSV
+\```bash
+python scripts/analyze.py data.csv --output report.txt
+\```
+
+### Create Visualization
+\```bash
+python scripts/visualize.py data.csv --type bar --output chart.png
+\```
+
+## Examples
+[Detailed examples here...]
+</code></pre>
+<h3 id="namespace-collision-handling">Namespace Collision Handling<a class="headerlink" href="#namespace-collision-handling" title="Permanent link">&para;</a></h3>
+<p>If multiple skills have the same name:</p>
+<pre><code class="language-java">// Use fully qualified names: directory:skill-name
+Skill(command=&quot;project-a:pdf&quot;)
+Skill(command=&quot;project-b:pdf&quot;)
+</code></pre>
+<h2 id="spring-boot-integration">Spring Boot Integration<a class="headerlink" href="#spring-boot-integration" title="Permanent link">&para;</a></h2>
+<h3 id="configuration-properties">Configuration Properties<a class="headerlink" href="#configuration-properties" title="Permanent link">&para;</a></h3>
+<pre><code class="language-properties"># application.properties
+skills.directory=.claude/skills
+skills.user.directory=${user.home}/.claude/skills
+</code></pre>
+<h3 id="configuration-class">Configuration Class<a class="headerlink" href="#configuration-class" title="Permanent link">&para;</a></h3>
+<pre><code class="language-java">@Configuration
+public class SkillsConfiguration {
+
+    @Value(&quot;${skills.directory}&quot;)
+    private String projectSkillsDir;
+
+    @Value(&quot;${skills.user.directory}&quot;)
+    private String userSkillsDir;
+
+    @Bean
+    public SkillsTool skillsTool() {
+        return SkillsTool.builder()
+            .addSkillsDirectory(projectSkillsDir)
+            .addSkillsDirectory(userSkillsDir)
+            .build();
+    }
+
+    @Bean
+    public ChatClient chatClient(
+            ChatClient.Builder chatClientBuilder,
+            SkillsTool skillsTool) {
+
+        return chatClientBuilder
+            .defaultToolCallbacks(skillsTool)
+            .defaultTools(FileSystemTools.builder().build())
+            .defaultTools(new ShellTools())
+            .build();
+    }
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="skill-not-found">Skill Not Found<a class="headerlink" href="#skill-not-found" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> AI doesn't invoke skill even though it should match</p>
+<p><strong>Solutions:</strong>
+1. Check skill description includes trigger keywords
+2. Verify <code>SKILL.md</code> exists and has frontmatter
+3. Ensure skill directory is registered
+4. Check logs for skill loading errors</p>
+<pre><code class="language-java">// Enable debug logging
+logging.level.org.springaicommunity.agent.tools.SkillsTool=DEBUG
+</code></pre>
+<h3 id="skill-cant-access-files">Skill Can't Access Files<a class="headerlink" href="#skill-cant-access-files" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Skill tries to read <code>reference.md</code> but fails</p>
+<p><strong>Solution:</strong> Register FileSystemTools</p>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultToolCallbacks(skillsTool)
+    .defaultTools(FileSystemTools.builder().build())  // Add this
+    .build();
+</code></pre>
+<h3 id="skill-cant-run-scripts">Skill Can't Run Scripts<a class="headerlink" href="#skill-cant-run-scripts" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Skill can't execute Python/shell scripts</p>
+<p><strong>Solution:</strong> Register ShellTools</p>
+<pre><code class="language-java">ChatClient chatClient = chatClientBuilder
+    .defaultToolCallbacks(skillsTool)
+    .defaultTools(new ShellTools())  // Add this
+    .build();
+</code></pre>
+<h3 id="skills-not-found-in-jar">Skills Not Found in JAR<a class="headerlink" href="#skills-not-found-in-jar" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> <code>SkillsTool</code> loads 0 skills from a <code>ClassPathResource</code> pointing inside a JAR</p>
+<p><strong>Cause:</strong> The JAR lacks explicit directory entries (common with some build tools), so Spring's <code>PathMatchingResourcePatternResolver</code> can't enumerate the contents.</p>
+<p><strong>Solution:</strong> <code>Skills.loadResource()</code> automatically falls back to scanning all classpath JARs via <code>ClassLoader.getResources("META-INF/MANIFEST.MF")</code>. If skills are still not found, verify the JAR entry prefix matches the <code>ClassPathResource</code> path:</p>
+<pre><code class="language-bash"># Inspect JAR entries
+jar tf my-skills.jar | grep SKILL.md
+# META-INF/skills/my-org/my-skills/pdf/SKILL.md
+
+# Use the matching prefix
+new ClassPathResource(&quot;META-INF/skills/my-org/my-skills&quot;)
+</code></pre>
+<h3 id="multiple-skills-with-same-name">Multiple Skills with Same Name<a class="headerlink" href="#multiple-skills-with-same-name" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Naming collision between skills</p>
+<p><strong>Solution:</strong> Use fully qualified names</p>
+<pre><code class="language-markdown">---
+name: project-name:skill-name
+---
+</code></pre>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Skill descriptions limited to 1024 characters</li>
+<li>Skill names limited to 64 characters</li>
+<li>Only <code>SKILL.md</code> files are recognized (exact name)</li>
+<li>YAML frontmatter must be valid</li>
+<li>Semantic matching depends on AI's understanding</li>
+</ul>
+<h2 id="best-practices-summary">Best Practices Summary<a class="headerlink" href="#best-practices-summary" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Descriptive names</strong>: Use clear, hyphenated names</li>
+<li><strong>Rich descriptions</strong>: Include capabilities and trigger keywords</li>
+<li><strong>Keep focused</strong>: One skill = one domain/task</li>
+<li><strong>Progressive disclosure</strong>: Use supporting files for details</li>
+<li><strong>Provide examples</strong>: Show concrete usage patterns</li>
+<li><strong>Register tools</strong>: FileSystemTools for files, ShellTools for scripts</li>
+<li><strong>Version control</strong>: Commit project skills to git, or package them as SkillsJar dependencies</li>
+<li><strong>Test thoroughly</strong>: Verify AI invokes skill correctly</li>
+<li><strong>Document well</strong>: Clear instructions for AI to follow</li>
+<li><strong>Maintain skills</strong>: Update as requirements change</li>
+<li><strong>Share via JARs</strong>: Package reusable skills as Maven/Gradle dependencies (SkillsJars) for cross-project sharing</li>
+</ol>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../FileSystemTools/">FileSystemTools</a> - For reading reference files</li>
+<li><a href="../ShellTools/">ShellTools</a> - For executing skill scripts</li>
+<li><a href="https://code.claude.com/docs/en/skills#agent-skills">Claude Code Skills Documentation</a> - Official reference</li>
+<li><a href="https://mikhail.io/2025/10/claude-code-skills/">Claude Code Skills Article</a> - Implementation patterns</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+      <script src="../../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

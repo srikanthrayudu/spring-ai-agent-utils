@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Enterprise Expectations - IKOS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Enterprise Expectations";
+        var mkdocs_page_input_path = "ENTERPRISE_EXPECTATIONS.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> IKOS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Enterprise Expectations</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#buyer-persona">Buyer Persona</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#expectations-and-ikos-coverage">Expectations And IKOS Coverage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-judges-should-see-first">What Judges Should See First</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#production-expectations-beyond-the-prototype">Production Expectations Beyond The Prototype</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#recommended-hackathon-positioning">Recommended Hackathon Positioning</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ARCHITECTURE/">Architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../DATA_DICTIONARY/">Data Dictionary</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../SPRING_AI_AGENT_UTILS_INTEGRATION/">Spring AI Integration</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../RISK_REPORT/">Risk Report</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">IKOS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Enterprise Expectations</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils/edit/main/docs/ENTERPRISE_EXPECTATIONS.md">Edit on srikanthrayudu/spring-ai-agent-utils</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="enterprise-expectations">Enterprise Expectations<a class="headerlink" href="#enterprise-expectations" title="Permanent link">&para;</a></h1>
+<p>This document explains what an enterprise identity-security user would expect from an Identity Sprawl and Privileged Access Abuse Detection product, and how IKOS addresses those expectations in the hackathon prototype.</p>
+<h2 id="buyer-persona">Buyer Persona<a class="headerlink" href="#buyer-persona" title="Permanent link">&para;</a></h2>
+<p>IKOS is aimed at security engineering, IAM governance, GRC, and SOC teams in hybrid enterprises where identity data is spread across directory services, cloud IAM, SSO, and SaaS platforms.</p>
+<p>The enterprise user is not looking for another login-anomaly dashboard. They want a system that answers:</p>
+<ul>
+<li>Who is this person or service account across all platforms?</li>
+<li>What access do they effectively have, including inherited privilege?</li>
+<li>Is the access still justified by lifecycle state, owner, department, exception, and recent usage?</li>
+<li>Which finding should be remediated first?</li>
+<li>What exact platform action should be taken?</li>
+<li>Can the finding survive audit scrutiny?</li>
+</ul>
+<h2 id="expectations-and-ikos-coverage">Expectations And IKOS Coverage<a class="headerlink" href="#expectations-and-ikos-coverage" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Enterprise expectation</th>
+<th>Why it matters</th>
+<th>IKOS prototype coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Identity coverage</td>
+<td>Gaps in identity inventory become breach paths</td>
+<td>Simulates 200 identities and 405 accounts across AD, AWS IAM, Okta, Salesforce, and ServiceNow</td>
+</tr>
+<tr>
+<td>Identity resolution</td>
+<td>Same person appears with different platform IDs</td>
+<td>Correlates by employee ID, email, display name, and platform account patterns</td>
+</tr>
+<tr>
+<td>Effective privilege</td>
+<td>Flat role lists miss inherited admin paths</td>
+<td>Models nested groups and computes hidden admin access through traversal</td>
+</tr>
+<tr>
+<td>Cross-platform reasoning</td>
+<td>One platform cannot see toxic combinations</td>
+<td>Scores risks across identity provider, cloud, and SaaS accounts together</td>
+</tr>
+<tr>
+<td>Lifecycle validation</td>
+<td>Offboarding errors create active attacker paths</td>
+<td>Detects disabled-in-one-platform but active-in-another conditions</td>
+</tr>
+<tr>
+<td>Service account governance</td>
+<td>Service accounts often have excessive persistent privilege</td>
+<td>Detects ownerless, stale, admin, and unrotated service/API accounts</td>
+</tr>
+<tr>
+<td>Temporary access expiry</td>
+<td>Emergency access often survives after policy expiry</td>
+<td>Models exceptions and flags stale grants not revoked across all platforms</td>
+</tr>
+<tr>
+<td>False-positive handling</td>
+<td>Legitimate admins should not drown the queue</td>
+<td>Includes legitimate high-privilege identities as false-positive traps</td>
+</tr>
+<tr>
+<td>Alert consolidation</td>
+<td>SOC teams need incidents, not duplicate alerts</td>
+<td>Consolidates repeated findings by identity and risk family</td>
+</tr>
+<tr>
+<td>Explainability</td>
+<td>Audit and remediation require evidence</td>
+<td>Stores evidence, policy references, confidence, and remediation steps</td>
+</tr>
+<tr>
+<td>Governance readiness</td>
+<td>Findings must map to controls</td>
+<td>Maps to NIST AC-2/AC-6/IA-4, GDPR Articles 5/32, CIS 5/6, and MITRE ATT&amp;CK</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-judges-should-see-first">What Judges Should See First<a class="headerlink" href="#what-judges-should-see-first" title="Permanent link">&para;</a></h2>
+<p>The strongest demo order is:</p>
+<ol>
+<li>Dashboard overview: show identity coverage, risk counts, and alert reduction.</li>
+<li>Offboarding gap: show terminated user disabled in AD but active in AWS/Okta.</li>
+<li>Hidden privilege: show nested group inheritance causing admin access.</li>
+<li>Risk report: show evidence and platform-specific remediation.</li>
+<li>Knowledge evolution: show why this is more than static rules.</li>
+<li>Spring AI agent layer: show the LLM-callable tools and subagent workflow.</li>
+</ol>
+<h2 id="production-expectations-beyond-the-prototype">Production Expectations Beyond The Prototype<a class="headerlink" href="#production-expectations-beyond-the-prototype" title="Permanent link">&para;</a></h2>
+<p>The prototype is intentionally simulated because the problem statement does not provide a dataset. For production, an enterprise would expect:</p>
+<table>
+<thead>
+<tr>
+<th>Production need</th>
+<th>Implementation path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Real connectors</td>
+<td>Implement <code>IdentityDataSource</code> for LDAP/AD, Microsoft Graph, AWS IAM, Okta, Salesforce, and ServiceNow</td>
+</tr>
+<tr>
+<td>Secure credential handling</td>
+<td>Use vault-backed secrets and read-only API scopes</td>
+</tr>
+<tr>
+<td>Incremental scans</td>
+<td>Replace full simulation runs with scheduled delta ingestion</td>
+</tr>
+<tr>
+<td>Reviewer workflows</td>
+<td>Add approval queues for exception validation and remediation sign-off</td>
+</tr>
+<tr>
+<td>SOAR/SIEM integration</td>
+<td>Push consolidated incidents via REST API or webhook</td>
+</tr>
+<tr>
+<td>Historical baselines</td>
+<td>Persist feature windows for behavioral drift and privilege spike detection</td>
+</tr>
+<tr>
+<td>Access graph storage</td>
+<td>Move from in-memory/file persistence to graph or relational storage</td>
+</tr>
+<tr>
+<td>Policy tuning</td>
+<td>Externalize thresholds by department, region, account type, and platform</td>
+</tr>
+</tbody>
+</table>
+<h2 id="recommended-hackathon-positioning">Recommended Hackathon Positioning<a class="headerlink" href="#recommended-hackathon-positioning" title="Permanent link">&para;</a></h2>
+<p>Do not pitch IKOS as a generic IAM dashboard. Pitch it as:</p>
+<blockquote>
+<p>A cross-platform identity intelligence layer that detects the attack paths created between IAM systems, then turns each finding and remediation outcome into reusable security knowledge.</p>
+</blockquote>
+<p>That positioning matches the problem statement and creates clear uniqueness against basic rule engines.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../ARCHITECTURE/" class="btn btn-neutral float-right" title="Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/srikanthrayudu/spring-ai-agent-utils" class="fa fa-code-fork" style="color: #fcfcfc"> srikanthrayudu/spring-ai-agent-utils</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../ARCHITECTURE/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
