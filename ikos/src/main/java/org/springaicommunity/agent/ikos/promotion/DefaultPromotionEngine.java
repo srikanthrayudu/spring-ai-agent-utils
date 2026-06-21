@@ -130,15 +130,16 @@ public class DefaultPromotionEngine implements PromotionEngine {
         return List.copyOf(this.pendingCandidates);
     }
 
+    // Using if/else instead of switch expression to avoid synthetic inner class
+    // generation that breaks exec-maven-plugin classloader (NoClassDefFoundError $2)
     private KnowledgeType mapToGlobalType(KnowledgeType local) {
-        return switch (local) {
-            case LOCAL_PATTERN  -> KnowledgeType.GLOBAL_PATTERN;
-            case LOCAL_OPINION  -> KnowledgeType.GLOBAL_OPINION;
-            case RECOMMENDATION -> KnowledgeType.RECOMMENDATION;
-            // IKOS type mappings
-            case RISK_OBSERVATION, SECURITY_INCIDENT, AUDIT_FINDING,
-                 REMEDIATION_ACTION -> KnowledgeType.SECURITY_KNOWLEDGE;
-            default             -> KnowledgeType.ENGINEERING_KNOWLEDGE;
-        };
+        if (local == KnowledgeType.LOCAL_PATTERN) return KnowledgeType.GLOBAL_PATTERN;
+        if (local == KnowledgeType.LOCAL_OPINION) return KnowledgeType.GLOBAL_OPINION;
+        if (local == KnowledgeType.RECOMMENDATION) return KnowledgeType.RECOMMENDATION;
+        if (local == KnowledgeType.RISK_OBSERVATION || local == KnowledgeType.SECURITY_INCIDENT
+                || local == KnowledgeType.AUDIT_FINDING || local == KnowledgeType.REMEDIATION_ACTION) {
+            return KnowledgeType.SECURITY_KNOWLEDGE;
+        }
+        return KnowledgeType.ENGINEERING_KNOWLEDGE;
     }
 }

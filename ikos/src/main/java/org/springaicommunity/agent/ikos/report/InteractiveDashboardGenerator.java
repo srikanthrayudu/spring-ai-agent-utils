@@ -229,9 +229,11 @@ public class InteractiveDashboardGenerator {
     private String consolidationRows(ConsolidationResult result) {
         StringBuilder sb = new StringBuilder();
         for (ConsolidatedAlert a : result.consolidatedAlerts()) {
-            String cls = switch (a.severity()) {
-                case "CRITICAL" -> "b-crit"; case "HIGH" -> "b-high"; case "MEDIUM" -> "b-med"; default -> "b-low";
-            };
+            String cls;
+            if ("CRITICAL".equals(a.severity())) cls = "b-crit";
+            else if ("HIGH".equals(a.severity())) cls = "b-high";
+            else if ("MEDIUM".equals(a.severity())) cls = "b-med";
+            else cls = "b-low";
             sb.append(String.format(
                     "<tr><td><code>%s</code></td><td>%s</td><td><span class='badge %s'>%s</span></td>" +
                     "<td>%d</td><td>%s</td><td>%s</td><td style='font-size:0.82rem'>%s</td></tr>\n",

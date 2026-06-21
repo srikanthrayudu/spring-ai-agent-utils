@@ -1333,30 +1333,28 @@ public class IkosDemo {
     }
 
     private String generateAgentResponse(String toolName, String toolResult, ContextPackage ctx) {
-        return switch (toolName) {
-            case "ListIdentityRisks" -> {
-                long count = storage.listKnowledgeUnitsByType(KnowledgeType.RISK_OBSERVATION).size();
-                yield "Based on the IKOS knowledge store, I found " + count + " active identity risks.\n" +
-                      "The most critical involve offboarding gaps and SOD violations.\n" +
-                      "I recommend prioritizing CRITICAL risks first — use 'Recommend remediation'\n" +
-                      "for specific action plans with policy references.";
-            }
-            case "AnalyzeIdentityRisks" ->
-                "Identity risk analysis complete. The knowledge evolution system has\n" +
-                "correlated observations across multiple platforms. Historical patterns\n" +
-                "from " + ctx.rankedUnits().size() + " prior knowledge units were used to enrich\n" +
-                "this analysis. Confidence scores reflect evidence × consistency ×\n" +
-                "validation × outcome factors.";
-            case "RecommendRemediation" ->
-                "Remediation recommendation generated with full evidence chain.\n" +
-                "Actions are mapped to NIST 800-53 and PAM policy controls.\n" +
-                "Risk reduction estimates are based on historical outcome data\n" +
-                "from the IKOS learning loop.";
-            default ->
-                "Query processed. The IKOS knowledge store has been updated.\n" +
-                "All observations feed into the knowledge evolution pipeline\n" +
-                "for automated pattern discovery and confidence scoring.";
-        };
+        if ("ListIdentityRisks".equals(toolName)) {
+            long count = storage.listKnowledgeUnitsByType(KnowledgeType.RISK_OBSERVATION).size();
+            return "Based on the IKOS knowledge store, I found " + count + " active identity risks.\n" +
+                    "The most critical involve offboarding gaps and SOD violations.\n" +
+                    "I recommend prioritizing CRITICAL risks first — use 'Recommend remediation'\n" +
+                    "for specific action plans with policy references.";
+        } else if ("AnalyzeIdentityRisks".equals(toolName)) {
+            return "Identity risk analysis complete. The knowledge evolution system has\n" +
+                    "correlated observations across multiple platforms. Historical patterns\n" +
+                    "from " + ctx.rankedUnits().size() + " prior knowledge units were used to enrich\n" +
+                    "this analysis. Confidence scores reflect evidence × consistency ×\n" +
+                    "validation × outcome factors.";
+        } else if ("RecommendRemediation".equals(toolName)) {
+            return "Remediation recommendation generated with full evidence chain.\n" +
+                    "Actions are mapped to NIST 800-53 and PAM policy controls.\n" +
+                    "Risk reduction estimates are based on historical outcome data\n" +
+                    "from the IKOS learning loop.";
+        } else {
+            return "Query processed. The IKOS knowledge store has been updated.\n" +
+                    "All observations feed into the knowledge evolution pipeline\n" +
+                    "for automated pattern discovery and confidence scoring.";
+        }
     }
 
     // ── Spring AI Framework Integration Showcase ─────────────────────────────
@@ -1807,27 +1805,25 @@ public class IkosDemo {
         for (var entry : byType.entrySet()) {
             KnowledgeType type = entry.getKey();
             List<KnowledgeUnit> units = entry.getValue();
-            String typeColor = switch (type) {
-                case RISK_OBSERVATION -> RED;
-                case SECURITY_INCIDENT -> RED;
-                case REMEDIATION_ACTION -> GREEN;
-                case LOCAL_PATTERN -> YELLOW;
-                case SECURITY_KNOWLEDGE -> PURPLE;
-                case PROMOTION_CANDIDATE -> BLUE;
-                default -> WHITE;
-            };
+            String typeColor;
+            if (type == KnowledgeType.RISK_OBSERVATION || type == KnowledgeType.SECURITY_INCIDENT) typeColor = RED;
+            else if (type == KnowledgeType.REMEDIATION_ACTION) typeColor = GREEN;
+            else if (type == KnowledgeType.LOCAL_PATTERN) typeColor = YELLOW;
+            else if (type == KnowledgeType.SECURITY_KNOWLEDGE) typeColor = PURPLE;
+            else if (type == KnowledgeType.PROMOTION_CANDIDATE) typeColor = BLUE;
+            else typeColor = WHITE;
 
             System.out.println();
             System.out.println("  " + typeColor + "▸ " + type + RESET + " (" + units.size() + " units)");
             for (KnowledgeUnit u : units) {
-                String stateIcon = u.getState() == null ? "?" : switch (u.getState()) {
-                    case OBSERVATION -> CYAN + "○";
-                    case PATTERN_CANDIDATE -> YELLOW + "◑";
-                    case VALIDATED_PATTERN -> PURPLE + "◕";
-                    case KNOWLEDGE -> GREEN + "●";
-                    case DEPRECATED -> RED + "✗";
-                    default -> WHITE + "◇";
-                };
+                String stateIcon;
+                if (u.getState() == null) stateIcon = "?";
+                else if (u.getState() == KnowledgeState.OBSERVATION) stateIcon = CYAN + "○";
+                else if (u.getState() == KnowledgeState.PATTERN_CANDIDATE) stateIcon = YELLOW + "◑";
+                else if (u.getState() == KnowledgeState.VALIDATED_PATTERN) stateIcon = PURPLE + "◕";
+                else if (u.getState() == KnowledgeState.KNOWLEDGE) stateIcon = GREEN + "●";
+                else if (u.getState() == KnowledgeState.DEPRECATED) stateIcon = RED + "✗";
+                else stateIcon = WHITE + "◇";
                 String reviewed = u.getLastReviewed() != null
                         ? u.getLastReviewed().toLocalDate().toString()
                         : "—";

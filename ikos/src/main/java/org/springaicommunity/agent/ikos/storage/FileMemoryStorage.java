@@ -163,15 +163,12 @@ public class FileMemoryStorage implements MemoryStorage {
 	}
 
 	private Path getDirectoryForType(KnowledgeType type) {
-		return switch (type) {
-			case OBSERVATION, LOCAL_PATTERN, LOCAL_OPINION, DECISION, INCIDENT, ARTIFACT,
-					RECOMMENDATION, PROMOTION_CANDIDATE,
-					RISK_OBSERVATION, SECURITY_INCIDENT, REMEDIATION_ACTION,
-					AUDIT_FINDING, IDENTITY_CORRELATION, PRIVILEGE_PROFILE,
-					POLICY_REFERENCE -> this.projectDir;
-			case ENGINEERING_KNOWLEDGE, PRINCIPLE, GLOBAL_PATTERN, GLOBAL_OPINION, TOOL_KNOWLEDGE,
-					SECURITY_KNOWLEDGE -> this.systemDir;
-		};
+		if (type == KnowledgeType.ENGINEERING_KNOWLEDGE || type == KnowledgeType.PRINCIPLE
+				|| type == KnowledgeType.GLOBAL_PATTERN || type == KnowledgeType.GLOBAL_OPINION
+				|| type == KnowledgeType.TOOL_KNOWLEDGE || type == KnowledgeType.SECURITY_KNOWLEDGE) {
+			return this.systemDir;
+		}
+		return this.projectDir;
 	}
 
 	private void readUnitsFromDir(Path dir, List<KnowledgeUnit> list) {

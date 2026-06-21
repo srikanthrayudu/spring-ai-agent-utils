@@ -50,19 +50,17 @@ public class IkosMemoryBridge {
      * @return result message from the memory tool
      */
     public String syncToMemory(KnowledgeUnit unit) {
-        String subDir = switch (unit.type()) {
-            case RISK_OBSERVATION -> "ikos/risks";
-            case SECURITY_INCIDENT -> "ikos/incidents";
-            case LOCAL_PATTERN, GLOBAL_PATTERN, PROMOTION_CANDIDATE -> "ikos/patterns";
-            case REMEDIATION_ACTION -> "ikos/remediations";
-            default -> "ikos/knowledge";
-        };
+        String subDir;
+        if (unit.type() == KnowledgeType.RISK_OBSERVATION) subDir = "ikos/risks";
+        else if (unit.type() == KnowledgeType.SECURITY_INCIDENT) subDir = "ikos/incidents";
+        else if (unit.type() == KnowledgeType.LOCAL_PATTERN || unit.type() == KnowledgeType.GLOBAL_PATTERN
+                || unit.type() == KnowledgeType.PROMOTION_CANDIDATE) subDir = "ikos/patterns";
+        else if (unit.type() == KnowledgeType.REMEDIATION_ACTION) subDir = "ikos/remediations";
+        else subDir = "ikos/knowledge";
 
-        String memoryType = switch (unit.type()) {
-            case RISK_OBSERVATION, SECURITY_INCIDENT -> "project";
-            case GLOBAL_PATTERN -> "reference";
-            default -> "project";
-        };
+        String memoryType;
+        if (unit.type() == KnowledgeType.GLOBAL_PATTERN) memoryType = "reference";
+        else memoryType = "project";
 
         String severity = extractSeverity(unit);
         String yaml = """
@@ -130,13 +128,13 @@ public class IkosMemoryBridge {
             if (!ofType.isEmpty()) {
                 index.append("## ").append(type.name()).append(" (").append(ofType.size()).append(")\n\n");
                 for (KnowledgeUnit unit : ofType) {
-                    String subDir = switch (type) {
-                        case RISK_OBSERVATION -> "ikos/risks";
-                        case SECURITY_INCIDENT -> "ikos/incidents";
-                        case LOCAL_PATTERN, GLOBAL_PATTERN, PROMOTION_CANDIDATE -> "ikos/patterns";
-                        case REMEDIATION_ACTION -> "ikos/remediations";
-                        default -> "ikos/knowledge";
-                    };
+                    String subDir;
+                    if (type == KnowledgeType.RISK_OBSERVATION) subDir = "ikos/risks";
+                    else if (type == KnowledgeType.SECURITY_INCIDENT) subDir = "ikos/incidents";
+                    else if (type == KnowledgeType.LOCAL_PATTERN || type == KnowledgeType.GLOBAL_PATTERN
+                            || type == KnowledgeType.PROMOTION_CANDIDATE) subDir = "ikos/patterns";
+                    else if (type == KnowledgeType.REMEDIATION_ACTION) subDir = "ikos/remediations";
+                    else subDir = "ikos/knowledge";
                     String path = subDir + "/" + sanitizeFilename(unit.id()) + ".md";
                     index.append("- [").append(unit.id()).append("](").append(path)
                             .append(") — ").append(truncate(unit.statement(), 100)).append("\n");
