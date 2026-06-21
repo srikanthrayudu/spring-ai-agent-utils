@@ -336,7 +336,15 @@ public class IkosDemo {
                         + String.format("%.0f%%", id.computeRiskScore() * 100) + RESET));
         if (identities.size() > 5) dimNote(identities.size() - 5 + " more identities resolved");
         ok(identities.size() + " unified identities resolved from " + accounts.size() + " accounts");
-        pause();
+        final List<UnifiedIdentity> idList = identities;
+        pauseWithDetail(() -> {
+            for (UnifiedIdentity id : idList) {
+                String badge = id.computeRiskScore() >= 0.5 ? RED + " ▲HIGH" + RESET : "";
+                System.out.println("    " + GREEN + "✓" + RESET + " " + BOLD + id.displayName() + RESET
+                        + GRAY + " (" + id.unifiedId() + ")" + RESET + " — "
+                        + id.platforms().size() + " platforms: " + String.join(", ", id.platforms()) + badge);
+            }
+        });
 
         // ═══════ Step 3: Detect risks ═══════
         step("3", "Risk Detection Engine — scanning for security risks");
@@ -377,7 +385,10 @@ public class IkosDemo {
                 .forEach(this::printRisk);
         if (risks.size() > 5) dimNote(risks.size() - 5 + " additional risks detected");
         ok("Detected " + risks.size() + " risks across " + riskCats.size() + " categories");
-        pause();
+        final List<KnowledgeUnit> allRisks = risks;
+        pauseWithDetail(() -> {
+            for (KnowledgeUnit r : allRisks) { printRisk(r); }
+        });
 
         // ═══════ Step 4: Privilege Analysis with Group Hierarchy ═══════
         step("4", "Privilege Intelligence — effective permissions via nested group traversal");
@@ -416,7 +427,23 @@ public class IkosDemo {
                     prof.adminPlatforms().size(), color, prof.privilegeRiskScore() * 100, RESET);
         }
         if (identities.size() > 5) dimNote(identities.size() - 5 + " more identities analyzed");
-        pause();
+        final List<Object[]> allProfiles = topProfiles;
+        pauseWithDetail(() -> {
+            for (Object[] entry : allProfiles) {
+                UnifiedIdentity u = (UnifiedIdentity) entry[0];
+                EffectivePrivilegeProfile p = (EffectivePrivilegeProfile) entry[1];
+                String c = p.privilegeRiskScore() >= 0.5 ? RED : p.privilegeRiskScore() >= 0.3 ? ORANGE : GREEN;
+                System.out.printf("    %s●%s %-22s Perms:%-3d  Sensitive:%-2d  Admin:%d  Risk:%s%.0f%%%s%n",
+                        c, RESET, BOLD + u.displayName() + RESET,
+                        p.totalPermissionCount(), p.sensitivePermissions().size(),
+                        p.adminPlatforms().size(), c, p.privilegeRiskScore() * 100, RESET);
+                if (p.hasHiddenAdmin()) {
+                    for (String chain : p.inheritanceChains()) {
+                        System.out.println("      " + RED + "⚠ Hidden Admin: " + RESET + chain);
+                    }
+                }
+            }
+        });
 
         // ═══════ Step 5: Auto-discover patterns ═══════
         step("5", "Knowledge Evolution — auto-discover patterns from risk observations");
@@ -450,7 +477,10 @@ public class IkosDemo {
                 .limit(3)
                 .forEach(this::printRecommendation);
         if (risks.size() > 3) dimNote(risks.size() - 3 + " additional recommendations generated");
-        pause();
+        final List<KnowledgeUnit> recRisks = risks;
+        pauseWithDetail(() -> {
+            for (KnowledgeUnit r : recRisks) { printRecommendation(r); }
+        });
 
         // ═══════ Step 7: Context assembly ═══════
         step("7", "Assemble context for agent query: 'dormant admin offboarding risk'");
@@ -1959,10 +1989,30 @@ public class IkosDemo {
     }
 
     private void pause() {
+        pauseWithDetail(null);
+    }
+
+    private void pauseWithDetail(Runnable detailView) {
         System.out.println();
-        System.out.print("  " + DIM + GRAY + "  ─── press " + RESET + CYAN + BOLD + "Enter"
-                + RESET + DIM + GRAY + " to continue ───" + RESET);
-        scanner.nextLine();
+        if (detailView != null) {
+            System.out.print("  " + DIM + GRAY + "  ─── " + RESET + CYAN + BOLD + "Enter"
+                    + RESET + DIM + GRAY + " continue · " + RESET + YELLOW + BOLD + "d"
+                    + RESET + DIM + GRAY + " detail view ───" + RESET);
+        } else {
+            System.out.print("  " + DIM + GRAY + "  ─── press " + RESET + CYAN + BOLD + "Enter"
+                    + RESET + DIM + GRAY + " to continue ───" + RESET);
+        }
+        String input = scanner.nextLine().trim().toLowerCase();
+        if (detailView != null && input.equals("d")) {
+            System.out.println();
+            System.out.println("  " + DIM + CYAN + "  ── DETAIL VIEW ──────────────────────────────────" + RESET);
+            detailView.run();
+            System.out.println("  " + DIM + CYAN + "  ── END DETAIL ───────────────────────────────────" + RESET);
+            System.out.println();
+            System.out.print("  " + DIM + GRAY + "  ─── press " + RESET + CYAN + BOLD + "Enter"
+                    + RESET + DIM + GRAY + " to continue ───" + RESET);
+            scanner.nextLine();
+        }
         System.out.println();
     }
 
