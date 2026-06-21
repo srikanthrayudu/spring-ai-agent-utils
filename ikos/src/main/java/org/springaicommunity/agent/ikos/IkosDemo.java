@@ -137,11 +137,15 @@ public class IkosDemo {
                 .todoEventHandler(todos -> {
                     System.out.println("  " + BOLD + "Remediation Task List Updated:" + RESET);
                     for (var item : todos.todos()) {
-                        String icon = switch (item.status()) {
-                            case pending -> YELLOW + "○";
-                            case in_progress -> CYAN + "◑";
-                            case completed -> GREEN + "●";
-                        };
+                        String icon;
+                        String statusName = item.status().name();
+                        if ("completed".equals(statusName)) {
+                            icon = GREEN + "●";
+                        } else if ("in_progress".equals(statusName)) {
+                            icon = CYAN + "◑";
+                        } else {
+                            icon = YELLOW + "○";
+                        }
                         System.out.println("    " + icon + RESET + " [" + item.status() + "] " + item.content());
                     }
                 })
