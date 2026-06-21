@@ -62,8 +62,8 @@ public class RemediationExecutorTool {
 
     private static final DateTimeFormatter TS = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    /** Audit log of all executed actions. */
-    private final List<ActionRecord> auditLog = new ArrayList<>();
+    /** Audit log of all executed actions. Each entry: [txId, actionType, target, platform, details, timestamp]. */
+    private final List<String[]> auditLog = new ArrayList<>();
 
     // ── Account Lifecycle ───────────────────────────────────────────────────
 
@@ -265,14 +265,28 @@ public class RemediationExecutorTool {
 
     // ── Audit & State ───────────────────────────────────────────────────────
 
-    /** Returns a copy of the full audit log for compliance reporting. */
-    public List<ActionRecord> getAuditLog() {
+    /**
+     * Returns a copy of the full audit log for compliance reporting.
+     * Each entry is [txId, actionType, target, platform, details, timestamp].
+     */
+    public List<String[]> getAuditLog() {
         return List.copyOf(auditLog);
     }
 
     /** Returns the number of actions executed in this session. */
     public int getActionCount() {
         return auditLog.size();
+    }
+
+    // Audit log accessors for individual fields
+    public static String txId(String[] rec) { return rec[0]; }
+    public static String actionType(String[] rec) { return rec[1]; }
+    public static String target(String[] rec) { return rec[2]; }
+    public static String platform(String[] rec) { return rec[3]; }
+    public static String details(String[] rec) { return rec[4]; }
+    public static String timestamp(String[] rec) { return rec[5]; }
+    public static String formatRecord(String[] rec) {
+        return String.format("[%s] %s → %s on %s (%s)", rec[0], rec[1], rec[2], rec[3], rec[4]);
     }
 
     // ── Internal Helpers ────────────────────────────────────────────────────
@@ -282,6 +296,6 @@ public class RemediationExecutorTool {
     }
 
     private void logAction(String txId, String actionType, String target, String platform, String details) {
-        auditLog.add(new ActionRecord(txId, actionType, target, platform, details, LocalDateTime.now()));
+        auditLog.add(new String[]{txId, actionType, target, platform, details, LocalDateTime.now().format(TS)});
     }
 }

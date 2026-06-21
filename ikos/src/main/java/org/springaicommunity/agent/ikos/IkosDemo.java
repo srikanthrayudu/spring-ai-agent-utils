@@ -21,7 +21,6 @@ import org.springaicommunity.agent.ikos.storage.FileMemoryStorage;
 import org.springaicommunity.agent.ikos.tools.EngineeringMemoryTools;
 import org.springaicommunity.agent.ikos.tools.IdentityGovernanceTools;
 import org.springaicommunity.agent.ikos.tools.RemediationExecutorTool;
-import org.springaicommunity.agent.ikos.tools.ActionRecord;
 import org.springaicommunity.agent.ikos.advisors.KnowledgeEvolutionAdvisor;
 import org.springaicommunity.agent.tools.AutoMemoryTools;
 import org.springaicommunity.agent.tools.AskUserQuestionTool;
@@ -760,7 +759,7 @@ public class IkosDemo {
         System.out.println("  " + PURPLE + BOLD + "  ╚══════════════════════════════════════════════════════╝" + RESET);
 
         // ── Compliance Audit Trail ──
-        List<ActionRecord> auditLog = remediationTool.getAuditLog();
+        List<String[]> auditLog = remediationTool.getAuditLog();
         if (!auditLog.isEmpty()) {
             System.out.println();
             System.out.println("  " + BOLD + "  COMPLIANCE AUDIT TRAIL" + RESET
@@ -771,14 +770,16 @@ public class IkosDemo {
             System.out.println("  " + GRAY + "  " + "─".repeat(68) + RESET);
             int auditLimit = Math.min(8, auditLog.size());
             for (int i = 0; i < auditLimit; i++) {
-                ActionRecord rec = auditLog.get(i);
-                String color = rec.actionType().contains("DISABLE") ? RED
-                        : rec.actionType().contains("REVOKE") ? ORANGE
-                        : rec.actionType().contains("ROTATE") ? YELLOW
+                String[] rec = auditLog.get(i);
+                String act = RemediationExecutorTool.actionType(rec);
+                String color = act.contains("DISABLE") ? RED
+                        : act.contains("REVOKE") ? ORANGE
+                        : act.contains("ROTATE") ? YELLOW
                         : GREEN;
                 System.out.printf("  " + GRAY + "  " + RESET + "%-22s " + color + "%-18s" + RESET + " %-16s %s%n",
-                        rec.txId(), rec.actionType(),
-                        truncate(rec.target(), 15), rec.platform());
+                        RemediationExecutorTool.txId(rec), act,
+                        truncate(RemediationExecutorTool.target(rec), 15),
+                        RemediationExecutorTool.platform(rec));
             }
             if (auditLog.size() > auditLimit) {
                 dimNote((auditLog.size() - auditLimit) + " more actions in full audit log");
@@ -795,8 +796,8 @@ public class IkosDemo {
         String postRemChoice = scanner.nextLine().trim().toLowerCase();
         if ("d".equals(postRemChoice) && !remediationTool.getAuditLog().isEmpty()) {
             System.out.println();
-            for (ActionRecord rec : remediationTool.getAuditLog()) {
-                System.out.println("    " + GRAY + rec.toString() + RESET);
+            for (String[] rec : remediationTool.getAuditLog()) {
+                System.out.println("    " + GRAY + RemediationExecutorTool.formatRecord(rec) + RESET);
             }
             pause();
         }
