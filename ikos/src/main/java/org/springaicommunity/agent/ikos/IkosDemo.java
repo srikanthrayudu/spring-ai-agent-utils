@@ -494,15 +494,30 @@ public class IkosDemo {
         // ═══════ Step 8: AI Agent Autonomous Remediation with SOC Approval ═══════
         step("8", "AI Agent Remediation — human-in-the-loop action execution");
 
+        // ── Calculate pre-remediation enterprise risk score ──
+        int totalRisks = risks.size();
+        double avgConfidence = risks.stream().mapToDouble(KnowledgeUnit::confidence).average().orElse(0);
+        int criticalCount = 0;
+        int highCount = 0;
+        for (KnowledgeUnit r : risks) {
+            String s = r.statement() != null ? r.statement().toUpperCase() : "";
+            if (s.contains("SOD") || s.contains("SERVICE ACCOUNT")) criticalCount++;
+            else if (s.contains("DORMANT") || s.contains("OFFBOARDING")) highCount++;
+        }
+        int preScore = Math.min(100, (int) (totalRisks * 0.4 + criticalCount * 8 + highCount * 5 + avgConfidence * 10));
+
         System.out.println();
         System.out.println("  " + PURPLE + "  ┌─ " + BOLD + "REMEDIATION AGENT" + RESET + PURPLE
                 + " ─────────────────────────────────────────┐" + RESET);
         System.out.println("  " + PURPLE + "  │" + RESET + "  Agent:     " + BOLD + "Autonomous SOC Remediation Agent" + RESET);
         System.out.println("  " + PURPLE + "  │" + RESET + "  Framework: " + CYAN + "Spring AI 2.0 + IKOS Knowledge Evolution" + RESET);
-        System.out.println("  " + PURPLE + "  │" + RESET + "  Mode:      " + YELLOW + BOLD + "APPROVAL REQUIRED" + RESET
-                + GRAY + " — agent proposes, SOC approves" + RESET);
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Policy:    " + GREEN + "Auto-Execute" + RESET
+                + GRAY + " safe actions (rotate, ticket)" + RESET + "  │  "
+                + YELLOW + BOLD + "Approve" + RESET + GRAY + " destructive (disable, revoke)" + RESET);
         System.out.println("  " + PURPLE + "  │" + RESET + "  Controls:  " + GREEN + "y" + RESET + " approve  "
                 + RED + "n" + RESET + " skip  " + CYAN + "a" + RESET + " approve all remaining");
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Risk Score:" + RED + BOLD + " " + preScore + "/100"
+                + RESET + GRAY + " (pre-remediation)" + RESET);
         System.out.println("  " + PURPLE + "  └──────────────────────────────────────────────────────────┘" + RESET);
 
         // Sort risks by confidence descending
@@ -604,10 +619,16 @@ public class IkosDemo {
             }
             System.out.println();
 
-            // ── SOC Approval ──
+            // ── SOC Approval (policy-based) ──
+            // Auto-approval policy: safe actions with high confidence auto-execute
+            boolean isSafeAction = "CREDENTIAL_ROTATION".equals(actionType)
+                    || "REVIEW_ESCALATE".equals(actionType);
+            boolean policyAutoApprove = isSafeAction && risk.confidence() >= 0.90;
+
             boolean doExecute;
-            if (approveAll) {
-                System.out.println("  " + GREEN + "    ✔ Auto-approved (approve-all mode)" + RESET);
+            if (approveAll || policyAutoApprove) {
+                String reason = approveAll ? "approve-all mode" : "policy: safe action + conf ≥ 0.90";
+                System.out.println("  " + GREEN + "    ✔ Auto-approved (" + reason + ")" + RESET);
                 doExecute = true;
             } else {
                 System.out.print("  " + YELLOW + "    ❯ Execute? " + RESET
@@ -633,8 +654,15 @@ public class IkosDemo {
                 }
                 // Show API response summary
                 String txId = extractJsonField(toolResult, "txId");
+                String apiResp = extractJsonField(toolResult, "response");
                 System.out.println("  " + GREEN + "    └ " + BOLD + "EXECUTED" + RESET
                         + GREEN + " — txId: " + txId + " — " + actionType + " completed" + RESET);
+
+                // ── Post-remediation verification ──
+                String verifyStatus = verifyRemediation(actionType, toolResult);
+                System.out.println("  " + CYAN + "    ⟳ " + BOLD + "VERIFIED" + RESET
+                        + CYAN + " — " + verifyStatus + RESET);
+
                 approved++;
                 learningEngine.learn(risk.id(), new Outcome(true,
                         "SOC-approved remediation: " + actionType + " [" + txId + "]", LocalDateTime.now()));
@@ -688,10 +716,57 @@ public class IkosDemo {
         tableRow(GREEN + "✔ Approved & Executed" + RESET, GREEN + String.valueOf(approved) + RESET);
         tableRow(ORANGE + "⊘ Skipped / Deferred" + RESET, ORANGE + String.valueOf(skipped) + RESET);
         tableRow("Actions Executed", String.valueOf(actionsExecuted));
-        tableRow("Playbooks Used", "6 (PAM-001 through PAM-010)");
+        tableRow("Playbooks Used", "7 (PAM-001 through PAM-010)");
         tableRow("Tool Invocations", GREEN + String.valueOf(remediationTool.getActionCount()) + " @Tool calls" + RESET);
         tableRow("Knowledge Updated", GREEN + "✔ " + risks.size() + " outcomes recorded" + RESET);
         tableFooter();
+
+        // ── Risk Impact Score (before/after) ──
+        int remediatedWeight = approved * 3;
+        int postScore = Math.max(5, preScore - remediatedWeight);
+        int reduction = ((preScore - postScore) * 100) / Math.max(1, preScore);
+        String preColor = preScore >= 60 ? RED : preScore >= 40 ? ORANGE : YELLOW;
+        String postColor = postScore >= 60 ? RED : postScore >= 40 ? ORANGE : GREEN;
+        System.out.println();
+        System.out.println("  " + PURPLE + BOLD + "  ╔══ RISK IMPACT ═══════════════════════════════════════╗" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Before Remediation:  "
+                + preColor + BOLD + preScore + "/100" + RESET
+                + GRAY + " (" + (preScore >= 60 ? "HIGH" : preScore >= 40 ? "MEDIUM" : "LOW") + ")" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  After Remediation:   "
+                + postColor + BOLD + postScore + "/100" + RESET
+                + GRAY + " (" + (postScore >= 60 ? "HIGH" : postScore >= 40 ? "MEDIUM" : "LOW") + ")" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Risk Reduction:      "
+                + GREEN + BOLD + reduction + "% ↓" + RESET
+                + GRAY + " across " + approved + " remediations" + RESET);
+        System.out.println("  " + PURPLE + BOLD + "  ╚══════════════════════════════════════════════════════╝" + RESET);
+
+        // ── Compliance Audit Trail ──
+        List<RemediationExecutorTool.ActionRecord> auditLog = remediationTool.getAuditLog();
+        if (!auditLog.isEmpty()) {
+            System.out.println();
+            System.out.println("  " + BOLD + "  COMPLIANCE AUDIT TRAIL" + RESET
+                    + GRAY + " (" + auditLog.size() + " actions recorded)" + RESET);
+            System.out.println("  " + GRAY + "  " + "─".repeat(68) + RESET);
+            System.out.printf("  " + GRAY + "  %-22s %-18s %-16s %s%n" + RESET,
+                    "TX-ID", "ACTION", "TARGET", "PLATFORM");
+            System.out.println("  " + GRAY + "  " + "─".repeat(68) + RESET);
+            int auditLimit = Math.min(8, auditLog.size());
+            for (int i = 0; i < auditLimit; i++) {
+                RemediationExecutorTool.ActionRecord rec = auditLog.get(i);
+                String color = rec.actionType().contains("DISABLE") ? RED
+                        : rec.actionType().contains("REVOKE") ? ORANGE
+                        : rec.actionType().contains("ROTATE") ? YELLOW
+                        : GREEN;
+                System.out.printf("  " + GRAY + "  " + RESET + "%-22s " + color + "%-18s" + RESET + " %-16s %s%n",
+                        rec.txId(), rec.actionType(),
+                        truncate(rec.target(), 15), rec.platform());
+            }
+            if (auditLog.size() > auditLimit) {
+                dimNote((auditLog.size() - auditLimit) + " more actions in full audit log");
+            }
+            System.out.println("  " + GRAY + "  " + "─".repeat(68) + RESET);
+        }
+
         ok("Remediation cycle complete. All decisions logged to audit trail.");
         pause();
 
@@ -2085,6 +2160,27 @@ public class IkosDemo {
         int end = json.indexOf("\"", start);
         if (end < 0) return "N/A";
         return json.substring(start, end);
+    }
+
+    /** Simulates post-remediation verification — confirms action was applied successfully. */
+    private String verifyRemediation(String actionType, String toolResult) {
+        String status = extractJsonField(toolResult, "status");
+        if (!"SUCCESS".equals(status)) {
+            return "FAILED — action did not complete, retry queued";
+        }
+        if ("ACCOUNT_DISABLE".equals(actionType)) {
+            return "Account status confirmed DISABLED, login attempts will be rejected";
+        } else if ("ADMIN_REVOCATION".equals(actionType) || "PRIVILEGE_SPLIT".equals(actionType)) {
+            return "Privilege removed, new role applied, break-glass access retained";
+        } else if ("CREDENTIAL_ROTATION".equals(actionType)) {
+            return "Old credentials invalidated (HTTP 403), new key active in vault";
+        } else if ("JIT_ACCESS".equals(actionType)) {
+            return "Standing privileges revoked, JIT elevation configured (4h max)";
+        } else if ("ACCOUNT_CLEANUP".equals(actionType)) {
+            return "Account disabled, sessions terminated, group memberships removed";
+        } else {
+            return "Remediation ticket created, SLA timer started";
+        }
     }
 
     private void printRecommendation(KnowledgeUnit risk) {
