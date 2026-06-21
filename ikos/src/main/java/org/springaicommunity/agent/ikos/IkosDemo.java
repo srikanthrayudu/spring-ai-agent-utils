@@ -488,31 +488,156 @@ public class IkosDemo {
         printContext(pkg);
         pause();
 
-        // ═══════ Step 8: Simulate remediation + outcome learning ═══════
-        step("8", "Remediation & Outcome Learning — closing the loop");
+        // ═══════ Step 8: AI Agent Autonomous Remediation ═══════
+        step("8", "AI Agent Autonomous Remediation — executing action playbooks");
 
-        // Process all remediations silently, then show summary
-        int remSuccess = 0, remEscalated = 0;
-        for (KnowledgeUnit risk : risks) {
-            boolean success = risk.confidence() >= 0.8;
+        System.out.println();
+        System.out.println("  " + PURPLE + "  ┌─ " + BOLD + "REMEDIATION AGENT" + RESET + PURPLE
+                + " ─────────────────────────────────────────┐" + RESET);
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Agent Type: " + BOLD + "Autonomous SOC Remediation Agent" + RESET);
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Framework:  " + CYAN + "Spring AI 2.0 + IKOS Knowledge Evolution" + RESET);
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Mode:       " + GREEN + "Auto-Execute" + RESET
+                + GRAY + " (high-confidence actions)" + RESET);
+        System.out.println("  " + PURPLE + "  │" + RESET + "  Escalate:   " + ORANGE + "Human-in-the-Loop" + RESET
+                + GRAY + " (low-confidence / destructive)" + RESET);
+        System.out.println("  " + PURPLE + "  └──────────────────────────────────────────────────────────┘" + RESET);
+        System.out.println();
+
+        // Sort risks by confidence descending for prioritized remediation
+        List<KnowledgeUnit> sortedRisks = risks.stream()
+                .sorted((a, b) -> Double.compare(b.confidence(), a.confidence()))
+                .toList();
+
+        int autoRemediated = 0, escalated = 0, actionsExecuted = 0;
+
+        // Show top 5 agent actions in detail
+        int showLimit = Math.min(5, sortedRisks.size());
+        for (int i = 0; i < showLimit; i++) {
+            KnowledgeUnit risk = sortedRisks.get(i);
+            boolean autoExecute = risk.confidence() >= 0.8;
+            String stmt = risk.statement() != null ? risk.statement().toUpperCase() : "";
+
+            // Agent reasoning
+            String actionType;
+            String playbook;
+            String[] executionSteps;
+
+            if (stmt.contains("OFFBOARDING")) {
+                actionType = "ACCOUNT_DISABLE";
+                playbook = "PAM-001 Offboarding Remediation";
+                executionSteps = new String[]{
+                    "Querying IdP for active sessions...",
+                    "Revoking OAuth/SAML tokens across platforms",
+                    "Disabling account in target platform",
+                    "Updating IKOS knowledge base"
+                };
+            } else if (stmt.contains("DORMANT")) {
+                actionType = "ADMIN_REVOCATION";
+                playbook = "PAM-003 Dormant Admin Cleanup";
+                executionSteps = new String[]{
+                    "Verifying last authentication timestamp",
+                    "Revoking admin privileges",
+                    "Rotating credentials (API keys, passwords)",
+                    "Creating recertification ticket"
+                };
+            } else if (stmt.contains("SOD") || stmt.contains("SEPARATION")) {
+                actionType = "PRIVILEGE_SPLIT";
+                playbook = "PAM-009 SoD Enforcement";
+                executionSteps = new String[]{
+                    "Analyzing toxic role combination",
+                    "Splitting admin roles across identities",
+                    "Implementing break-glass for emergency",
+                    "Logging SoD exception to audit trail"
+                };
+            } else if (stmt.contains("STALE") && stmt.contains("SERVICE")) {
+                actionType = "CREDENTIAL_ROTATION";
+                playbook = "PAM-008 Service Account Lifecycle";
+                executionSteps = new String[]{
+                    "Identifying service account dependencies",
+                    "Generating new credentials (90-day rotation)",
+                    "Updating secrets vault",
+                    "Assigning service account owner"
+                };
+            } else if (stmt.contains("CROSS-PLATFORM")) {
+                actionType = "JIT_ACCESS";
+                playbook = "PAM-004 Least Privilege Enforcement";
+                executionSteps = new String[]{
+                    "Analyzing cross-platform admin scope",
+                    "Implementing Just-In-Time access policy",
+                    "Setting time-bound admin elevation (4h max)",
+                    "Enabling MFA step-up for admin actions"
+                };
+            } else {
+                actionType = "REVIEW_ESCALATE";
+                playbook = "PAM-010 General Remediation";
+                executionSteps = new String[]{
+                    "Analyzing risk context and evidence",
+                    "Generating remediation recommendation",
+                    "Creating SOC review ticket",
+                    "Scheduling recertification"
+                };
+            }
+
+            // Print agent action
+            System.out.println("  " + GRAY + "  ─────────────────────────────────────────────────────" + RESET);
+            String badge = autoExecute
+                    ? (GREEN + " AUTO " + RESET)
+                    : (ORANGE + " ESCALATE " + RESET);
+            System.out.println("  " + BOLD + "  " + badge + " " + RESET + BOLD
+                    + truncate(risk.statement(), 65) + RESET);
+            System.out.println("  " + GRAY + "    Playbook: " + RESET + CYAN + playbook + RESET
+                    + GRAY + "  │  Action: " + RESET + BOLD + actionType + RESET
+                    + GRAY + "  │  Conf: " + RESET + GREEN + f(risk.confidence()) + RESET);
+
+            // Simulated execution steps
+            for (String execStep : executionSteps) {
+                System.out.println("  " + GRAY + "    → " + RESET + execStep);
+                actionsExecuted++;
+            }
+
+            // Outcome
+            if (autoExecute) {
+                System.out.println("  " + GREEN + "    ✔ " + BOLD + "COMPLETED" + RESET
+                        + GREEN + " — risk mitigated, knowledge confidence updated" + RESET);
+                autoRemediated++;
+            } else {
+                System.out.println("  " + ORANGE + "    ↗ " + BOLD + "ESCALATED" + RESET
+                        + ORANGE + " — assigned to SOC team for manual review" + RESET);
+                escalated++;
+            }
+
+            // Record outcome in learning engine
+            boolean success = autoExecute;
             Outcome outcome = new Outcome(success,
-                    success ? "Remediated: account disabled, tokens revoked." : "Partial: escalated to security team.",
+                    success ? "Agent auto-remediated: " + actionType : "Escalated to SOC: " + actionType,
                     LocalDateTime.now());
             learningEngine.learn(risk.id(), outcome);
-            if (success) remSuccess++; else remEscalated++;
         }
 
-        // Single TodoWriteTool update with final state (only 1 in_progress allowed)
+        // Process remaining risks silently
+        for (int i = showLimit; i < sortedRisks.size(); i++) {
+            KnowledgeUnit risk = sortedRisks.get(i);
+            boolean success = risk.confidence() >= 0.8;
+            Outcome outcome = new Outcome(success,
+                    success ? "Agent auto-remediated" : "Escalated to SOC",
+                    LocalDateTime.now());
+            learningEngine.learn(risk.id(), outcome);
+            if (success) autoRemediated++; else escalated++;
+            actionsExecuted += 4;
+        }
+
+        // TodoWriteTool update (single batch, max 1 in_progress)
         List<TodoWriteTool.Todos.TodoItem> finalTasks = new ArrayList<>();
-        boolean firstEscalated = true;
-        for (KnowledgeUnit risk : risks) {
+        boolean firstEsc = true;
+        for (int i = 0; i < Math.min(10, sortedRisks.size()); i++) {
+            KnowledgeUnit risk = sortedRisks.get(i);
             boolean success = risk.confidence() >= 0.8;
             TodoWriteTool.Todos.Status status;
             if (success) {
                 status = TodoWriteTool.Todos.Status.completed;
-            } else if (firstEscalated) {
+            } else if (firstEsc) {
                 status = TodoWriteTool.Todos.Status.in_progress;
-                firstEscalated = false;
+                firstEsc = false;
             } else {
                 status = TodoWriteTool.Todos.Status.pending;
             }
@@ -520,15 +645,22 @@ public class IkosDemo {
                     "Remediate: " + truncate(risk.statement(), 50), status,
                     "Remediating " + risk.id()));
         }
-        todoTool.todoWrite(new TodoWriteTool.Todos(finalTasks.subList(0, Math.min(10, finalTasks.size()))));
+        todoTool.todoWrite(new TodoWriteTool.Todos(finalTasks));
 
+        if (sortedRisks.size() > showLimit) {
+            dimNote(sortedRisks.size() - showLimit + " additional risks processed by agent");
+        }
+
+        // Summary table
         System.out.println();
-        tableHeader("REMEDIATION", "COUNT");
-        tableRow(GREEN + "✔ Auto-Remediated" + RESET, GREEN + String.valueOf(remSuccess) + RESET);
-        tableRow(ORANGE + "↗ Escalated to SOC" + RESET, ORANGE + String.valueOf(remEscalated) + RESET);
-        tableRow("Total Processed", String.valueOf(risks.size()));
+        tableHeader("AGENT SUMMARY", "RESULT");
+        tableRow(GREEN + "✔ Auto-Remediated" + RESET, GREEN + String.valueOf(autoRemediated) + RESET);
+        tableRow(ORANGE + "↗ Escalated to SOC" + RESET, ORANGE + String.valueOf(escalated) + RESET);
+        tableRow("Actions Executed", String.valueOf(actionsExecuted));
+        tableRow("Playbooks Used", "6 (PAM-001 through PAM-010)");
+        tableRow("Knowledge Updated", GREEN + "✔ " + risks.size() + " units" + RESET);
         tableFooter();
-        ok(risks.size() + " outcomes recorded. Knowledge confidence updated.");
+        ok("AI Agent completed " + risks.size() + " remediations. Knowledge confidence evolved.");
         pause();
 
         // ═══════ Step 9: Show dashboard ═══════
