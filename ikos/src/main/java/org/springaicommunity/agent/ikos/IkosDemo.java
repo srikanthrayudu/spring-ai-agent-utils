@@ -20,6 +20,7 @@ import org.springaicommunity.agent.ikos.risk.DefaultRiskDetectionEngine;
 import org.springaicommunity.agent.ikos.storage.FileMemoryStorage;
 import org.springaicommunity.agent.ikos.tools.EngineeringMemoryTools;
 import org.springaicommunity.agent.ikos.tools.IdentityGovernanceTools;
+import org.springaicommunity.agent.ikos.tools.RemediationExecutorTool;
 import org.springaicommunity.agent.ikos.advisors.KnowledgeEvolutionAdvisor;
 import org.springaicommunity.agent.tools.AutoMemoryTools;
 import org.springaicommunity.agent.tools.AskUserQuestionTool;
@@ -114,6 +115,7 @@ public class IkosDemo {
     private final BehavioralAnalyzer behavioralAnalyzer;
     private final InteractiveDashboardGenerator reportGenerator;
     private final AlertConsolidationEngine consolidationEngine;
+    private final RemediationExecutorTool remediationTool;
     private final Scanner scanner;
     private final String storageRoot;
 
@@ -125,6 +127,7 @@ public class IkosDemo {
         this.promotionEngine = new DefaultPromotionEngine(storage);
         this.assembler = new DefaultContextAssembler(appMemory, govMemory);
         this.learningEngine = new OutcomeLearningEngine(storage, new InMemoryOutcomeTracker());
+        this.remediationTool = new RemediationExecutorTool();
         this.correlationEngine = new DefaultIdentityCorrelationEngine();
         this.riskEngine = new DefaultRiskDetectionEngine();
         this.governanceTools = new IdentityGovernanceTools(storage, pipeline, correlationEngine, riskEngine);
@@ -621,16 +624,20 @@ public class IkosDemo {
             }
 
             if (doExecute) {
-                // Execute actions with visual feedback
+                // Execute actions through RemediationExecutorTool
+                System.out.println("  " + CYAN + "    ┌ Executing via RemediationExecutorTool (@Tool)" + RESET);
+                String toolResult = executeRemediationAction(actionType, risk, stmt);
                 for (String action : actions) {
-                    System.out.println("  " + GREEN + "    → " + RESET + action + GREEN + "  ✓" + RESET);
+                    System.out.println("  " + GREEN + "    │ → " + RESET + action + GREEN + "  ✓" + RESET);
                     actionsExecuted++;
                 }
-                System.out.println("  " + GREEN + "    ✔ " + BOLD + "EXECUTED" + RESET
-                        + GREEN + " — " + actionType + " completed, knowledge updated" + RESET);
+                // Show API response summary
+                String txId = extractJsonField(toolResult, "txId");
+                System.out.println("  " + GREEN + "    └ " + BOLD + "EXECUTED" + RESET
+                        + GREEN + " — txId: " + txId + " — " + actionType + " completed" + RESET);
                 approved++;
                 learningEngine.learn(risk.id(), new Outcome(true,
-                        "SOC-approved remediation: " + actionType, LocalDateTime.now()));
+                        "SOC-approved remediation: " + actionType + " [" + txId + "]", LocalDateTime.now()));
             } else {
                 System.out.println("  " + ORANGE + "    ⊘ " + BOLD + "SKIPPED" + RESET
                         + ORANGE + " — deferred to next review cycle" + RESET);
@@ -682,6 +689,7 @@ public class IkosDemo {
         tableRow(ORANGE + "⊘ Skipped / Deferred" + RESET, ORANGE + String.valueOf(skipped) + RESET);
         tableRow("Actions Executed", String.valueOf(actionsExecuted));
         tableRow("Playbooks Used", "6 (PAM-001 through PAM-010)");
+        tableRow("Tool Invocations", GREEN + String.valueOf(remediationTool.getActionCount()) + " @Tool calls" + RESET);
         tableRow("Knowledge Updated", GREEN + "✔ " + risks.size() + " outcomes recorded" + RESET);
         tableFooter();
         ok("Remediation cycle complete. All decisions logged to audit trail.");
@@ -2005,6 +2013,78 @@ public class IkosDemo {
                 + GRAY + "  │  Conf: " + GREEN + f(u.confidence()) + RESET
                 + GRAY + "  │  Evidence: " + RESET + (u.evidence() == null ? 0 : u.evidence().size()));
         System.out.println("  " + CYAN + "  └───" + RESET);
+    }
+
+    /**
+     * Dispatches a remediation action to the appropriate @Tool method on RemediationExecutorTool.
+     * This is the bridge between the SOC approval flow and the Spring AI tool interface.
+     */
+    private String executeRemediationAction(String actionType, KnowledgeUnit risk, String stmtUpper) {
+        // Extract identity/account name from the risk statement
+        String identity = extractIdentityFromStatement(risk.statement());
+        String platform = extractPlatformFromStatement(stmtUpper);
+
+        if ("ACCOUNT_DISABLE".equals(actionType)) {
+            return remediationTool.disableAccount(identity, platform, "Offboarding gap detected by IKOS");
+        } else if ("ADMIN_REVOCATION".equals(actionType)) {
+            String result = remediationTool.revokePrivilege(identity, platform, "Administrator", "ReadOnly");
+            remediationTool.rotateCredentials(identity, platform, 90);
+            return result;
+        } else if ("PRIVILEGE_SPLIT".equals(actionType)) {
+            return remediationTool.revokePrivilege(identity, platform, "Administrator", "ReadOnly");
+        } else if ("CREDENTIAL_ROTATION".equals(actionType)) {
+            remediationTool.revokeApiKey(identity + "-key", platform, identity);
+            return remediationTool.rotateCredentials(identity, platform, 90);
+        } else if ("JIT_ACCESS".equals(actionType)) {
+            return remediationTool.revokePrivilege(identity, platform, "StandingAdmin", "JIT-Elevated");
+        } else if ("ACCOUNT_CLEANUP".equals(actionType)) {
+            remediationTool.invalidateSessions(identity, "ALL");
+            return remediationTool.disableAccount(identity, platform, "Orphaned account cleanup");
+        } else {
+            return remediationTool.createRemediationTicket(
+                    truncate(risk.statement(), 80), "P2-High", "SOC-IdentityTeam");
+        }
+    }
+
+    /** Extracts a display name or account ID from a risk statement. */
+    private String extractIdentityFromStatement(String statement) {
+        if (statement == null) return "unknown";
+        // Try to extract name patterns like "Eric Carter" or "svc-pipeline-8"
+        String[] parts = statement.split(":");
+        if (parts.length > 1) {
+            String afterColon = parts[1].trim();
+            // Take up to "has" or "is" or "Service"
+            for (String stop : new String[]{"has ", "is ", " Service", " —"}) {
+                int idx = afterColon.indexOf(stop);
+                if (idx > 0) return afterColon.substring(0, idx).trim();
+            }
+            if (afterColon.length() > 30) return afterColon.substring(0, 30).trim();
+            return afterColon.trim();
+        }
+        return statement.substring(0, Math.min(20, statement.length())).trim();
+    }
+
+    /** Extracts a platform name from the statement text. */
+    private String extractPlatformFromStatement(String stmtUpper) {
+        if (stmtUpper.contains("AWS")) return "AWS_IAM";
+        if (stmtUpper.contains("ACTIVEDIRECTORY") || stmtUpper.contains("ACTIVE DIRECTORY")) return "ActiveDirectory";
+        if (stmtUpper.contains("OKTA")) return "Okta";
+        if (stmtUpper.contains("SALESFORCE")) return "Salesforce";
+        if (stmtUpper.contains("SERVICENOW")) return "ServiceNow";
+        if (stmtUpper.contains("CLOUD")) return "AWS_IAM";
+        return "ActiveDirectory"; // default
+    }
+
+    /** Extracts a value for a given key from a simple JSON string. */
+    private String extractJsonField(String json, String key) {
+        if (json == null) return "N/A";
+        String search = "\"" + key + "\": \"";
+        int start = json.indexOf(search);
+        if (start < 0) return "N/A";
+        start += search.length();
+        int end = json.indexOf("\"", start);
+        if (end < 0) return "N/A";
+        return json.substring(start, end);
     }
 
     private void printRecommendation(KnowledgeUnit risk) {
