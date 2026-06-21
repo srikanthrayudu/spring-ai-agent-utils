@@ -72,15 +72,22 @@ import java.util.*;
  */
 public class IkosDemo {
 
-    static final String RESET = "\033[0m";
-    static final String BOLD = "\033[1m";
-    static final String CYAN = "\033[0;36m";
-    static final String GREEN = "\033[0;32m";
-    static final String YELLOW = "\033[0;33m";
-    static final String RED = "\033[0;31m";
-    static final String BLUE = "\033[0;34m";
-    static final String PURPLE = "\033[0;35m";
-    static final String WHITE = "\033[0;37m";
+    // ── ANSI Theme: Modern SOC Terminal ──────────────────────────────────────
+    static final String RESET  = "\033[0m";
+    static final String BOLD   = "\033[1m";
+    static final String DIM    = "\033[2m";
+    static final String ITALIC = "\033[3m";
+    static final String CYAN   = "\033[38;5;87m";   // bright cyan
+    static final String GREEN  = "\033[38;5;84m";   // emerald
+    static final String YELLOW = "\033[38;5;220m";  // gold
+    static final String RED    = "\033[38;5;196m";  // vivid red
+    static final String BLUE   = "\033[38;5;69m";   // steel blue
+    static final String PURPLE = "\033[38;5;141m";  // lavender
+    static final String WHITE  = "\033[38;5;252m";  // soft white
+    static final String ORANGE = "\033[38;5;208m";  // warning orange
+    static final String GRAY   = "\033[38;5;243m";  // muted gray
+    static final String BG_DIM = "\033[48;5;236m";  // subtle bg highlight
+    static final int    W      = 62;                  // box width
 
     private final FileMemoryStorage storage;
     private final ApplicationMemory appMemory;
@@ -175,15 +182,20 @@ public class IkosDemo {
         new File(storageRoot).mkdirs();
 
         banner();
-        System.out.println(CYAN + "  Storage: " + storageRoot + RESET);
-        System.out.println();
 
-        // Show agent environment info (AgentEnvironment utility)
-        System.out.println(
-                BOLD + "  Agent Environment" + RESET + " (org.springaicommunity.agent.utils.AgentEnvironment):");
+        // ── Environment card ──
+        System.out.println(GRAY + "  ┌" + "─".repeat(W) + "┐" + RESET);
+        System.out.println(GRAY + "  │" + RESET + BOLD + "  ⚙  Environment" + RESET
+                + " ".repeat(W - 17) + GRAY + "│" + RESET);
+        System.out.println(GRAY + "  ├" + "─".repeat(W) + "┤" + RESET);
+        System.out.println(formatInfoRow("Storage", storageRoot));
         for (String line : AgentEnvironment.info().split("\n")) {
-            System.out.println("    " + WHITE + line + RESET);
+            String[] parts = line.split(":", 2);
+            if (parts.length == 2) {
+                System.out.println(formatInfoRow(parts[0].trim(), parts[1].trim()));
+            }
         }
+        System.out.println(GRAY + "  └" + "─".repeat(W) + "┘" + RESET);
         System.out.println();
 
         IkosDemo demo = new IkosDemo(storageRoot);
@@ -222,26 +234,57 @@ public class IkosDemo {
     }
 
     private static void printMenu() {
-        System.out.println(BOLD + RED + "━━━ IKOS — Identity Knowledge Operating System ━━━━━━━" + RESET);
-        System.out.println("  " + CYAN + "1" + RESET + "  Run full IKOS lifecycle demo (automated)");
-        System.out.println("  " + CYAN + "2" + RESET + "  Detect identity risks (offboarding gap / dormant admin)");
-        System.out.println("  " + CYAN + "3" + RESET + "  Record a security incident");
-        System.out.println("  " + CYAN + "4" + RESET + "  Record a remediation action");
-        System.out.println("  " + CYAN + "5" + RESET + "  View auto-discovered pattern candidates");
-        System.out.println("  " + CYAN + "6" + RESET + "  Nominate + approve a promotion (governance review)");
-        System.out.println("  " + CYAN + "7" + RESET + "  Assemble context for identity governance query");
-        System.out.println("  " + CYAN + "8" + RESET + "  Record an outcome and learn");
-        System.out.println("  " + CYAN + "9" + RESET + "  List all IKOS knowledge units");
-        System.out.println(
-                "  " + CYAN + "0" + RESET + "  " + BOLD + "Compliance Dashboard" + RESET + " (risk heatmap + scores)");
-        System.out.println(
-                "  " + CYAN + "a" + RESET + "  " + BOLD + "Audit Trail" + RESET + " (knowledge evolution timeline)");
-        System.out.println(
-                "  " + CYAN + "i" + RESET + "  " + BOLD + "AI Agent Query" + RESET + " (Spring AI tool-calling demo)");
-        System.out.println("  " + CYAN + "s" + RESET + "  " + BOLD + "Spring AI Integration" + RESET
-                + " (framework component showcase)");
-        System.out.println("  " + CYAN + "q" + RESET + "  Quit");
-        System.out.println(RED + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" + RESET);
+        String bar = CYAN + "━".repeat(W + 4) + RESET;
+        System.out.println(bar);
+        System.out.println();
+
+        // ── Section: SOC Operations ──
+        System.out.println(sectionLabel("SOC OPERATIONS"));
+        menuItem("1", "Run full IKOS lifecycle demo", "automated 14-step pipeline");
+        menuItem("2", "Detect identity risks", "offboarding gap · dormant admin · SoD");
+        menuItem("3", "Record a security incident", "manual incident intake");
+        menuItem("4", "Record a remediation action", "track outcomes");
+        System.out.println();
+
+        // ── Section: Intelligence ──
+        System.out.println(sectionLabel("INTELLIGENCE"));
+        menuItem("5", "Pattern candidates", "auto-discovered from observations");
+        menuItem("6", "Governance review", "nominate + approve promotions");
+        menuItem("7", "Context assembly", "build agent query context");
+        menuItem("8", "Outcome learning", "record outcomes, evolve confidence");
+        menuItem("9", "Knowledge store", "browse all IKOS knowledge units");
+        System.out.println();
+
+        // ── Section: Dashboards ──
+        System.out.println(sectionLabel("DASHBOARDS & AI"));
+        menuItem("0", "Compliance Dashboard", "risk heatmap · scores · posture");
+        menuItem("a", "Audit Trail", "knowledge evolution timeline");
+        menuItem("i", "AI Agent Query", "Spring AI tool-calling demo");
+        menuItem("s", "Spring AI Integration", "13-component framework showcase");
+        System.out.println();
+
+        menuItem("q", "Quit", "");
+        System.out.println(bar);
+    }
+
+    private static void menuItem(String key, String label, String hint) {
+        String hintStr = hint.isEmpty() ? "" : GRAY + " · " + hint + RESET;
+        System.out.println("   " + CYAN + BOLD + " " + key + " " + RESET
+                + "  " + WHITE + label + RESET + hintStr);
+    }
+
+    private static String sectionLabel(String label) {
+        return "   " + DIM + GRAY + "── " + label + " " + "─".repeat(Math.max(1, W - label.length() - 7)) + RESET;
+    }
+
+    private static String formatInfoRow(String label, String value) {
+        String padded = String.format("  %-18s %s", label, value);
+        int pad = W - padded.length() + 4;
+        if (pad < 1) pad = 1;
+        return GRAY + "  │" + RESET + GRAY + "  " + label + RESET
+                + WHITE + ": " + BOLD + value + RESET
+                + " ".repeat(Math.max(1, W - label.length() - value.length() - 4))
+                + GRAY + "│" + RESET;
     }
 
     // ── Option 1: Full automated lifecycle ───────────────────────────────────
@@ -1695,20 +1738,22 @@ public class IkosDemo {
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private void printRisk(KnowledgeUnit u) {
-        System.out.println("  " + RED + "⚠ " + RESET + BOLD + u.statement() + RESET);
-        System.out.println("    " + YELLOW + "Confidence: " + f(u.confidence()) + RESET
-                + " | Evidence: " + (u.evidence() != null ? u.evidence().size() : 0) + " item(s)");
+        String sev = u.confidence() >= 0.9 ? RED + "CRIT" : u.confidence() >= 0.7 ? ORANGE + "HIGH" : YELLOW + "MED ";
+        System.out.println("  " + GRAY + "  " + RESET + BG_DIM + " " + sev + RESET + BG_DIM + " " + RESET
+                + "  " + WHITE + u.statement() + RESET);
+        System.out.println("  " + GRAY + "         Confidence: " + RESET + BOLD + f(u.confidence()) + RESET
+                + GRAY + "  │  Evidence: " + RESET + (u.evidence() != null ? u.evidence().size() : 0) + " item(s)");
     }
 
     private void printUnit(KnowledgeUnit u) {
-        System.out.println("  " + YELLOW + "┌─ " + u.id() + RESET);
-        System.out.println("  " + YELLOW + "│  " + RESET + BOLD + u.statement() + RESET);
-        System.out.println("  " + YELLOW + "│  " + RESET + "Type:       " + CYAN + u.type() + RESET);
         String state = u.getState() != null ? u.getState().name() : "—";
-        System.out.println("  " + YELLOW + "│  " + RESET + "State:      " + PURPLE + state + RESET);
-        System.out.println("  " + YELLOW + "│  " + RESET + "Confidence: " + GREEN + f(u.confidence()) + RESET);
-        System.out.println("  " + YELLOW + "└  " + RESET + "Evidence:   "
-                + (u.evidence() == null ? 0 : u.evidence().size()) + " item(s)");
+        System.out.println("  " + CYAN + "  ┌─" + GRAY + " " + u.id() + RESET);
+        System.out.println("  " + CYAN + "  │ " + RESET + BOLD + WHITE + u.statement() + RESET);
+        System.out.println("  " + CYAN + "  │ " + RESET + GRAY + "Type: " + CYAN + u.type() + RESET
+                + GRAY + "  │  State: " + PURPLE + state + RESET
+                + GRAY + "  │  Conf: " + GREEN + f(u.confidence()) + RESET
+                + GRAY + "  │  Evidence: " + RESET + (u.evidence() == null ? 0 : u.evidence().size()));
+        System.out.println("  " + CYAN + "  └───" + RESET);
     }
 
     private void printRecommendation(KnowledgeUnit risk) {
@@ -1776,45 +1821,64 @@ public class IkosDemo {
     }
 
     private static void banner() {
-        System.out.println(BOLD + RED);
-        System.out.println("  ██╗██╗  ██╗ ██████╗ ███████╗");
-        System.out.println("  ██║██║ ██╔╝██╔═══██╗██╔════╝");
-        System.out.println("  ██║█████╔╝ ██║   ██║███████╗");
-        System.out.println("  ██║██╔═██╗ ██║   ██║╚════██║");
-        System.out.println("  ██║██║  ██╗╚██████╔╝███████║");
-        System.out.println("  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝");
-        System.out.println(RESET + BOLD);
-        System.out.println("  Identity Knowledge Operating System");
-        System.out.println("  Continuously learning security intelligence" + RESET);
+        System.out.println();
+        System.out.println(BOLD + RED    + "      ██╗██╗  ██╗ ██████╗ ███████╗" + RESET);
+        System.out.println(BOLD + RED    + "      ██║██║ ██╔╝██╔═══██╗██╔════╝" + RESET);
+        System.out.println(BOLD + ORANGE + "      ██║█████╔╝ ██║   ██║███████╗" + RESET);
+        System.out.println(BOLD + YELLOW + "      ██║██╔═██╗ ██║   ██║╚════██║" + RESET);
+        System.out.println(BOLD + GREEN  + "      ██║██║  ██╗╚██████╔╝███████║" + RESET);
+        System.out.println(BOLD + CYAN   + "      ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝" + RESET);
+        System.out.println();
+        System.out.println(BOLD + WHITE  + "      Identity Knowledge Operating System" + RESET);
+        System.out.println(DIM  + GRAY   + "      Autonomous Identity Sprawl & Privilege Abuse Detection" + RESET);
+        System.out.println(DIM  + GRAY   + "      Powered by Spring AI 2.0 + Knowledge Evolution Framework" + RESET);
         System.out.println();
     }
 
     private void header(String title) {
-        System.out.println(BOLD + BLUE + "── " + title + " ──" + RESET);
+        System.out.println();
+        String line = "─".repeat(Math.max(1, title.length() + 6));
+        System.out.println("  " + CYAN + "┌" + line + "┐" + RESET);
+        System.out.println("  " + CYAN + "│" + RESET + BOLD + "   " + title + "   " + CYAN + "│" + RESET);
+        System.out.println("  " + CYAN + "└" + line + "┘" + RESET);
         System.out.println();
     }
 
     private void step(String num, String desc) {
         System.out.println();
-        System.out.println("  " + BOLD + RED + "Step " + num + ": " + desc + RESET);
+        int n = 0;
+        try { n = Integer.parseInt(num); } catch (Exception ignored) {}
+        String numBadge = BOLD + BG_DIM + WHITE + " STEP " + num + " " + RESET;
+        String progress = n > 0 ? progressBar(n, 14) + "  " : "";
+        System.out.println("  " + numBadge + "  " + progress + BOLD + WHITE + desc + RESET);
+        System.out.println("  " + DIM + GRAY + "─".repeat(Math.min(W, desc.length() + 16)) + RESET);
+    }
+
+    private static String progressBar(int current, int total) {
+        int filled = (int)((double) current / total * 10);
+        int empty = 10 - filled;
+        return GRAY + "[" + GREEN + "█".repeat(filled) + DIM + GRAY + "░".repeat(empty) + RESET + GRAY + "]" + RESET
+                + DIM + GRAY + " " + current + "/" + total + RESET;
     }
 
     private void ok(String msg) {
-        System.out.println("  " + GREEN + "✓ " + msg + RESET);
+        System.out.println("  " + GREEN + "  ✔ " + RESET + WHITE + msg + RESET);
     }
 
     private void warn(String msg) {
-        System.out.println("  " + YELLOW + "⚠ " + msg + RESET);
+        System.out.println("  " + ORANGE + "  ⚠ " + RESET + YELLOW + msg + RESET);
     }
 
     private void pause() {
         System.out.println();
-        System.out.print("  " + BLUE + "[ press Enter to continue ]" + RESET);
+        System.out.print("  " + DIM + GRAY + "  ─── press " + RESET + CYAN + BOLD + "Enter"
+                + RESET + DIM + GRAY + " to continue ───" + RESET);
         scanner.nextLine();
+        System.out.println();
     }
 
     private String prompt(String label) {
-        System.out.print("  " + BOLD + label + ": " + RESET);
+        System.out.print("  " + CYAN + "❯ " + RESET + BOLD + label + ": " + RESET);
         return scanner.nextLine();
     }
 
@@ -1830,7 +1894,14 @@ public class IkosDemo {
 
     private static void bye() {
         System.out.println();
-        System.out.println(BOLD + GREEN + "  Goodbye! IKOS data persisted in ~/.ikos-demo" + RESET);
+        System.out.println(GRAY + "  ┌" + "─".repeat(W) + "┐" + RESET);
+        System.out.println(GRAY + "  │" + RESET + GREEN + BOLD
+                + "  ✔  Session complete. IKOS data persisted." + RESET
+                + " ".repeat(Math.max(1, W - 45)) + GRAY + "│" + RESET);
+        System.out.println(GRAY + "  │" + RESET + DIM + GRAY
+                + "     Storage: ~/.ikos-demo" + RESET
+                + " ".repeat(Math.max(1, W - 27)) + GRAY + "│" + RESET);
+        System.out.println(GRAY + "  └" + "─".repeat(W) + "┘" + RESET);
         System.out.println();
     }
 }
