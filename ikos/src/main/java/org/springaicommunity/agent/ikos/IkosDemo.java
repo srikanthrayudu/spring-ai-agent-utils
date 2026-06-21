@@ -502,13 +502,22 @@ public class IkosDemo {
             if (success) remSuccess++; else remEscalated++;
         }
 
-        // Single TodoWriteTool update with final state
+        // Single TodoWriteTool update with final state (only 1 in_progress allowed)
         List<TodoWriteTool.Todos.TodoItem> finalTasks = new ArrayList<>();
+        boolean firstEscalated = true;
         for (KnowledgeUnit risk : risks) {
             boolean success = risk.confidence() >= 0.8;
+            TodoWriteTool.Todos.Status status;
+            if (success) {
+                status = TodoWriteTool.Todos.Status.completed;
+            } else if (firstEscalated) {
+                status = TodoWriteTool.Todos.Status.in_progress;
+                firstEscalated = false;
+            } else {
+                status = TodoWriteTool.Todos.Status.pending;
+            }
             finalTasks.add(new TodoWriteTool.Todos.TodoItem(
-                    "Remediate: " + truncate(risk.statement(), 50),
-                    success ? TodoWriteTool.Todos.Status.completed : TodoWriteTool.Todos.Status.in_progress,
+                    "Remediate: " + truncate(risk.statement(), 50), status,
                     "Remediating " + risk.id()));
         }
         todoTool.todoWrite(new TodoWriteTool.Todos(finalTasks.subList(0, Math.min(10, finalTasks.size()))));

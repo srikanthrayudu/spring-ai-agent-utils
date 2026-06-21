@@ -69,17 +69,28 @@ public class ContextBuilder {
 		// Tokenize and normalize keywords from the question
 		Set<String> queryKeywords = extractKeywords(question);
 
-		// Rank memories by Relevance * Confidence
-		List<RankedMemory> rankedMemories = allMemories.stream()
-				.map(unit -> {
-					double relevance = calculateRelevance(queryKeywords, unit);
-					double score = relevance * unit.confidence();
-					return new RankedMemory(unit, score);
-				})
-				.filter(rm -> rm.score() > 0.05) // filter out completely irrelevant memories
-				.sorted(Comparator.comparingDouble(RankedMemory::score).reversed())
-				.limit(limit)
-				.toList();
+		// Score all memories — using parallel lists to avoid inner-class generation
+		// (exec-maven-plugin classloader cannot resolve synthetic $RankedMemory classes)
+		List<KnowledgeUnit> scoredUnits = new ArrayList<>();
+		List<Double> scoredValues = new ArrayList<>();
+		for (KnowledgeUnit unit : allMemories) {
+			double relevance = calculateRelevance(queryKeywords, unit);
+			double score = relevance * unit.confidence();
+			if (score > 0.05) {
+				scoredUnits.add(unit);
+				scoredValues.add(score);
+			}
+		}
+
+		// Sort by score descending using index-based sorting
+		Integer[] indices = new Integer[scoredUnits.size()];
+		for (int i = 0; i < indices.length; i++) indices[i] = i;
+		java.util.Arrays.sort(indices, (a, b) -> Double.compare(scoredValues.get(b), scoredValues.get(a)));
+
+		List<KnowledgeUnit> rankedUnits = new ArrayList<>();
+		for (int i = 0; i < Math.min(limit, indices.length); i++) {
+			rankedUnits.add(scoredUnits.get(indices[i]));
+		}
 
 		StringBuilder sb = new StringBuilder();
 
@@ -103,8 +114,7 @@ public class ContextBuilder {
 		});
 
 		// Group retrieved memories by memory type for structured presentation
-		Map<KnowledgeType, List<KnowledgeUnit>> grouped = rankedMemories.stream()
-				.map(RankedMemory::unit)
+		Map<KnowledgeType, List<KnowledgeUnit>> grouped = rankedUnits.stream()
 				.collect(Collectors.groupingBy(KnowledgeUnit::type));
 
 		// Build formatted sections
@@ -151,7 +161,7 @@ public class ContextBuilder {
 		Set<String> keywords = new HashSet<>();
 		String[] tokens = text.toLowerCase().split("\\W+");
 		for (String token : tokens) {
-			if (token.length() > 3) { // filter out short stop words (e.g. "and", "the", "a")
+			if (token.length() > 3) {
 				keywords.add(token);
 			}
 		}
@@ -173,6 +183,4 @@ public class ContextBuilder {
 
 		return (double) matches / queryKeywords.size();
 	}
-
-	private record RankedMemory(KnowledgeUnit unit, double score) {}
 }

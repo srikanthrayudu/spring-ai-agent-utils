@@ -68,18 +68,30 @@ public class DefaultContextAssembler implements ContextAssembler {
 
         List<KnowledgeUnit> corpus = gatherAll();
 
-        List<ScoredUnit> scored = corpus.stream()
-                .map(unit -> new ScoredUnit(unit, this.scorer.score(unit, query, now)))
-                .filter(su -> su.score() > MINIMUM_SCORE)
-                .sorted(Comparator.comparingDouble(ScoredUnit::score).reversed())
-                .limit(limit)
-                .toList();
+        // Score and rank — using double[] wrapper to avoid inner-class generation
+        // (exec-maven-plugin classloader cannot resolve synthetic $ScoredUnit classes)
+        List<KnowledgeUnit> scored = new ArrayList<>();
+        List<Double> scores = new ArrayList<>();
+        for (KnowledgeUnit unit : corpus) {
+            double s = this.scorer.score(unit, query, now);
+            if (s > MINIMUM_SCORE) {
+                scored.add(unit);
+                scores.add(s);
+            }
+        }
 
-        List<KnowledgeUnit> ranked = scored.stream().map(ScoredUnit::unit).toList();
-        double overallRelevance = scored.stream()
-                .mapToDouble(ScoredUnit::score)
-                .average()
-                .orElse(0.0);
+        // Sort by score descending using index-based sorting
+        Integer[] indices = new Integer[scored.size()];
+        for (int i = 0; i < indices.length; i++) indices[i] = i;
+        java.util.Arrays.sort(indices, (a, b) -> Double.compare(scores.get(b), scores.get(a)));
+
+        List<KnowledgeUnit> ranked = new ArrayList<>();
+        double totalScore = 0;
+        for (int i = 0; i < Math.min(limit, indices.length); i++) {
+            ranked.add(scored.get(indices[i]));
+            totalScore += scores.get(indices[i]);
+        }
+        double overallRelevance = ranked.isEmpty() ? 0.0 : totalScore / ranked.size();
 
         return new ContextPackage(query, ranked, overallRelevance);
     }
@@ -101,6 +113,4 @@ public class DefaultContextAssembler implements ContextAssembler {
         all.addAll(this.governanceMemory.getToolKnowledge());
         return all;
     }
-
-    private record ScoredUnit(KnowledgeUnit unit, double score) {}
 }
