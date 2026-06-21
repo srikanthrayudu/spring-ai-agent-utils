@@ -21,6 +21,7 @@ import org.springaicommunity.agent.ikos.storage.FileMemoryStorage;
 import org.springaicommunity.agent.ikos.tools.EngineeringMemoryTools;
 import org.springaicommunity.agent.ikos.tools.IdentityGovernanceTools;
 import org.springaicommunity.agent.ikos.tools.RemediationExecutorTool;
+import org.springaicommunity.agent.ikos.tools.ActionRecord;
 import org.springaicommunity.agent.ikos.advisors.KnowledgeEvolutionAdvisor;
 import org.springaicommunity.agent.tools.AutoMemoryTools;
 import org.springaicommunity.agent.tools.AskUserQuestionTool;
@@ -293,7 +294,19 @@ public class IkosDemo {
     // ── Option 1: Full automated lifecycle ───────────────────────────────────
 
     private void demoFullLifecycle() {
-        header("Full IKOS Lifecycle: Identity Event → Risk → Knowledge → Recommendation");
+        // ── Mission Briefing ──
+        System.out.println();
+        System.out.println("  " + PURPLE + BOLD + "  ╔══ MISSION BRIEFING ═══════════════════════════════════════════╗" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Scope:      " + BOLD + "200 identities across 5 enterprise platforms" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Platforms:  " + CYAN + "Active Directory · AWS IAM · Okta · Salesforce · ServiceNow" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Objective:  " + BOLD + "Detect identity sprawl, privilege abuse & policy drift" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Approach:   15-step autonomous intelligence pipeline");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Agent:      " + GREEN + "AI Remediation Agent with human-in-the-loop approval" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET);
+        System.out.println("  " + PURPLE + BOLD + "  ╚═════════════════════════════════════════════════════════════╝" + RESET);
+        agentSays("Starting identity reconnaissance. I'll brief you at each checkpoint.");
+        System.out.println();
 
         // ═══════ WAVE 1: Generate simulated data at scale ═══════
         step("1", "SimulatedDataGenerator — enterprise identity dataset");
@@ -308,7 +321,7 @@ public class IkosDemo {
         }
         tableFooter();
         ok("Generated " + accounts.size() + " accounts from 5 platforms");
-        pause();
+        agentSays("Data loaded. " + accounts.size() + " accounts ingested. Proceeding to cross-platform correlation...");
 
         // ═══════ Step 2: Correlate identities ═══════
         step("2", "Identity Correlation Engine — cross-platform resolution");
@@ -388,6 +401,7 @@ public class IkosDemo {
                 .forEach(this::printRisk);
         if (risks.size() > 5) dimNote(risks.size() - 5 + " additional risks detected");
         ok("Detected " + risks.size() + " risks across " + riskCats.size() + " categories");
+        agentSays("I found " + risks.size() + " risks. " + criticalRiskCount(risks) + " are CRITICAL. Let me show you the top threats.");
         final List<KnowledgeUnit> allRisks = risks;
         pauseWithDetail(() -> {
             for (KnowledgeUnit r : allRisks) { printRisk(r); }
@@ -430,6 +444,9 @@ public class IkosDemo {
                     prof.adminPlatforms().size(), color, prof.privilegeRiskScore() * 100, RESET);
         }
         if (identities.size() > 5) dimNote(identities.size() - 5 + " more identities analyzed");
+        agentSays(hiddenAdmins > 0
+                ? "Found " + hiddenAdmins + " hidden admin(s) via nested group inheritance — these are invisible in standard audits."
+                : "No hidden admins detected through group inheritance. Privilege landscape looks contained.");
         final List<Object[]> allProfiles = topProfiles;
         pauseWithDetail(() -> {
             for (Object[] entry : allProfiles) {
@@ -470,6 +487,7 @@ public class IkosDemo {
                 printUnit(p);
             }
         }
+        agentSays("Knowledge synthesis complete. " + allPatterns.size() + " pattern candidates ready for governance review.");
         pause();
 
         // ═══════ Step 6: Generate recommendations ═══════
@@ -480,6 +498,7 @@ public class IkosDemo {
                 .limit(3)
                 .forEach(this::printRecommendation);
         if (risks.size() > 3) dimNote(risks.size() - 3 + " additional recommendations generated");
+        agentSays("Recommendations generated. Moving to context assembly for the remediation agent...");
         final List<KnowledgeUnit> recRisks = risks;
         pauseWithDetail(() -> {
             for (KnowledgeUnit r : recRisks) { printRecommendation(r); }
@@ -489,7 +508,7 @@ public class IkosDemo {
         step("7", "Assemble context for agent query: 'dormant admin offboarding risk'");
         ContextPackage pkg = assembler.assemble("dormant admin offboarding privilege creep contractor risk", 10);
         printContext(pkg);
-        pause();
+        agentSays("Context assembled. I have enough intelligence to begin targeted remediation.");
 
         // ═══════ Step 8: AI Agent Autonomous Remediation with SOC Approval ═══════
         step("8", "AI Agent Remediation — human-in-the-loop action execution");
@@ -741,7 +760,7 @@ public class IkosDemo {
         System.out.println("  " + PURPLE + BOLD + "  ╚══════════════════════════════════════════════════════╝" + RESET);
 
         // ── Compliance Audit Trail ──
-        List<RemediationExecutorTool.ActionRecord> auditLog = remediationTool.getAuditLog();
+        List<ActionRecord> auditLog = remediationTool.getAuditLog();
         if (!auditLog.isEmpty()) {
             System.out.println();
             System.out.println("  " + BOLD + "  COMPLIANCE AUDIT TRAIL" + RESET
@@ -752,7 +771,7 @@ public class IkosDemo {
             System.out.println("  " + GRAY + "  " + "─".repeat(68) + RESET);
             int auditLimit = Math.min(8, auditLog.size());
             for (int i = 0; i < auditLimit; i++) {
-                RemediationExecutorTool.ActionRecord rec = auditLog.get(i);
+                ActionRecord rec = auditLog.get(i);
                 String color = rec.actionType().contains("DISABLE") ? RED
                         : rec.actionType().contains("REVOKE") ? ORANGE
                         : rec.actionType().contains("ROTATE") ? YELLOW
@@ -768,12 +787,24 @@ public class IkosDemo {
         }
 
         ok("Remediation cycle complete. All decisions logged to audit trail.");
-        pause();
+
+        // Decision point after remediation
+        System.out.println();
+        System.out.print("  " + YELLOW + "  ❯ " + RESET + "[" + GREEN + BOLD + "Enter" + RESET + "] continue pipeline  "
+                + "[" + CYAN + BOLD + "d" + RESET + "] detailed audit log: ");
+        String postRemChoice = scanner.nextLine().trim().toLowerCase();
+        if ("d".equals(postRemChoice) && !remediationTool.getAuditLog().isEmpty()) {
+            System.out.println();
+            for (ActionRecord rec : remediationTool.getAuditLog()) {
+                System.out.println("    " + GRAY + rec.toString() + RESET);
+            }
+            pause();
+        }
 
         // ═══════ Step 9: Show dashboard ═══════
         step("9", "Compliance Dashboard — organizational risk posture");
         complianceDashboard();
-        pause();
+        agentSays("Compliance posture updated. Moving to knowledge promotion and behavioral analysis...");
 
         // ═══════ Step 10: Auto-promote patterns to Security Knowledge ═══════
         step("10", "Governance Review — auto-promote validated patterns to Security Knowledge");
@@ -881,11 +912,23 @@ public class IkosDemo {
         } catch (IOException e) {
             warn("Failed to write dashboard: " + e.getMessage());
         }
-        pause();
 
+        // ── Closing Debrief ──
+        int finalApproved = approved;
         System.out.println();
-        ok(BOLD + "Full IKOS lifecycle complete — 15 stages!" + RESET + GREEN
-                + " Knowledge evolves with every identity event — that is the moat." + RESET);
+        System.out.println("  " + PURPLE + BOLD + "  ╔══ MISSION DEBRIEF ════════════════════════════════════════╗" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET);
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Identities Scanned:  " + BOLD + identities.size() + RESET + " across 5 platforms");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Risks Detected:      " + RED + BOLD + risks.size() + RESET + " (" + criticalRiskCount(risks) + " critical)");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Remediated:          " + GREEN + BOLD + finalApproved + RESET + " actions executed via @Tool");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Alert Noise:         " + GREEN + BOLD + String.format("%.0f%%", consolidation.reductionPercentage()) + RESET + " reduction (" + consolidation.originalAlertCount() + " → " + consolidation.consolidatedAlertCount() + ")");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Patterns Promoted:   " + BOLD + promoted + RESET + " to Security Knowledge");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Behavioral Anomalies:" + RED + BOLD + " " + behavioral.anomaliesDetected() + RESET + " detected");
+        System.out.println("  " + PURPLE + "  ║" + RESET + "  Offboarding Gaps:    " + RED + BOLD + gaps.size() + RESET + " terminated users still active");
+        System.out.println("  " + PURPLE + "  ║" + RESET);
+        System.out.println("  " + PURPLE + BOLD + "  ╚═════════════════════════════════════════════════════════════╝" + RESET);
+        agentSays("Mission complete. " + risks.size() + " risks analyzed, " + finalApproved
+                + " remediated. Knowledge evolves with every identity event — that is the moat.");
     }
 
     // ── Option 2: Interactive risk detection ─────────────────────────────────
@@ -2274,6 +2317,22 @@ public class IkosDemo {
 
     private static void dimNote(String note) {
         System.out.println("    " + DIM + GRAY + "  ⋯ " + note + RESET);
+    }
+
+    /** Agent narration — styled message from the AI agent. */
+    private static void agentSays(String message) {
+        System.out.println();
+        System.out.println("  " + PURPLE + "  ▸ " + BOLD + "AGENT:" + RESET + " " + WHITE + message + RESET);
+        System.out.println();
+    }
+
+    /** Counts risks with confidence >= 0.9 (critical threshold). */
+    private static int criticalRiskCount(List<KnowledgeUnit> risks) {
+        int count = 0;
+        for (KnowledgeUnit r : risks) {
+            if (r.confidence() >= 0.9) count++;
+        }
+        return count;
     }
 
     private static void banner() {

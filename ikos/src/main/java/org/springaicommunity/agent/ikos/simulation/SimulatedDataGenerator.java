@@ -129,15 +129,35 @@ public class SimulatedDataGenerator {
 
     /**
      * Result of data generation.
+     * Static final class (not record) to avoid exec-maven-plugin synthetic class issues.
      */
-    public record GeneratedData(
-            List<IdentityAccount> accounts,
-            List<AuditEvent> auditEvents,
-            List<OffboardingRecord> offboardingRecords,
-            List<TemporaryAccessException> temporaryExceptions,
-            GroupHierarchy groupHierarchy,
-            Map<String, String> dataStats
-    ) {}
+    public static final class GeneratedData {
+        private final List<IdentityAccount> accounts;
+        private final List<AuditEvent> auditEvents;
+        private final List<OffboardingRecord> offboardingRecords;
+        private final List<TemporaryAccessException> temporaryExceptions;
+        private final GroupHierarchy groupHierarchy;
+        private final Map<String, String> dataStats;
+
+        public GeneratedData(List<IdentityAccount> accounts, List<AuditEvent> auditEvents,
+                             List<OffboardingRecord> offboardingRecords,
+                             List<TemporaryAccessException> temporaryExceptions,
+                             GroupHierarchy groupHierarchy, Map<String, String> dataStats) {
+            this.accounts = accounts;
+            this.auditEvents = auditEvents;
+            this.offboardingRecords = offboardingRecords;
+            this.temporaryExceptions = temporaryExceptions;
+            this.groupHierarchy = groupHierarchy;
+            this.dataStats = dataStats;
+        }
+
+        public List<IdentityAccount> accounts() { return accounts; }
+        public List<AuditEvent> auditEvents() { return auditEvents; }
+        public List<OffboardingRecord> offboardingRecords() { return offboardingRecords; }
+        public List<TemporaryAccessException> temporaryExceptions() { return temporaryExceptions; }
+        public GroupHierarchy groupHierarchy() { return groupHierarchy; }
+        public Map<String, String> dataStats() { return dataStats; }
+    }
 
     /**
      * Generates a complete simulated dataset.
